@@ -1,16 +1,16 @@
 'use client'
 
-import { useRef, useState, useEffect } from 'react'
+import { useRef, useState, useEffect, useCallback } from 'react'
 import { Upload, X } from 'lucide-react'
 import Image from 'next/image'
 import { Button } from '@/components/ui/button'
+import { useDropzone } from 'react-dropzone';
 
 interface FileWithPreview extends File {
   preview: string;
 }
 
 const UploadPhoto = () => {
-  const fileInputRef = useRef<HTMLInputElement>(null);
   const [files, setFiles] = useState<FileWithPreview[]>([]);
   const [rejectedNames, setRejectedNames] = useState<string[]>([]);
 
@@ -18,15 +18,10 @@ const UploadPhoto = () => {
     return () => files.forEach(file => URL.revokeObjectURL(file.preview));
   }, [files]);
 
-  const handleUploadClick = () => {
-    fileInputRef.current?.click();
-  };
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedFiles = event.target.files;
-    if (!selectedFiles) return;
 
-    const newFiles = Array.from(selectedFiles);
+  const processFiles = useCallback((newFiles: File[]) => {
+
     const maxSize = 5 * 1024 * 1024;
 
     const acceptedBatch: FileWithPreview[] = [];
@@ -48,34 +43,36 @@ const UploadPhoto = () => {
     }
 
     setRejectedNames(rejectedBatch);
-  };
+  }, []);
 
-  const handleRemovePhoto = (index: number) => {
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop: processFiles, // Pass our refactored function here
+    accept: { 'image/*': [] }, // Restrict to images
+    multiple: true
+  });
+
+  const handleRemovePhoto = useCallback((index: number) => {
     setFiles((prev) => {
       const newFiles = [...prev];
       URL.revokeObjectURL(newFiles[index].preview);
       newFiles.splice(index, 1);
       return newFiles;
     });
-  };
+  }, []);
 
   return (
     <section className="space-y-4">
       <h2 className="text-xl font-semibold border-b border-border pb-2">3. Photos</h2>
       
+      <div 
+        {...getRootProps()}
+        className={`border-2 border-dashed rounded-xl p-8 text-center hover:bg-muted/50 transition-colors cursor-pointer ${isDragActive ? 'border-primary bg-primary/5' : 'border-border hover:bg-muted/50'}`}
+      >
       <input
-        type="file"
-        ref={fileInputRef}
-        onChange={handleFileChange}
-        className="hidden"
-        accept="image/*"
-        multiple
+        {...getInputProps()}
+        className={`${isDragActive ? 'text-primary' : 'text-muted-foreground'}`}
       />
 
-      <div 
-        onClick={handleUploadClick} 
-        className="border-2 border-dashed border-border rounded-xl p-8 text-center hover:bg-muted/50 transition-colors cursor-pointer"
-      >
         <Upload className="h-8 w-8 text-muted-foreground mx-auto mb-3" />
         <p className="text-sm font-medium text-foreground mb-1">Click to upload or drag and drop</p>
         <p className="text-xs text-muted-foreground">Images only (max. 5MB per file)</p>
@@ -104,7 +101,8 @@ const UploadPhoto = () => {
                 type="button"
                 variant="destructive"
                 size="icon"           
-                onClick={() => handleRemovePhoto(index)} 
+                onClick={(e) => {e.stopPropagation(); handleRemovePhoto(index)}} 
+                
                 className="cursor-pointer absolute -top-2 -right-2 h-6 w-6 rounded-full shadow-sm opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity"
               >
                 <X className="h-3 w-3" />
