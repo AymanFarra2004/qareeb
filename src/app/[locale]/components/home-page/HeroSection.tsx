@@ -4,7 +4,7 @@ import HeroQuickSearch from './HeroQuickSearch';
 import FeaturedHubSection from './FeaturedHubSection';
 import { useState } from 'react';
 
-const HeroSection = () => {
+const HeroSection = ({ initialHubs = [] }: { initialHubs?: any[] }) => {
   const t = useTranslations("Hero");
   const [filter, setFilter] = useState<{governorate: string, service: string}>({governorate: "", service: ""});
   return (
@@ -23,7 +23,7 @@ const HeroSection = () => {
               <HeroQuickSearch setFilter={setFilter} />
             </div>
           </div>
-          <FeaturedHubSection filter={filter} />
+          <FeaturedHubSection filter={filter} hubs={initialHubs} />
           
           {/* Decorative background elements */}
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/5 rounded-full blur-3xl -z-10" />

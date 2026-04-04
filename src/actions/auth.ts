@@ -81,6 +81,7 @@ export async function registerUser(prevState: any, formData: FormData) {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
+      "Accept": "application/json",
     },
     body: JSON.stringify({ name, email, password, password_confirmation, role, location_id }),
   });

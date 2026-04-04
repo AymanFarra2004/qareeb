@@ -1,9 +1,25 @@
 import { HubCard } from "@/src/app/[locale]/components/general/HubCard";
 import { staticHubs } from "@/data/hubs";
-import { IHub } from "@/data/hubs";
 
-export default function FeaturedHubSection({filter}: {filter: {governorate: string, service: string}}){
-    const filteredHubs =filter.governorate === "" && filter.service === "" ? staticHubs : staticHubs.filter((hub) => {
+export default function FeaturedHubSection({filter, hubs = []}: {filter: {governorate: string, service: string}, hubs?: any[]}){
+    const mappedHubs = hubs.map(apiHub => ({
+        id: String(apiHub.id),
+        slug: apiHub.slug,
+        name: apiHub.name?.en || apiHub.name?.ar || apiHub.name || "Unknown Hub",
+        description: apiHub.description?.en || apiHub.description?.ar || apiHub.description || "No description",
+        location: apiHub.address_details?.en || apiHub.address_details?.ar || apiHub.address_details || "Unknown",
+        governorate: apiHub.location?.name || "Gaza",
+        pricing: apiHub.pricing || "Free",
+        operatingHours: "24/7",
+        services: Array.isArray(apiHub.services) ? apiHub.services.map((s:any) => s.name?.en || s.name) : [],
+        imageUrl: apiHub.images?.main || staticHubs[Math.floor(Math.random() * staticHubs.length)].imageUrl,
+        verificationStatus: apiHub.status === "approved" ? "Verified" : "Pending",
+        contact: { contactNumber: apiHub.contact || "" }
+    }));
+
+    const displayHubs = mappedHubs.length > 0 ? mappedHubs : staticHubs;
+
+    const filteredHubs = filter.governorate === "" && filter.service === "" ? displayHubs : displayHubs.filter((hub) => {
       if(filter.governorate === ""){
         return hub.services.includes(filter.service) ;
       }
@@ -26,7 +42,7 @@ export default function FeaturedHubSection({filter}: {filter: {governorate: stri
             </div>
             
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredHubs.map((hub: IHub) => (
+              {filteredHubs.map((hub: any) => (
                 <HubCard key={hub.id} hub={hub} />
               ))}
             </div>

@@ -1,11 +1,37 @@
-import { Header } from "@/components/header/Header"
-import { Footer } from "@/components/footer/Footer"
-import { MapPin, Upload, Info } from "lucide-react"
-import BasicInfo from "@/components/submit/BasicInfo"
-import ServicesPricing from "@/components/submit/ServicesPricing"
-import UploadPhoto from "@/components/submit/UploadPhoto"
+"use client";
+
+import { Header } from "../components/header/Header";
+import { Footer } from "../components/footer/Footer";
+import { MapPin, Info, Loader2 } from "lucide-react";
+import BasicInfo from "../components/submit/BasicInfo";
+import ServicesPricing from "../components/submit/ServicesPricing";
+import UploadPhoto from "../components/submit/UploadPhoto";
+import { useActionState, useEffect } from "react";
+import { useFormStatus } from "react-dom";
+import { useRouter } from "@/src/i18n/routing";
+import { createHub } from "@/src/actions/hubs";
+
+function SubmitButton() {
+  const { pending } = useFormStatus();
+  return (
+    <button type="submit" disabled={pending} className="px-6 py-2 rounded-md bg-primary text-primary-foreground font-medium hover:bg-primary/90 transition-colors shadow-sm disabled:opacity-70 disabled:cursor-not-allowed flex gap-2 items-center">
+      {pending && <Loader2 className="h-4 w-4 animate-spin" />}
+      Submit Listing
+    </button>
+  );
+}
 
 export default function SubmitHub() {
+  const [state, formAction] = useActionState(createHub, null);
+  const router = useRouter();
+
+  useEffect(() => {
+    if (state?.success && state?.hub) {
+      router.push(`/dashboard/hubs/${state.hub.id || state.hub.slug}`);
+      router.refresh();
+    }
+  }, [state, router]);
+
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
@@ -24,16 +50,22 @@ export default function SubmitHub() {
           </div>
 
           <div className="bg-card border border-border rounded-2xl shadow-sm p-6 sm:p-10">
-            <form className="space-y-8">
+            <form action={formAction} className="space-y-8">
               
+              {state?.error && (
+                <div className="p-4 bg-red-50 border border-red-200 text-red-700 text-sm rounded-xl">
+                  {state.error}
+                </div>
+              )}
+
               {/* Basic Info */}
               <BasicInfo />
 
-              {/* Services & Pricing */}
+              {/* Services & Contact */}
               <ServicesPricing />
 
               {/* Photos */}
-             < UploadPhoto />
+              <UploadPhoto />
 
               <div className="bg-primary/5 border border-primary/20 rounded-lg p-4 flex gap-3 text-sm text-muted-foreground">
                 <Info className="h-5 w-5 text-primary flex-shrink-0" />
@@ -43,13 +75,11 @@ export default function SubmitHub() {
                 </p>
               </div>
 
-              <div className="pt-4 border-t border-border flex justify-end gap-3">
-                <a href="/" className="px-6 py-2 rounded-md border border-input text-foreground font-medium hover:bg-muted transition-colors">
+              <div className="pt-4 border-t border-border flex justify-end gap-3 mt-8">
+                <a href="/dashboard" className="px-6 py-2 rounded-md border border-input text-foreground font-medium hover:bg-muted transition-colors">
                   Cancel
                 </a>
-                <button type="button" className="px-6 py-2 rounded-md bg-primary text-primary-foreground font-medium hover:bg-primary/90 transition-colors shadow-sm">
-                  Submit Listing
-                </button>
+                <SubmitButton />
               </div>
 
             </form>

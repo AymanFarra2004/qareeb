@@ -155,7 +155,7 @@ export default function SignUpPage() {
                     <span className="text-sm font-medium">Regular User</span>
                   </label>
                   <label className="flex items-center justify-center gap-2 p-3 border border-input rounded-xl cursor-pointer hover:bg-muted/30 transition-colors has-[:checked]:border-primary has-[:checked]:bg-primary/5 has-[:checked]:ring-1 has-[:checked]:ring-primary">
-                    <input type="radio" name="role" value="owner" className="hidden" />
+                    <input type="radio" name="role" value="hub_owner" className="hidden" />
                     <span className="text-sm font-medium">Hub Owner</span>
                   </label>
                 </div>

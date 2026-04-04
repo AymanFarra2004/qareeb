@@ -1,0 +1,40 @@
+import { DashboardSidebar } from "../components/dashboard/DashboardSidebar";
+import { DashboardHeader } from "../components/dashboard/DashboardHeader";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
+
+export default async function DashboardLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const cookieStore = await cookies();
+  const userCookie = cookieStore.get("user")?.value;
+  
+  if (!userCookie) {
+    redirect("/sign-in");
+  }
+
+  try {
+    const user = JSON.parse(userCookie);
+    if (user.role !== "hub_owner") {
+      redirect("/");
+    }
+  } catch (e) {
+    redirect("/");
+  }
+
+  return (
+    <div className="flex h-screen bg-muted/20 overflow-hidden">
+      <DashboardSidebar />
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+        <DashboardHeader />
+        <main className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8">
+          <div className="mx-auto max-w-6xl w-full">
+            {children}
+          </div>
+        </main>
+      </div>
+    </div>
+  );
+}

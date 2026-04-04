@@ -1,8 +1,7 @@
 import React from 'react'
 import { HubCard } from '../general/HubCard'
-import { IHub } from '@/data/hubs'
 
-export default function HubsList({hubsData}: {hubsData: IHub[]}) {
+export default function HubsList({hubsData}: {hubsData: any[]}) {
   return (
     <div className="flex-1">
               <div className="flex justify-between items-center mb-6">
@@ -15,7 +14,7 @@ export default function HubsList({hubsData}: {hubsData: IHub[]}) {
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-                 {hubsData.map((hub: IHub) => (
+                 {hubsData.map((hub: any) => (
                   <HubCard key={hub.id} hub={hub} />
                 ))}
               </div>

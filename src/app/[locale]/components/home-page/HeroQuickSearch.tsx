@@ -4,7 +4,7 @@ import { useTranslations } from 'next-intl';
 const HeroQuickSearch = ({setFilter}: {setFilter: React.Dispatch<React.SetStateAction<{ governorate: string, service: string }>>}) => {
     const t = useTranslations("Hero");
   return (
-    <div className="bg-background rounded-full shadow-lg border border-border p-2 flex flex-col sm:flex-row gap-2 max-w-2xl mx-auto">
+    <div className="bg-background rounded-3xl sm:rounded-full shadow-lg border border-border p-2 flex flex-col sm:flex-row gap-2 max-w-2xl mx-auto">
                 <div className="flex-1 relative">
                   <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground h-5 w-5" />
                   <select onChange={(e) => setFilter(prev => ({ ...prev, governorate: e.target.value }))} className="w-full h-12 pl-12 pr-4 bg-transparent appearance-none focus:outline-none text-foreground cursor-pointer rounded-full hover:bg-muted/50 transition-colors">

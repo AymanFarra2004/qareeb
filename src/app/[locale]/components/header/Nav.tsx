@@ -23,6 +23,7 @@ export default function Nav({isOpen, setIsOpen}: {isOpen: boolean, setIsOpen: (i
  const auth = useSelector((state: any) => state.auth);
 
 const isLoggedIn = !!(auth && auth.isLoggedIn);
+const isHubOwner = isLoggedIn && auth?.user?.role === "hub_owner";
 
     const dispatch = useDispatch();
 
@@ -71,6 +72,14 @@ console.log(auth);
           </Link>)}
          {isLoggedIn && (
             <div className="flex items-center space-x-4">
+              {isHubOwner && (
+                <Link 
+                  href="/dashboard"
+                  className="px-4 py-2 bg-primary/10 text-primary hover:bg-primary/20 rounded-xl transition-colors font-medium text-sm"
+                >
+                  Dashboard
+                </Link>
+              )}
               <span className="text-sm font-medium text-foreground">
                 Hello, {auth?.user?.name || "U"}
               </span>
