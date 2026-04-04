@@ -1,3 +1,8 @@
+import img1 from "@/public/images/workspace1.jpeg";
+import img2 from "@/public/images/workspace2.jpeg";
+import img3 from "@/public/images/workspace3.jpeg";
+
+
 interface Icontact {
     contactNumber: string;
     links?: string[];
@@ -12,7 +17,7 @@ export interface IHub {
     pricing: string;
     operatingHours: string;
     services: string[];
-    imageUrl: string;
+    imageUrl: any;
     verificationStatus: "Verified" | "Pending";
     contact:Icontact;
 }
@@ -27,7 +32,7 @@ export const staticHubs: IHub[] = [
     pricing: "10 / hour",
     operatingHours: "08:00 AM - 10:00 PM",
     services: ["High-speed Internet", "Electricity", "Meeting Rooms", "Coffee Shop", "Workspace"],
-    imageUrl: "https://images.unsplash.com/photo-1519389950473-47ba0277781c",
+    imageUrl: img1,
     verificationStatus: "Verified",
     contact: {
       contactNumber: "+970599000111",
@@ -44,7 +49,7 @@ export const staticHubs: IHub[] = [
     pricing: "5",
     operatingHours: "09:00 AM - 08:00 PM",
     services: ["Solar Power", "Stable WiFi", "Private Desks", "Workspace"],
-    imageUrl: "https://images.unsplash.com/photo-1497366216548-37526070297c",
+    imageUrl: img2,
     verificationStatus: "Verified",
     contact: {
       contactNumber: "+970592000222",
@@ -60,7 +65,7 @@ export const staticHubs: IHub[] = [
     pricing: "7",
     operatingHours: "24/7",
     services: ["Fiber Internet", "24/7 Access", "Printing Services"],
-    imageUrl: "https://images.unsplash.com/photo-1527192491265-7e15c55b1ed2",
+    imageUrl: img3,
     verificationStatus: "Pending",
     contact: {
       contactNumber: "+970598000333",
@@ -76,7 +81,7 @@ export const staticHubs: IHub[] = [
     pricing: "3",
     operatingHours: "08:00 AM - 06:00 PM",
     services: ["Shared Desks", "Workshops", "Community Events"],
-    imageUrl: "https://images.unsplash.com/photo-1517048676732-d65bc937f952",
+    imageUrl: img1,
     verificationStatus: "Verified",
     contact: {
       contactNumber: "+970595000444",
@@ -93,7 +98,7 @@ export const staticHubs: IHub[] = [
     pricing: "0", // Free for students
     operatingHours: "10:00 AM - 04:00 PM",
     services: ["Basic Internet", "Charging Stations"],
-    imageUrl: "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d",
+    imageUrl: img2,
     verificationStatus: "Pending",
     contact: {
       contactNumber: "+970597000555"
@@ -108,7 +113,7 @@ export const staticHubs: IHub[] = [
     pricing: "10 / hour",
     operatingHours: "08:00 AM - 10:00 PM",
     services: ["High-speed Internet", "Electricity", "Meeting Rooms", "Coffee Shop"],
-    imageUrl: "https://images.unsplash.com/photo-1519389950473-47ba0277781c",
+    imageUrl: img3,
     verificationStatus: "Verified",
     contact: {
       contactNumber: "+970599000111",

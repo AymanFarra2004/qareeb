@@ -6,10 +6,10 @@ import { Header } from "@/components/header/Header"
 import { registerUser } from "@/src/actions/auth"
 import {useActionState, useEffect} from "react"
 import { useFormStatus } from "react-dom";
+import { LocationSelect } from "../components/LocationSelect";
 
 
-
-  function SubmitButton() {
+function SubmitButton() {
       const { pending } = useFormStatus();
       return (
         <button
@@ -145,25 +145,7 @@ export default function SignUpPage() {
 
 
 
-{/**ضفت تحديد الموقع بشكل مؤقت بهذا الشكل لحد ما افهم منك ايش قصدك منها */}
-<div>
-  <label htmlFor="location_id" className="block text-sm font-medium text-foreground">
-    Location ID
-  </label>
-  <div className="mt-1 relative rounded-md">
-    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-      <MapPin className="h-5 w-5 text-muted-foreground" />
-    </div>
-    <input
-      id="location_id"
-      name="location_id"
-      type="number"
-      required
-      className="appearance-none block w-full pl-10 pr-3 py-3 border border-input rounded-xl bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary sm:text-sm transition-colors"
-      placeholder="e.g. 12345"
-    />
-  </div>
-</div>
+              <LocationSelect />
               
               <div className="space-y-2">
                 <label className="block text-sm font-medium text-foreground">Account Type</label>

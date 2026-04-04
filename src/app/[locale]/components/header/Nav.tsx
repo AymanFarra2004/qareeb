@@ -33,7 +33,7 @@ const isLoggedIn = !!(auth && auth.isLoggedIn);
     
     router.push("/");
   };
-
+console.log(auth);
   return (
     <>
       {/* Desktop Navigation */}
@@ -72,7 +72,7 @@ const isLoggedIn = !!(auth && auth.isLoggedIn);
          {isLoggedIn && (
             <div className="flex items-center space-x-4">
               <span className="text-sm font-medium text-foreground">
-                Hello, {auth?.user?.name || "User"}
+                Hello, {auth?.user?.name || "U"}
               </span>
               <button 
                 onClick={handleLogout}

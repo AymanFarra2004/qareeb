@@ -21,6 +21,7 @@ export async function loginUser(prevState: any, formData: FormData) {
 
     const body = await res.json();
 
+    console.log("FULL LOGIN RESPONSE:", JSON.stringify(body, null, 2));
     if (!res.ok || body.status !== "success") {
       return { error: body.message || "Failed to log in. Please check your credentials." };
     }
@@ -29,7 +30,7 @@ export async function loginUser(prevState: any, formData: FormData) {
     if (body.data?.token) {
       const cookieStore = await cookies();
       
-      const user = body.data?.user || { name: body.data?.name || "User", email };
+      const user = body.data?.user  || { name: body.data?.name || "User", email };
       cookieStore.set({
         name: "user",
         value: JSON.stringify(user),
@@ -65,6 +66,7 @@ export async function logoutUser() {
 
 export async function registerUser(prevState: any, formData: FormData) {
   const name = formData.get("name") as string;
+  console.log("name: ++++++++++++++++++",name, "++++++++++++++++");
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
   const password_confirmation = formData.get("password_confirmation") as string;
@@ -89,7 +91,28 @@ export async function registerUser(prevState: any, formData: FormData) {
     return { error: body.message || "Failed to register. Please try again." };
   }
 
-  return { success: true, message: body.message || "Registered successfully" };
+  // Set selected location_id in cookies for the application to remember
+  if (location_id) {
+    const cookieStore = await cookies();
+    cookieStore.set({
+      name: "user_location_id",
+      value: String(location_id),
+      path: "/",
+      secure: process.env.NODE_ENV === "production",
+      maxAge: 60 * 60 * 24 * 365, // 1 year
+    });
+  }
+
+  // Auto-login after successful registration
+  const loginResult = await loginUser(prevState, formData);
+  if (loginResult?.error) {
+    return { 
+      success: true, 
+      message: "Registered successfully, but auto-login failed. Please sign in manually." 
+    };
+  }
+
+  return { success: true, message: body.message || "Registered and logged in successfully" };
 } catch (error) {
   console.log(error)
   console.error("Registration Error:", error);
