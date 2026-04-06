@@ -5,6 +5,7 @@ import { useFormStatus } from "react-dom";
 import { Link, useRouter } from '@/src/i18n/routing'
 import { MapPin, Mail, Lock, ArrowRight, Loader2 } from "lucide-react"
 import { Header } from "@/components/header/Header"
+import { Footer } from "@/components/footer/Footer"
 import { loginUser } from "@/src/actions/auth"
 
 function SubmitButton() {
@@ -81,6 +82,7 @@ export default function SignInPage() {
                     type="email"
                     autoComplete="email"
                     required
+                    defaultValue={state?.fields?.email || ""}
                     className="appearance-none block w-full pl-10 pr-3 py-3 border border-input rounded-xl bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary sm:text-sm transition-colors"
                     placeholder="you@example.com"
                   />
@@ -160,6 +162,7 @@ export default function SignInPage() {
         </div>
       </div>
     </div>
+    <Footer />
     </div>
   )
 }

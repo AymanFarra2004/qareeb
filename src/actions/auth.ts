@@ -7,7 +7,7 @@ export async function loginUser(prevState: any, formData: FormData) {
   const password = formData.get("password") as string;
 
   if (!email || !password) {
-    return { error: "Email and password are required" };
+    return { error: "Email and password are required", fields: { email, password: "" } };
   }
 
   try {
@@ -23,7 +23,7 @@ export async function loginUser(prevState: any, formData: FormData) {
 
     console.log("FULL LOGIN RESPONSE:", JSON.stringify(body, null, 2));
     if (!res.ok || body.status !== "success") {
-      return { error: body.message || "Failed to log in. Please check your credentials." };
+      return { error: body.message || "Failed to log in. Please check your credentials.", fields: { email, password: "" } };
     }
 
     // Success, store the token securely in cookies
@@ -53,7 +53,7 @@ export async function loginUser(prevState: any, formData: FormData) {
     return { error: "Token missing from response" };
   } catch (error) {
     console.error("Login Error:", error);
-    return { error: "An unexpected error occurred while sign in." };
+    return { error: "An unexpected error occurred while sign in.", fields: { email, password: "" } };
   }
 }
 
@@ -89,7 +89,7 @@ export async function registerUser(prevState: any, formData: FormData) {
   const body = await response.json();
 
   if (!response.ok || body.status !== "success") {
-    return { error: body.message || "Failed to register. Please try again." };
+    return { error: body.message || "Failed to register. Please try again.", fields: { name, email, role, location_id: locationIid } };
   }
 
   // Set selected location_id in cookies for the application to remember
@@ -117,6 +117,34 @@ export async function registerUser(prevState: any, formData: FormData) {
 } catch (error) {
   console.log(error)
   console.error("Registration Error:", error);
-  return { error: "An unexpected error occurred while registering." };
+    return { error: "An unexpected error occurred while registering.", fields: { name, email, role, location_id: locationIid } };
+  }
 }
+
+export async function getUserProfile() {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("token")?.value;
+
+  if (!token) {
+    return { error: "Unauthenticated", data: null };
+  }
+
+  try {
+    const res = await fetch("https://karam.idreis.net/api/v1/profile", {
+      method: "GET",
+      headers: {
+        "Accept": "application/json",
+        "Authorization": `Bearer ${token}`
+      },
+      next: { revalidate: 0 }
+    });
+
+    const body = await res.json();
+    if (res.ok) {
+      return { success: true, data: body.data || body };
+    }
+    return { error: body.message || "Failed to fetch profile", data: null };
+  } catch (error) {
+    return { error: "Network Error", data: null };
+  }
 }

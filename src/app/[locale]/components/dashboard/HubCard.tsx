@@ -45,7 +45,7 @@ export function HubCard({ hub }: HubCardProps) {
         
         <div className="pt-4 border-t border-border mt-auto flex gap-3">
           <Link 
-            href={`/dashboard/hubs/${hub.slug || hub.id}`} 
+            href={`/dashboard/hubs/${hub.id}`} 
             className="flex-1 flex justify-center items-center gap-2 py-2.5 px-4 bg-primary text-primary-foreground font-medium rounded-xl hover:bg-primary/90 transition-colors text-sm"
           >
             <Settings className="h-4 w-4" />

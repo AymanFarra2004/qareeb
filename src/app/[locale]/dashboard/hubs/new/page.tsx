@@ -25,7 +25,7 @@ export default function SubmitHub() {
 
   useEffect(() => {
     if (state?.success && state?.hub) {
-      router.push(`/dashboard/hubs/${state.hub.slug || state.hub.id}`);
+      router.push(`/dashboard/hubs/${state.hub.id}`);
       router.refresh();
     }
   }, [state, router]);

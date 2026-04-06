@@ -20,7 +20,7 @@ export function DashboardSidebar() {
   };
 
   return (
-    <aside className="w-64 bg-background border-r border-border flex-col hidden md:flex h-full">
+    <aside className="w-64 bg-background border-r border-border flex-col hidden md:flex sticky top-0 h-screen">
       <div className="p-6">
         <Link href="/" className="font-bold text-2xl tracking-tight text-primary">
           Habbat Owner

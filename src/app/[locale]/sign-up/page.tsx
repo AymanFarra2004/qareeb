@@ -3,6 +3,7 @@
 import { Link, useRouter } from '@/src/i18n/routing'
 import { MapPin, Mail, Lock, User, ArrowRight, Loader2 } from "lucide-react"
 import { Header } from "@/components/header/Header"
+import { Footer } from "@/components/footer/Footer"
 import { registerUser } from "@/src/actions/auth"
 import {useActionState, useEffect} from "react"
 import { useFormStatus } from "react-dom";
@@ -38,7 +39,7 @@ export default function SignUpPage() {
 
   
   return (
-    <div className="flex flex-col h-screen bg-background">
+    <div className="flex flex-col min-h-screen bg-background">
       <Header />
       
       <div className="flex-1 flex flex-col md:flex-row-reverse">
@@ -85,6 +86,7 @@ export default function SignUpPage() {
                     name="name"
                     type="text"
                     required
+                    defaultValue={state?.fields?.name || ""}
                     className="appearance-none block w-full pl-10 pr-3 py-3 border border-input rounded-xl bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary sm:text-sm transition-colors"
                     placeholder="Ahmed Al-Masri"
                   />
@@ -102,6 +104,7 @@ export default function SignUpPage() {
                     name="email"
                     type="email"
                     required
+                    defaultValue={state?.fields?.email || ""}
                     className="appearance-none block w-full pl-10 pr-3 py-3 border border-input rounded-xl bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary sm:text-sm transition-colors"
                     placeholder="you@example.com"
                   />
@@ -151,11 +154,11 @@ export default function SignUpPage() {
                 <label className="block text-sm font-medium text-foreground">Account Type</label>
                 <div className="grid grid-cols-2 gap-3">
                   <label className="flex items-center justify-center gap-2 p-3 border border-input rounded-xl cursor-pointer hover:bg-muted/30 transition-colors has-[:checked]:border-primary has-[:checked]:bg-primary/5 has-[:checked]:ring-1 has-[:checked]:ring-primary">
-                    <input type="radio" name="role" value="user" className="hidden" defaultChecked />
+                    <input type="radio" name="role" value="user" className="hidden" defaultChecked={!state?.fields?.role || state?.fields?.role === "user"} />
                     <span className="text-sm font-medium">Regular User</span>
                   </label>
                   <label className="flex items-center justify-center gap-2 p-3 border border-input rounded-xl cursor-pointer hover:bg-muted/30 transition-colors has-[:checked]:border-primary has-[:checked]:bg-primary/5 has-[:checked]:ring-1 has-[:checked]:ring-primary">
-                    <input type="radio" name="role" value="hub_owner" className="hidden" />
+                    <input type="radio" name="role" value="hub_owner" className="hidden" defaultChecked={state?.fields?.role === "hub_owner"} />
                     <span className="text-sm font-medium">Hub Owner</span>
                   </label>
                 </div>
@@ -193,6 +196,7 @@ export default function SignUpPage() {
           </div>
         </div>
       </div>
+      <Footer />
     </div>
   )
 }
