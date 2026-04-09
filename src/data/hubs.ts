@@ -13,7 +13,7 @@ export interface IHub {
     name: string;
     description: string;
     location: string;
-    governorate: "Khan Yunis" | "Gaza" | "Deir al-Balah" | "Rafah" | "North Gaza";
+    governorate: string;
     pricing: string;
     operatingHours: string;
     services: string[];

@@ -1,17 +1,43 @@
 "use client";
 
-import { useState, use, useEffect, useActionState } from "react";
-import { Settings, Box, Tag, Link as LinkIcon, Camera, Save, ArrowLeft, Loader2, AlertTriangle, MapPin, Phone } from "lucide-react";
+import { useState, use, useEffect, useActionState, useRef } from "react";
+import { Settings, Box, Tag, Link as LinkIcon, Camera, Save, ArrowLeft, Loader2, AlertTriangle, MapPin, Phone, Trash2 } from "lucide-react";
 import { Link } from "@/src/i18n/routing";
 import { useRouter } from "next/navigation";
-import { getHubBySlug, updateHub, deleteHub, addHubSocial, getHubOffers, addHubOffer, getAllServices, createService } from "@/src/actions/hubs";
+import { getHubBySlug, updateHub, deleteHub, addHubSocial, getHubOffers, addHubOffer, getAllServices, createService, getHubServices, addCustomService, deleteCustomService } from "@/src/actions/hubs";
 import { toast } from "react-hot-toast";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/src/app/[locale]/components/ui/alert-dialog";
 
 // General Tab - shows real hub data
-function GeneralTab({ hub }: { hub: any }) {
+function GeneralTab({ hub, onUpdate }: { hub: any; onUpdate: () => void }) {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsUploading(true);
+    const formData = new FormData();
+    formData.append("main_image", file);
+    
+    const res = await updateHub(hub.slug, null, formData);
+    if (res.success) {
+      toast.success("Image updated successfully!");
+      onUpdate();
+    } else {
+      toast.error(res.error || "Failed to update image");
+    }
+    setIsUploading(false);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
+
+  const mainImage = hub.images?.main || hub.main_image;
+  const imageUrl = mainImage ? (mainImage.startsWith('http') ? mainImage : `https://karam.idreis.net${mainImage.startsWith('/') ? '' : '/'}${mainImage}`) : null;
 
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
@@ -22,16 +48,37 @@ function GeneralTab({ hub }: { hub: any }) {
           <div>
             <label className="block text-sm font-medium mb-1">Cover Image / Logo</label>
             <div className="flex items-center gap-4">
-              <div className="h-24 w-24 rounded-xl border-2 border-dashed border-border flex items-center justify-center bg-muted/30 text-muted-foreground overflow-hidden">
-                {hub.images?.main ? (
-                  <img src={hub.images.main} alt="Hub" className="w-full h-full object-cover" />
+              <div className="h-24 w-24 rounded-xl border-2 border-dashed border-border flex items-center justify-center bg-muted/30 text-muted-foreground overflow-hidden relative">
+                {isUploading && (
+                  <div className="absolute inset-0 bg-background/50 flex items-center justify-center z-10">
+                    <Loader2 className="h-6 w-6 animate-spin text-primary" />
+                  </div>
+                )}
+                {imageUrl ? (
+                  <img src={imageUrl} alt="Hub" className="w-full h-full object-cover" />
                 ) : (
                   <Camera className="h-8 w-8 opacity-50" />
                 )}
               </div>
-              <button className="px-4 py-2 bg-secondary text-secondary-foreground text-sm rounded-lg font-medium hover:bg-secondary/80 transition-colors">
-                Upload New
-              </button>
+              <div>
+                <input 
+                  type="file" 
+                  accept="image/*" 
+                  ref={fileInputRef} 
+                  className="hidden" 
+                  onChange={handleImageChange} 
+                />
+                <button 
+                  onClick={(e) => {
+                    e.preventDefault();
+                    fileInputRef.current?.click();
+                  }}
+                  disabled={isUploading}
+                  className="px-4 py-2 bg-secondary text-secondary-foreground text-sm rounded-lg font-medium hover:bg-secondary/80 transition-colors disabled:opacity-50"
+                >
+                  {isUploading ? "Uploading..." : "Upload New"}
+                </button>
+              </div>
             </div>
           </div>
 
@@ -126,14 +173,15 @@ function GeneralTab({ hub }: { hub: any }) {
   );
 }
 
-// Services Tab - Checkbox list of global services, with "Other" option
+// Services Tab - Updated for Current Services Table and Dedicated Custom Endpoints
 function ServicesTab({ hub, onUpdate }: { hub: any; onUpdate: () => void }) {
   const [globalServices, setGlobalServices] = useState<any[]>([]);
-  const [selectedIds, setSelectedIds] = useState<number[]>([]);
+  const [activeServices, setActiveServices] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
+  const [savingLink, setSavingLink] = useState<number | null>(null);
+  const [addingCustom, setAddingCustom] = useState(false);
+  const [deletingId, setDeletingId] = useState<number | null>(null);
   
-  const [showOther, setShowOther] = useState(false);
   const [customNameEN, setCustomNameEN] = useState("");
   const [customNameAR, setCustomNameAR] = useState("");
   const [customDescEN, setCustomDescEN] = useState("");
@@ -141,166 +189,236 @@ function ServicesTab({ hub, onUpdate }: { hub: any; onUpdate: () => void }) {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
 
-  useEffect(() => {
-    async function loadServices() {
-      const res = await getAllServices();
-      if (res.success) setGlobalServices(res.data);
-      
-      const initialIds = hub.services?.map((s: any) => s.id) || [];
-      setSelectedIds(initialIds);
-      setLoading(false);
-    }
-    loadServices();
-  }, [hub]);
-
-  const toggleService = (id: number) => {
-    setSelectedIds(prev => 
-      prev.includes(id) ? prev.filter(sId => sId !== id) : [...prev, id]
-    );
+  const loadData = async () => {
+    setLoading(true);
+    const [globalRes, activeRes] = await Promise.all([
+      getAllServices(),
+      getHubServices(hub.slug)
+    ]);
+    
+    if (globalRes.success) setGlobalServices(globalRes.data);
+    if (activeRes.success) setActiveServices(activeRes.data);
+    setLoading(false);
   };
 
-  const handleSave = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setSaving(true);
+  useEffect(() => {
+    loadData();
+  }, [hub.slug]);
+
+  const handleLinkGlobal = async (serviceId: number, isLinked: boolean) => {
+    setSavingLink(serviceId);
     setError(null);
     setSuccess(null);
 
-    // Build form data for hub update
-    const updateData = new FormData();
-    
-    // Add selected global service IDs
-    selectedIds.forEach(id => updateData.append("service_ids[]", String(id)));
-
-    // If "Other" is checked with a name, send it as a custom service on the hub
-    if (showOther && customNameEN.trim()) {
-      updateData.append("custom_service[name][en]", customNameEN.trim());
-      updateData.append("custom_service[name][ar]", customNameAR.trim() || customNameEN.trim());
-      if (customDescEN.trim()) updateData.append("custom_service[description][en]", customDescEN.trim());
-      if (customDescAR.trim()) updateData.append("custom_service[description][ar]", customDescAR.trim());
+    const formData = new FormData();
+    if (isLinked) {
+      formData.append("remove_service_ids[]", String(serviceId));
+    } else {
+      formData.append("add_service_ids[]", String(serviceId));
     }
-    
-    const res = await updateHub(hub.slug, null, updateData);
-    
+
+    const res = await updateHub(hub.slug, null, formData);
     if (res.success) {
-      setSuccess("Hub services updated successfully.");
-      setShowOther(false);
+      toast.success(isLinked ? "Service unlinked" : "Service linked");
+      await loadData();
+    } else {
+      toast.error(res.error || "Failed to update service");
+    }
+    setSavingLink(null);
+  };
+
+  const handleAddCustom = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setAddingCustom(true);
+    setError(null);
+    setSuccess(null);
+
+    const formData = new FormData();
+    formData.append("name_en", customNameEN.trim());
+    formData.append("name_ar", customNameAR.trim() || customNameEN.trim());
+    formData.append("description_en", customDescEN.trim());
+    formData.append("description_ar", customDescAR.trim());
+
+    const res = await addCustomService(hub.slug, null, formData);
+    if (res.success) {
+      toast.success("Custom service added!");
       setCustomNameEN("");
       setCustomNameAR("");
       setCustomDescEN("");
       setCustomDescAR("");
-      onUpdate();
+      await loadData();
     } else {
-      setError(res.error || "Failed to update hub services.");
+      toast.error(res.error || "Failed to add service");
     }
-    setSaving(false);
+    setAddingCustom(false);
   };
 
+  const handleDeleteCustom = async (serviceId: number) => {
+    setDeletingId(serviceId);
+    const res = await deleteCustomService(hub.slug, serviceId);
+    if (res.success) {
+      toast.success("Service removed");
+      await loadData();
+    } else {
+      toast.error(res.error || "Failed to remove service");
+    }
+    setDeletingId(null);
+  };
+
+  if (loading && activeServices.length === 0) {
+     return <div className="py-20 text-center"><Loader2 className="h-8 w-8 animate-spin mx-auto text-primary" /></div>;
+  }
+
   return (
-    <div className="space-y-6 animate-in fade-in duration-500">
-      <div className="bg-background rounded-2xl border border-border p-6 shadow-sm">
-        <div className="flex justify-between items-center mb-6">
-          <div>
-            <h3 className="text-lg font-bold">Services Engine</h3>
-            <p className="text-sm text-muted-foreground mt-1">Select the services your hub provides to the community</p>
+    <div className="space-y-8 animate-in fade-in duration-500">
+      
+      {/* Current Services Table */}
+      <div className="bg-background rounded-2xl border border-border shadow-sm overflow-hidden">
+        <div className="p-6 border-b border-border">
+          <h3 className="text-lg font-bold">Current Hub Services</h3>
+          <p className="text-sm text-muted-foreground">List of all active services for this hub.</p>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm text-left">
+            <thead className="bg-muted/50 text-muted-foreground uppercase text-xs font-semibold">
+              <tr>
+                <th className="px-6 py-4">Service Name</th>
+                <th className="px-6 py-4">Type</th>
+                <th className="px-6 py-4">Description</th>
+                <th className="px-6 py-4 text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-border">
+              {activeServices.map((s: any) => {
+                const isCustom = !s.id || s.is_custom || (s.pivot === undefined && !globalServices.find(gs => gs.id === s.id));
+                // Note: The API response might distinguish these differently, adjust if needed
+                return (
+                  <tr key={s.id || s.name?.en} className="hover:bg-muted/10 transition-colors">
+                    <td className="px-6 py-4">
+                      <span className="font-medium block">{s.name?.en || s.name}</span>
+                      {s.name?.ar && <span className="text-xs text-muted-foreground block">{s.name.ar}</span>}
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className={`px-2 py-0.5 rounded-full text-[10px] uppercase font-bold ${s.pivot ? "bg-blue-100 text-blue-700" : "bg-purple-100 text-purple-700"}`}>
+                        {s.pivot ? "Global" : "Custom"}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 text-muted-foreground italic">
+                      {s.description?.en || s.description || "-"}
+                    </td>
+                    <td className="px-6 py-4 text-right">
+                       <button 
+                         disabled={deletingId === s.id || savingLink === s.id}
+                         onClick={() => s.pivot ? handleLinkGlobal(s.id, true) : handleDeleteCustom(s.id)}
+                         className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                       >
+                         {deletingId === s.id || savingLink === s.id ? (
+                           <Loader2 className="h-4 w-4 animate-spin" />
+                         ) : (
+                           <Trash2 className="h-4 w-4" />
+                         )}
+                       </button>
+                    </td>
+                  </tr>
+                );
+              })}
+              {activeServices.length === 0 && !loading && (
+                <tr>
+                  <td colSpan={4} className="px-6 py-8 text-center text-muted-foreground">No active services. Add one below.</td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        
+        {/* Link Global Services */}
+        <div className="bg-background rounded-2xl border border-border p-6 shadow-sm">
+          <h3 className="text-lg font-bold mb-4">Link Global Services</h3>
+          <div className="space-y-2 max-h-[400px] overflow-y-auto pr-2">
+            {globalServices.map((gs) => {
+              const isLinked = activeServices.some(as => as.id === gs.id);
+              return (
+                <div key={gs.id} className="flex items-center justify-between p-3 border border-border rounded-xl hover:bg-muted/30 transition-colors">
+                  <div>
+                    <span className="font-medium block text-sm">{gs.name?.en || gs.name}</span>
+                    {gs.name?.ar && <span className="text-[10px] text-muted-foreground block">{gs.name.ar}</span>}
+                  </div>
+                  <button
+                    disabled={savingLink === gs.id}
+                    onClick={() => handleLinkGlobal(gs.id, isLinked)}
+                    className={`px-3 py-1 rounded-lg text-xs font-semibold transition-colors ${
+                      isLinked 
+                        ? "bg-red-50 text-red-600 hover:bg-red-100" 
+                        : "bg-primary/10 text-primary hover:bg-primary/20"
+                    }`}
+                  >
+                    {savingLink === gs.id ? <Loader2 className="h-3 w-3 animate-spin" /> : (isLinked ? "Unlink" : "Link")}
+                  </button>
+                </div>
+              );
+            })}
           </div>
         </div>
 
-        {error && <div className="p-3 mb-4 text-sm text-red-600 bg-red-50 rounded-lg border border-red-200">{error}</div>}
-        {success && <div className="p-3 mb-4 text-sm text-green-700 bg-green-50 rounded-lg border border-green-200">{success}</div>}
-
-        {loading ? (
-          <div className="py-8 text-center"><Loader2 className="h-6 w-6 animate-spin mx-auto text-primary" /></div>
-        ) : (
-          <form onSubmit={handleSave} className="space-y-6 max-w-xl">
-            <div className="space-y-1 p-4 border border-border rounded-xl bg-muted/10">
-              {globalServices.map((service) => (
-                <label key={service.id} className="flex items-start gap-3 p-2.5 hover:bg-muted/50 rounded-lg cursor-pointer transition-colors">
-                  <input 
-                    type="checkbox" 
-                    className="w-4 h-4 text-primary rounded border-gray-300 focus:ring-primary mt-0.5"
-                    checked={selectedIds.includes(service.id)}
-                    onChange={() => toggleService(service.id)}
-                  />
-                  <div>
-                    <span className="font-medium">{service.name?.en || service.name}</span>
-                    {service.name?.ar && <span className="text-xs text-muted-foreground block">{service.name.ar}</span>}
-                    {service.description?.en && <p className="text-xs text-muted-foreground mt-0.5">{service.description.en}</p>}
-                  </div>
-                </label>
-              ))}
-              
-              <label className="flex items-center gap-3 p-2.5 hover:bg-muted/50 rounded-lg cursor-pointer transition-colors border-t border-border mt-1 pt-3">
+        {/* Add Custom Service */}
+        <div className="bg-background rounded-2xl border border-border p-6 shadow-sm">
+          <h3 className="text-lg font-bold mb-4">Add Custom Service</h3>
+          <form onSubmit={handleAddCustom} className="space-y-4">
+            <div className="grid grid-cols-1 gap-4">
+              <div>
+                <label className="block text-xs font-medium mb-1 uppercase tracking-wider text-muted-foreground">Service Name (EN) *</label>
                 <input 
-                  type="checkbox" 
-                  className="w-4 h-4 text-primary rounded border-gray-300 focus:ring-primary"
-                  checked={showOther}
-                  onChange={(e) => setShowOther(e.target.checked)}
+                  required
+                  value={customNameEN}
+                  onChange={(e) => setCustomNameEN(e.target.value)}
+                  className="w-full px-3 py-2 border border-border rounded-xl bg-background text-sm" 
+                  placeholder="e.g. Dedicated Desk"
                 />
-                <span className="font-medium text-primary">Other (Add a Custom Service)</span>
-              </label>
-            </div>
-
-            {showOther && (
-              <div className="p-4 border border-primary/30 rounded-xl bg-primary/5 space-y-4 animate-in slide-in-from-top-2">
-                <h4 className="text-sm font-semibold text-primary">Custom Service Details</h4>
-                <p className="text-xs text-muted-foreground -mt-2">This service will be added directly to your hub.</p>
-                
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium mb-1">Service Name (English) <span className="text-red-500">*</span></label>
-                    <input 
-                      required={showOther}
-                      value={customNameEN}
-                      onChange={(e) => setCustomNameEN(e.target.value)}
-                      className="w-full px-3 py-2 border border-input rounded-lg bg-background text-sm" 
-                      placeholder="e.g. Free Coffee"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-1">Service Name (Arabic)</label>
-                    <input 
-                      value={customNameAR}
-                      onChange={(e) => setCustomNameAR(e.target.value)}
-                      dir="rtl" 
-                      className="w-full px-3 py-2 border border-input rounded-lg bg-background text-sm" 
-                      placeholder="مثال: قهوة مجانية"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-1">Description (English)</label>
-                    <textarea
-                      value={customDescEN}
-                      onChange={(e) => setCustomDescEN(e.target.value)}
-                      className="w-full px-3 py-2 border border-input rounded-lg bg-background text-sm resize-none"
-                      rows={2}
-                      placeholder="Brief description of the service..."
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-1">Description (Arabic)</label>
-                    <textarea
-                      value={customDescAR}
-                      onChange={(e) => setCustomDescAR(e.target.value)}
-                      dir="rtl"
-                      className="w-full px-3 py-2 border border-input rounded-lg bg-background text-sm resize-none"
-                      rows={2}
-                      placeholder="وصف مختصر للخدمة..."
-                    />
-                  </div>
-                </div>
               </div>
-            )}
-
+              <div>
+                <label className="block text-xs font-medium mb-1 uppercase tracking-wider text-muted-foreground">Service Name (AR)</label>
+                <input 
+                  value={customNameAR}
+                  onChange={(e) => setCustomNameAR(e.target.value)}
+                  dir="rtl" 
+                  className="w-full px-3 py-2 border border-border rounded-xl bg-background text-sm text-right" 
+                  placeholder="مثال: مكتب خاص"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-medium mb-1 uppercase tracking-wider text-muted-foreground">Description (EN)</label>
+                <textarea
+                  value={customDescEN}
+                  onChange={(e) => setCustomDescEN(e.target.value)}
+                  className="w-full px-3 py-2 border border-border rounded-xl bg-background text-sm resize-none"
+                  rows={2}
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-medium mb-1 uppercase tracking-wider text-muted-foreground">Description (AR)</label>
+                <textarea
+                  value={customDescAR}
+                  onChange={(e) => setCustomDescAR(e.target.value)}
+                  dir="rtl"
+                  className="w-full px-3 py-2 border border-border rounded-xl bg-background text-sm resize-none text-right"
+                  rows={2}
+                />
+              </div>
+            </div>
             <button 
               type="submit" 
-              disabled={saving || (showOther && !customNameEN.trim())}
-              className="px-6 py-2.5 bg-primary text-primary-foreground rounded-xl text-sm font-medium hover:bg-primary/90 transition-colors disabled:opacity-50 flex items-center gap-2"
+              disabled={addingCustom || !customNameEN.trim()}
+              className="w-full px-6 py-2.5 bg-primary text-primary-foreground rounded-xl text-sm font-medium hover:bg-primary/90 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
             >
-              {saving && <Loader2 className="h-4 w-4 animate-spin" />}
-              {saving ? "Saving..." : "Save Services"}
+              {addingCustom && <Loader2 className="h-4 w-4 animate-spin" />}
+              {addingCustom ? "Adding..." : "Add Service"}
             </button>
           </form>
-        )}
+        </div>
+
       </div>
     </div>
   );
@@ -308,8 +426,8 @@ function ServicesTab({ hub, onUpdate }: { hub: any; onUpdate: () => void }) {
 
 
 // Socials Tab - functional form
-function SocialsTab({ hubId }: { hubId: string }) {
-  const [state, formAction] = useActionState(addHubSocial.bind(null, hubId), null);
+function SocialsTab({ hubSlug }: { hubSlug: string }) {
+  const [state, formAction] = useActionState(addHubSocial.bind(null, hubSlug), null);
 
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
@@ -548,10 +666,10 @@ export default function HubManagementPage({ params }: { params: Promise<{ id: st
 
         {/* Tab Content Area */}
         <div className="flex-1 min-w-0">
-          {activeTab === "general" && <GeneralTab hub={hub} />}
+          {activeTab === "general" && <GeneralTab hub={hub} onUpdate={fetchHub} />}
           {activeTab === "services" && <ServicesTab hub={hub} onUpdate={fetchHub} />}
           {activeTab === "offers" && <OffersTab hubSlug={hub.slug} />}
-          {activeTab === "socials" && <SocialsTab hubId={resolvedParams.id} />}
+          {activeTab === "socials" && <SocialsTab hubSlug={hub.slug} />}
         </div>
       </div>
     </div>

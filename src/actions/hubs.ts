@@ -1,6 +1,7 @@
 "use server";
 
 import { cookies } from "next/headers";
+import { revalidatePath, revalidateTag } from "next/cache";
 
 const API_BASE_URL = "https://karam.idreis.net/api/v1"; 
 // Using v1 as confirmed manually; the POST endpoints for services likely need backend route matching verification
@@ -14,7 +15,12 @@ export async function getAllHubs() {
     });
     const result = await res.json();
     if (res.ok) {
-       return { success: true, data: result.data || result || [] };
+       let hubsArray = result.data;
+       // If paginated, data is nested under data.data
+       if (hubsArray && !Array.isArray(hubsArray) && Array.isArray(hubsArray.data)) {
+          hubsArray = hubsArray.data;
+       }
+       return { success: true, data: hubsArray || [] };
     }
     return { error: result.message || "Failed to fetch hubs", data: [] };
   } catch (error) {
@@ -31,8 +37,6 @@ export async function getMyHubs() {
   }
 
   try {
-    // Insomnia showed `/api/hubs/my`. 
-    // Trying the endpoint with the standard v1 base.
     const res = await fetch(`${API_BASE_URL}/hubs/my`, {
       method: "GET",
       headers: {
@@ -46,7 +50,11 @@ export async function getMyHubs() {
     
     // Check if the API returned an array directly or inside `data`
     if (res.ok) {
-       return { success: true, data: result.data || result || [] };
+       let hubsArray = result.data;
+       if (hubsArray && !Array.isArray(hubsArray) && Array.isArray(hubsArray.data)) {
+          hubsArray = hubsArray.data;
+       }
+       return { success: true, data: hubsArray || [] };
     }
     
     return { error: result.message || "Failed to fetch hubs", data: [] };
@@ -114,6 +122,9 @@ export async function createHub(prevState: any, formData: FormData) {
       return { error: "Please select a specific location (Governorate, City, or Area)" };
     }
 
+    const hourly_price_raw = formData.get("hourly_price");
+    const hourly_price = hourly_price_raw ? Number(hourly_price_raw) : undefined;
+
     const payload: any = {
       name: {
         en: name_en,
@@ -131,6 +142,10 @@ export async function createHub(prevState: any, formData: FormData) {
       location_id: location_id,
       social_accounts: [] as any[],
     };
+
+    if (hourly_price !== undefined && !isNaN(hourly_price)) {
+      payload.hourly_price = hourly_price;
+    }
 
     // Gather service_ids if they exist
     const serviceIdsRaw = formData.getAll("service_ids");
@@ -169,6 +184,7 @@ export async function createHub(prevState: any, formData: FormData) {
     const xUrl = formData.get("twitter_url") as string;
     if (xUrl) payload.social_accounts.push({ platform: "twitter", url: xUrl });
 
+    // ─── Step 1: Create hub with JSON (text fields only) ───────────────────────
     const res = await fetch(`${API_BASE_URL}/hubs`, {
       method: "POST",
       headers: {
@@ -180,17 +196,65 @@ export async function createHub(prevState: any, formData: FormData) {
     });
 
     const result = await res.json();
-    
-    // Robust check: if ok, or if success status is present
-    if (res.ok || result.status === 'success') {
-      return { 
-        success: true, 
-        message: result.message || "Hub created successfully", 
-        hub: result.data || result // Handle cases where data is at the root
-      };
+
+    if (!res.ok && result.status !== 'success') {
+      return { error: result.message || `Failed to create hub (Status ${res.status})` };
     }
-    
-    return { error: result.message || `Failed to create hub (Status ${res.status})` };
+
+    const hub = result.data || result;
+    const hubSlug = hub.slug;
+
+    // ─── Step 2: Upload images if provided ─────────────────────────────────────
+    const mainImage = formData.get("main_image") as File | null;
+    const galleryFiles = formData.getAll("gallery[]") as File[];
+
+    const hasMainImage = mainImage instanceof File && mainImage.size > 0;
+    const hasGallery = galleryFiles.some(f => f instanceof File && (f as File).size > 0);
+
+    if ((hasMainImage || hasGallery) && hubSlug) {
+      const imageForm = new FormData();
+      imageForm.append("_method", "PUT");
+
+      if (hasMainImage) {
+        imageForm.append("main_image", mainImage as File);
+      }
+
+      if (hasGallery) {
+        galleryFiles.forEach(file => {
+          if (file instanceof File && file.size > 0) {
+            imageForm.append("gallery[]", file);
+          }
+        });
+      }
+
+      try {
+        await fetch(`${API_BASE_URL}/hubs/${hubSlug}`, {
+          method: "POST",
+          headers: {
+            "Accept": "application/json",
+            "Authorization": `Bearer ${token}`,
+            "X-HTTP-Method-Override": "PUT",
+          },
+          body: imageForm,
+        });
+      } catch (_) {
+        // Images failed — hub was still created, not fatal
+        console.warn("Image upload failed after hub creation; hub still created.");
+      }
+    }
+
+    if (hubSlug) {
+      revalidatePath('/dashboard');
+      revalidatePath('/[locale]/dashboard', 'page');
+      revalidatePath('/', 'layout');
+      revalidateTag('all-hubs');
+    }
+
+    return {
+      success: true,
+      message: result.message || "Hub created successfully",
+      hub,
+    };
   } catch (error) {
     console.error("Error creating hub:", error);
     return { error: "Network Error" };
@@ -245,9 +309,100 @@ export async function createService(prevState: any, formData: FormData) {
     
     const result = await res.json();
     if (res.ok && result.status === 'success') {
+       revalidatePath('/dashboard');
        return { success: true, data: result.data, message: "Added" };
     }
     return { error: result.message || "Failed to create service" };
+  } catch (error) {
+    return { error: "Network Error" };
+  }
+}
+
+export async function getHubServices(slug: string) {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("token")?.value;
+  if (!token) return { error: "Unauthenticated", data: [] };
+
+  try {
+    const res = await fetch(`${API_BASE_URL}/hubs/${slug}/services`, {
+      method: "GET",
+      headers: { 
+        "Accept": "application/json", 
+        "Authorization": `Bearer ${token}` 
+      },
+      next: { tags: [`hub-services-${slug}`], revalidate: 0 }
+    });
+    const result = await res.json();
+    if (res.ok) {
+       return { success: true, data: result.data || result || [] };
+    }
+    return { error: result.message || "Failed to fetch services", data: [] };
+  } catch (e) {
+    return { error: "Network Error", data: [] };
+  }
+}
+
+export async function addCustomService(hubSlug: string, prevState: any, formData: FormData) {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("token")?.value;
+  if (!token) return { error: "Unauthenticated" };
+
+  try {
+    const payload = {
+      name: {
+        en: formData.get("name_en") as string,
+        ar: formData.get("name_ar") as string || formData.get("name_en") as string,
+      },
+      description: {
+        en: formData.get("description_en") as string || "",
+        ar: formData.get("description_ar") as string || "",
+      },
+      is_active: formData.get("is_active") === "true" || true
+    };
+
+    const res = await fetch(`${API_BASE_URL}/hubs/${hubSlug}/custom-services`, {
+      method: "POST",
+      headers: { 
+        "Content-Type": "application/json", 
+        "Accept": "application/json", 
+        "Authorization": `Bearer ${token}` 
+      },
+      body: JSON.stringify(payload)
+    });
+    
+    const result = await res.json();
+    if (res.ok) {
+      revalidatePath(`/dashboard/hubs/${hubSlug}`);
+      revalidateTag(`hub-services-${hubSlug}`);
+      return { success: true, data: result.data, message: "Custom service added successfully" };
+    }
+    return { error: result.message || "Failed to add custom service" };
+  } catch (error) {
+    return { error: "Network Error" };
+  }
+}
+
+export async function deleteCustomService(hubSlug: string, serviceId: number) {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("token")?.value;
+  if (!token) return { error: "Unauthenticated" };
+
+  try {
+    const res = await fetch(`${API_BASE_URL}/hubs/${hubSlug}/custom-services/${serviceId}`, {
+      method: "DELETE",
+      headers: { 
+        "Accept": "application/json", 
+        "Authorization": `Bearer ${token}` 
+      }
+    });
+    
+    if (res.ok) {
+      revalidatePath(`/dashboard/hubs/${hubSlug}`);
+      revalidateTag(`hub-services-${hubSlug}`);
+      return { success: true, message: "Custom service deleted successfully" };
+    }
+    const result = await res.json();
+    return { error: result.message || "Failed to delete custom service" };
   } catch (error) {
     return { error: "Network Error" };
   }
@@ -318,7 +473,12 @@ export async function addHubOffer(hubSlug: string, prevState: any, formData: For
       body: JSON.stringify(payload)
     });
     const result = await res.json();
-    return res.ok && result.status === 'success' ? { success: true, message: "Added" } : { error: result.message || "Failed" };
+    if (res.ok && result.status === 'success') {
+      revalidatePath(`/hubs/${hubSlug}`);
+      revalidatePath(`/dashboard/hubs/${hubSlug}`);
+      return { success: true, message: "Added" };
+    }
+    return { error: result.message || "Failed" };
   } catch (e) {
     return { error: "Network Error" };
   }
@@ -343,7 +503,7 @@ export async function getHubSocials(hubId: string) {
   }
 }
 
-export async function addHubSocial(hubId: string, prevState: any, formData: FormData) {
+export async function addHubSocial(hubSlug: string, prevState: any, formData: FormData) {
   const cookieStore = await cookies();
   const token = cookieStore.get("token")?.value;
   if (!token) return { error: "Unauthenticated" };
@@ -354,13 +514,18 @@ export async function addHubSocial(hubId: string, prevState: any, formData: Form
       url: formData.get("url") as string
     };
 
-    const res = await fetch(`${API_BASE_URL}/hubs/${hubId}/social-accounts`, {
-      method: "POST",
+    const res = await fetch(`${API_BASE_URL}/hubs/${hubSlug}`, {
+      method: "PUT",
       headers: { "Content-Type": "application/json", "Accept": "application/json", Authorization: `Bearer ${token}` },
       body: JSON.stringify(payload)
     });
     const result = await res.json();
-    return res.ok && result.status === 'success' ? { success: true, message: "Added" } : { error: result.message || "Failed" };
+    if (res.ok && result.status === 'success') {
+      revalidatePath(`/hubs/${hubSlug}`);
+      revalidatePath(`/dashboard/hubs/${hubSlug}`);
+      return { success: true, message: "Added" };
+    }
+    return { error: result.message || "Failed" };
   } catch (e) {
     return { error: "Network Error" };
   }
@@ -394,8 +559,12 @@ export async function updateHub(slug: string, prevState: any, formData: FormData
       const payload: any = {};
       
       Array.from(formData.entries()).forEach(([key, value]) => {
-        if (key === "service_ids") {
-          payload[key] = formData.getAll(key).map(Number);
+        if (key === "service_ids" || key === "service_ids[]") {
+          payload["service_ids"] = formData.getAll(key).map(Number);
+        } else if (key === "add_service_ids" || key === "add_service_ids[]") {
+          payload["add_service_ids"] = formData.getAll(key).map(Number);
+        } else if (key === "remove_service_ids" || key === "remove_service_ids[]") {
+          payload["remove_service_ids"] = formData.getAll(key).map(Number);
         } else {
           payload[key] = value;
         }
@@ -410,7 +579,15 @@ export async function updateHub(slug: string, prevState: any, formData: FormData
     });
 
     const result = await res.json();
-    return res.ok ? { success: true, message: result.message || "Updated" } : { error: result.message || "Failed" };
+    if (res.ok) {
+      revalidatePath('/dashboard');
+      revalidatePath('/[locale]/dashboard', 'page');
+      revalidatePath(`/hubs/${slug}`);
+      revalidatePath('/', 'layout');
+      revalidateTag('all-hubs');
+      return { success: true, message: result.message || "Updated" };
+    }
+    return { error: result.message || "Failed" };
   } catch (e) {
     return { error: "Network Error" };
   }
@@ -427,7 +604,14 @@ export async function deleteHub(slug: string) {
       headers: { "Accept": "application/json", Authorization: `Bearer ${token}` }
     });
     const result = await res.json();
-    return res.ok ? { success: true, message: "Deleted" } : { error: result.message || "Failed" };
+    if (res.ok) {
+      revalidatePath('/dashboard');
+      revalidatePath('/[locale]/dashboard', 'page');
+      revalidatePath('/', 'layout');
+      revalidateTag('all-hubs');
+      return { success: true, message: "Deleted" };
+    }
+    return { error: result.message || "Failed" };
   } catch (e) {
     return { error: "Network Error" };
   }

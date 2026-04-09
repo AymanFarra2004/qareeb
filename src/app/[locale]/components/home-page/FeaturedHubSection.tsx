@@ -12,22 +12,31 @@ export default function FeaturedHubSection({filter, hubs = []}: {filter: {govern
         pricing: apiHub.pricing || "Free",
         operatingHours: "24/7",
         services: Array.isArray(apiHub.services) ? apiHub.services.map((s:any) => s.name?.en || s.name) : [],
-        imageUrl: apiHub.images?.main || staticHubs[Math.floor(Math.random() * staticHubs.length)].imageUrl,
+        imageUrl: apiHub.images?.main ? 
+          (apiHub.images.main.startsWith('http') ? apiHub.images.main : `https://karam.idreis.net${apiHub.images.main.startsWith('/') ? '' : '/'}${apiHub.images.main}`) 
+          : staticHubs[Math.floor(Math.random() * staticHubs.length)].imageUrl,
         verificationStatus: apiHub.status === "approved" ? "Verified" : "Pending",
         contact: { contactNumber: apiHub.contact || "" }
     }));
 
     const displayHubs = mappedHubs.length > 0 ? mappedHubs : staticHubs;
 
-    const filteredHubs = filter.governorate === "" && filter.service === "" ? displayHubs : displayHubs.filter((hub) => {
-      if(filter.governorate === ""){
-        return hub.services.includes(filter.service) ;
-      }
-      if(filter.service === ""){
-      return hub.governorate === filter.governorate ;
-    }
-    return hub.governorate === filter.governorate && hub.services.includes(filter.service) ;
-    });
+    const filteredHubs = (filter.governorate === "" && filter.service === "")
+      ? displayHubs
+      : displayHubs.filter((hub) => {
+          const govMatch =
+            filter.governorate === "" ||
+            (hub.governorate || "").toLowerCase().includes(filter.governorate.toLowerCase()) ||
+            filter.governorate.toLowerCase().includes((hub.governorate || "").toLowerCase());
+
+          const srvMatch =
+            filter.service === "" ||
+            (hub.services || []).some((s: string) =>
+              s.toLowerCase().includes(filter.service.toLowerCase())
+            );
+
+          return govMatch && srvMatch;
+        });
   return(
          <section className="py-20">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

@@ -22,18 +22,34 @@ const ServicesPricing = () => {
 
   return (
     <section className="space-y-6">
-      <h2 className="text-xl font-semibold border-b border-border pb-2">2. Services & Contact</h2>
+      <h2 className="text-xl font-semibold border-b border-border pb-2">2. Services, Pricing &amp; Contact</h2>
 
-      <div>
-        <label className="block text-sm font-medium text-foreground mb-1">Contact Number</label>
-        <input
-          name="contact"
-          type="tel"
-          dir="ltr"
-          required
-          className="w-full md:w-1/2 rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary text-left"
-          placeholder="e.g. +970591234567"
-        />
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label className="block text-sm font-medium text-foreground mb-1">Contact Number</label>
+          <input
+            name="contact"
+            type="tel"
+            dir="ltr"
+            required
+            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary text-left"
+            placeholder="e.g. +970591234567"
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-foreground mb-1">
+            Hourly Price <span className="text-muted-foreground font-normal">(per hour, in ₪)</span>
+          </label>
+          <input
+            name="hourly_price"
+            type="number"
+            min="0"
+            step="0.5"
+            required
+            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+            placeholder="e.g. 5"
+          />
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

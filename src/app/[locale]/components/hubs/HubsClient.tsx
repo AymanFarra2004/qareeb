@@ -13,12 +13,26 @@ export default function HubsClient({ hubs }: HubsClientProps) {
   const [selectedGovernorates, setSelectedGovernorates] = useState<string[]>([]);
   const [selectedServices, setSelectedServices] = useState<string[]>([]);
 
-  const governorates = ["North Gaza", "Gaza", "Deir al-Balah", "Khan Yunis", "Rafah"];
-  const services = [
-    { name: "Internet", icon: <Wifi className="h-3 w-3 inline mr-1" /> },
-    { name: "Electricity", icon: <Zap className="h-3 w-3 inline mr-1" /> },
-    { name: "Workspace", icon: null },
-  ];
+  // Derive unique governorates from actual hub data
+  const governorates = useMemo(() => {
+    const set = new Set<string>();
+    hubs.forEach((h) => { if (h.governorate) set.add(h.governorate); });
+    return Array.from(set).sort();
+  }, [hubs]);
+
+  // Derive unique services from actual hub data
+  const services = useMemo(() => {
+    const set = new Set<string>();
+    hubs.forEach((h) => (h.services || []).forEach((s: string) => set.add(s)));
+    return Array.from(set).sort().map((name) => ({
+      name,
+      icon: name.toLowerCase().includes("internet") || name.toLowerCase().includes("wifi") || name.toLowerCase().includes("web")
+        ? <Wifi className="h-3 w-3 inline mr-1" />
+        : name.toLowerCase().includes("electric") || name.toLowerCase().includes("power") || name.toLowerCase().includes("solar")
+        ? <Zap className="h-3 w-3 inline mr-1" />
+        : null,
+    }));
+  }, [hubs]);
 
   const toggleGovernorate = (gov: string) => {
     setSelectedGovernorates((prev) =>
@@ -51,15 +65,21 @@ export default function HubsClient({ hubs }: HubsClientProps) {
         if (!nameMatch && !descMatch && !locMatch) return false;
       }
 
-      // Governorate filter
+      // Governorate filter (partial, case-insensitive)
       if (selectedGovernorates.length > 0) {
-        if (!selectedGovernorates.includes(hub.governorate)) return false;
+        const govNorm = (hub.governorate || "").toLowerCase();
+        const hasGovMatch = selectedGovernorates.some(
+          (g) => govNorm.includes(g.toLowerCase()) || g.toLowerCase().includes(govNorm)
+        );
+        if (!hasGovMatch) return false;
       }
 
-      // Services filter
+      // Services filter (partial, case-insensitive)
       if (selectedServices.length > 0) {
         const hubServices: string[] = hub.services || [];
-        const hasMatch = selectedServices.some((s) => hubServices.includes(s));
+        const hasMatch = selectedServices.some((sel) =>
+          hubServices.some((s) => s.toLowerCase().includes(sel.toLowerCase()))
+        );
         if (!hasMatch) return false;
       }
 

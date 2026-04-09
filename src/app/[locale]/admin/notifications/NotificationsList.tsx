@@ -62,7 +62,23 @@ export default function NotificationsList({ initialNotifications }: { initialNot
                   <p className={`text-sm ${!notif.read_at ? 'font-semibold text-foreground' : 'text-muted-foreground'}`}>
                     {notif.data?.message || "Internal system notification"}
                   </p>
-                  <span className="text-xs text-muted-foreground mt-1.5 block">
+                  
+                  {notif.data && Object.keys(notif.data).filter(k => k !== 'message').length > 0 && (
+                    <div className="mt-2 flex flex-wrap gap-2">
+                       {Object.entries(notif.data).filter(([k]) => k !== 'message').map(([key, value]) => {
+                          const displayKey = key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                          const displayValue = typeof value === 'object' ? (value as any)?.en || JSON.stringify(value) : String(value);
+                          return (
+                            <span key={key} className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-muted/60 border border-border rounded-lg text-xs font-medium text-muted-foreground">
+                              <span className="opacity-70">{displayKey}:</span> 
+                              <span className="text-foreground">{displayValue}</span>
+                            </span>
+                          );
+                       })}
+                    </div>
+                  )}
+
+                  <span className="text-xs text-muted-foreground mt-2 block opacity-70">
                     {new Date(notif.created_at || Date.now()).toLocaleString()}
                   </span>
                 </div>

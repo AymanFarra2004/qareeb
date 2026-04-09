@@ -1,0 +1,60 @@
+{
+  "success": true,
+  "data": {
+    "notifications": [
+      {
+        "id": "21efb887-8cd5-4cf0-a388-2748db110bf3",
+        "type": "HubCreatedNotification",
+        "data": {
+          "hub_id": 8,
+          "hub_name": "sfvf",
+          "owner_name": "hub owner1",
+          "message": "تم طلب إنشاء Hub جديد: sfvf"
+        },
+        "read_at": null,
+        "is_read": false,
+        "created_at": "منذ دقيقتين"
+      },
+      {
+        "id": "857df9a3-3cbf-47c4-bd65-0d91a20ddd3a",
+        "type": "HubCreatedNotification",
+        "data": {
+          "hub_id": 8,
+          "hub_name": "sfvf",
+          "owner_name": "hub owner1",
+          "message": "تم طلب إنشاء Hub جديد: sfvf"
+        },
+        "read_at": null,
+        "is_read": false,
+        "created_at": "منذ دقيقتين"
+      },
+      {
+        "id": "40ab9ca7-681f-4a20-907b-576f55ee3676",
+        "type": "HubCreatedNotification",
+        "data": {
+          "hub_id": 7,
+          "hub_name": "نتلنت",
+          "owner_name": "hub owner1",
+          "message": "تم طلب إنشاء Hub جديد: نتلنت"
+        },
+        "read_at": null,
+        "is_read": false,
+        "created_at": "منذ 28 دقيقة"
+      },
+      {
+        "id": "bc290161-026e-45bb-8108-680a99a56059",
+        "type": "HubCreatedNotification",
+        "data": {
+          "hub_id": 7,
+          "hub_name": "نتلنت",
+          "owner_name": "hub owner1",
+          "message": "تم طلب إنشاء Hub جديد: نتلنت"
+        },
+        "read_at": null,
+        "is_read": false,
+        "created_at": "منذ 28 دقيقة"
+      }
+    ],
+    "unread_count": 4
+  }
+}

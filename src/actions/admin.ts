@@ -1,6 +1,7 @@
 "use server";
 
 import { cookies } from "next/headers";
+import { revalidatePath, revalidateTag } from "next/cache";
 
 const API_BASE_URL = "https://karam.idreis.net/api/v1";
 
@@ -23,12 +24,17 @@ export async function getAdminHubs() {
   }
 }
 
-export async function updateHubStatus(slugOrId: string, status: string) {
+export async function updateHubStatus(slugOrId: string, status: string, rejectionReason?: string) {
   const cookieStore = await cookies();
   const token = cookieStore.get("token")?.value;
   if (!token) return { error: "Unauthenticated" };
 
   try {
+    const payload: any = { status };
+    if (rejectionReason) {
+      payload.rejection_reason = rejectionReason;
+    }
+
     // Attempt POST for status update
     const res = await fetch(`${API_BASE_URL}/hubs/${slugOrId}/status`, {
       method: "POST", 
@@ -37,26 +43,36 @@ export async function updateHubStatus(slugOrId: string, status: string) {
         "Accept": "application/json", 
         "Authorization": `Bearer ${token}` 
       },
-      body: JSON.stringify({ status })
+      body: JSON.stringify(payload)
     });
     
     if (!res.ok && res.status === 405) {
-      // Fallback to PUT
+      // Fallback to PATCH
       const retryRes = await fetch(`${API_BASE_URL}/hubs/${slugOrId}/status`, {
-        method: "PUT",
+        method: "PATCH",
         headers: { 
           "Content-Type": "application/json", 
           "Accept": "application/json", 
           "Authorization": `Bearer ${token}` 
         },
-        body: JSON.stringify({ status })
+        body: JSON.stringify(payload)
       });
       const retryResult = await retryRes.json();
-      return retryRes.ok ? { success: true, message: "Status updated" } : { error: retryResult.message || "Failed" };
+      if (retryRes.ok) {
+        revalidatePath('/', 'layout');
+        revalidateTag('all-hubs');
+        return { success: true, message: "Status updated" };
+      }
+      return { error: retryResult.message || "Failed" };
     }
 
     const result = await res.json();
-    return res.ok ? { success: true, message: "Status updated" } : { error: result.message || "Failed" };
+    if (res.ok) {
+      revalidatePath('/', 'layout');
+      revalidateTag('all-hubs');
+      return { success: true, message: "Status updated" };
+    }
+    return { error: result.message || "Failed" };
   } catch (error) {
     return { error: "Network Error" };
   }

@@ -9,13 +9,15 @@ export function HubCard({ hub }: HubCardProps) {
   // Gracefully handle translations inside name or fallback formats
   const hubName = hub.name?.en || hub.name?.ar || hub.name || "Unnamed Hub";
   const desc = hub.description?.en || hub.description?.ar || hub.description || "No description provided.";
-  
+  const mainImage = hub.images?.main || hub.main_image;
+  const imageUrl = mainImage ? (mainImage.startsWith('http') ? mainImage : `https://karam.idreis.net${mainImage.startsWith('/') ? '' : '/'}${mainImage}`) : null;
+
   return (
     <div className="bg-background rounded-2xl border border-border shadow-sm overflow-hidden flex flex-col transition-all hover:shadow-md group">
       <div className="h-48 bg-muted relative overflow-hidden">
-        {hub.main_image ? (
+        {imageUrl ? (
           <img 
-            src={hub.main_image} 
+            src={imageUrl} 
             alt={hubName} 
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
           />

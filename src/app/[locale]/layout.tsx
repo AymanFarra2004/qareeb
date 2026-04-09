@@ -4,6 +4,7 @@ import "./globals.css";
 import { NextIntlClientProvider } from 'next-intl';
 import StoreProvider from "@/src/providers/storeProvider";
 import AuthHydrator from "@/src/providers/AuthHydrator";
+import { ThemeProvider } from "@/src/providers/ThemeProvider";
 import { Toaster } from "react-hot-toast";
 import { cookies } from "next/headers";
 
@@ -50,15 +51,17 @@ export default async function RootLayout({
     } catch(e) {}
   }
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <StoreProvider> 
-          {token && user && <AuthHydrator user={user} />}
-         <NextIntlClientProvider>{children}</NextIntlClientProvider>
-         <Toaster position="top-center" toastOptions={{ className: 'dark:bg-slate-800 dark:text-white rounded-xl' }} />
-        </StoreProvider>
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+          <StoreProvider> 
+            {token && user && <AuthHydrator user={user} />}
+           <NextIntlClientProvider>{children}</NextIntlClientProvider>
+           <Toaster position="top-center" toastOptions={{ className: 'dark:bg-slate-800 dark:text-white rounded-xl' }} />
+          </StoreProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

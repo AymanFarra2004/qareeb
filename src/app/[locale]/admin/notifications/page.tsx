@@ -1,9 +1,15 @@
 import { getAdminNotifications } from "@/src/actions/admin";
 import NotificationsList from "./NotificationsList";
+import fs from "fs";
 
 export default async function AdminNotificationsPage() {
   const res = await getAdminNotifications();
   
+  // DEBUG PORTAL: Write to disk so the agent can inspect the structure
+  try {
+    fs.writeFileSync('.gemini-debug-notifs.json', JSON.stringify(res, null, 2));
+  } catch (e) {}
+
   let notifications = res.data || [];
   if (!Array.isArray(notifications)) {
     notifications = notifications.data || [];

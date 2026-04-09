@@ -16,6 +16,12 @@ const nextConfig: NextConfig = {
         port: '',
         pathname: '/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'karam.idreis.net',
+        port: '',
+        pathname: '/**',
+      },
     ],
   },
 };

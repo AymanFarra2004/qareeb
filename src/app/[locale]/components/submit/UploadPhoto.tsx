@@ -1,10 +1,10 @@
 'use client'
 
 import { useRef, useState, useEffect, useCallback } from 'react'
-import { Upload, X } from 'lucide-react'
+import { Upload, X, Star, Crown, Image as ImageIcon } from 'lucide-react'
 import Image from 'next/image'
 import { Button } from '@/components/ui/button'
-import { useDropzone } from 'react-dropzone';
+import { useDropzone } from 'react-dropzone'
 
 interface FileWithPreview extends File {
   preview: string;
@@ -12,26 +12,48 @@ interface FileWithPreview extends File {
 
 const UploadPhoto = () => {
   const [files, setFiles] = useState<FileWithPreview[]>([]);
+  const [mainIndex, setMainIndex] = useState<number>(0);
   const [rejectedNames, setRejectedNames] = useState<string[]>([]);
 
+  const mainInputRef = useRef<HTMLInputElement>(null);
+  const galleryInputRef = useRef<HTMLInputElement>(null);
+
+  // Revoke object URLs on cleanup
   useEffect(() => {
     return () => files.forEach(file => URL.revokeObjectURL(file.preview));
   }, [files]);
 
+  // Sync hidden file inputs whenever files or mainIndex changes
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
 
+    // Main image input
+    if (mainInputRef.current && files.length > 0) {
+      const dt = new DataTransfer();
+      dt.items.add(files[mainIndex]);
+      mainInputRef.current.files = dt.files;
+    } else if (mainInputRef.current) {
+      mainInputRef.current.files = new DataTransfer().files;
+    }
+
+    // Gallery images input (all except main)
+    if (galleryInputRef.current) {
+      const dt = new DataTransfer();
+      files.forEach((file, idx) => {
+        if (idx !== mainIndex) dt.items.add(file);
+      });
+      galleryInputRef.current.files = dt.files;
+    }
+  }, [files, mainIndex]);
 
   const processFiles = useCallback((newFiles: File[]) => {
-
     const maxSize = 5 * 1024 * 1024;
-
     const acceptedBatch: FileWithPreview[] = [];
     const rejectedBatch: string[] = [];
 
     newFiles.forEach((file) => {
       if (file.size <= maxSize) {
-        Object.assign(file, {
-          preview: URL.createObjectURL(file)
-        });
+        Object.assign(file, { preview: URL.createObjectURL(file) });
         acceptedBatch.push(file as FileWithPreview);
       } else {
         rejectedBatch.push(file.name);
@@ -41,13 +63,12 @@ const UploadPhoto = () => {
     if (acceptedBatch.length > 0) {
       setFiles((prev) => [...prev, ...acceptedBatch]);
     }
-
     setRejectedNames(rejectedBatch);
   }, []);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    onDrop: processFiles, // Pass our refactored function here
-    accept: { 'image/*': [] }, // Restrict to images
+    onDrop: processFiles,
+    accept: { 'image/*': [] },
     multiple: true
   });
 
@@ -58,69 +79,174 @@ const UploadPhoto = () => {
       newFiles.splice(index, 1);
       return newFiles;
     });
+    setMainIndex((prev) => {
+      if (index === prev) return 0;
+      if (index < prev) return prev - 1;
+      return prev;
+    });
+  }, []);
+
+  const handleSetMain = useCallback((index: number) => {
+    setMainIndex(index);
   }, []);
 
   return (
     <section className="space-y-4">
-      <h2 className="text-xl font-semibold border-b border-border pb-2">3. Photos</h2>
-      
-      <div 
-        {...getRootProps()}
-        className={`border-2 border-dashed rounded-xl p-8 text-center hover:bg-muted/50 transition-colors cursor-pointer ${isDragActive ? 'border-primary bg-primary/5' : 'border-border hover:bg-muted/50'}`}
-      >
+      <div className="flex items-center justify-between border-b border-border pb-2">
+        <h2 className="text-xl font-semibold">3. Photos</h2>
+        {files.length > 0 && (
+          <p className="text-xs text-muted-foreground">
+            <span className="text-amber-500 font-medium">★ Main</span> image shows on the hub card · others go to gallery
+          </p>
+        )}
+      </div>
+
+      {/* Hidden file inputs for form submission */}
       <input
-        {...getInputProps()}
-        className={`${isDragActive ? 'text-primary' : 'text-muted-foreground'}`}
+        ref={mainInputRef}
+        type="file"
+        name="main_image"
+        accept="image/*"
+        className="hidden"
+        readOnly
+      />
+      <input
+        ref={galleryInputRef}
+        type="file"
+        name="gallery[]"
+        accept="image/*"
+        multiple
+        className="hidden"
+        readOnly
       />
 
-        <Upload className="h-8 w-8 text-muted-foreground mx-auto mb-3" />
-        <p className="text-sm font-medium text-foreground mb-1">Click to upload or drag and drop</p>
-        <p className="text-xs text-muted-foreground">Images only (max. 5MB per file)</p>
+      {/* Drop Zone */}
+      <div
+        {...getRootProps()}
+        className={`border-2 border-dashed rounded-xl p-8 text-center transition-colors cursor-pointer ${
+          isDragActive
+            ? 'border-primary bg-primary/5'
+            : 'border-border hover:bg-muted/50 hover:border-primary/50'
+        }`}
+      >
+        <input {...getInputProps()} />
+        <div className="flex flex-col items-center gap-2">
+          <div className={`p-3 rounded-full ${isDragActive ? 'bg-primary/10' : 'bg-muted'}`}>
+            <Upload className={`h-6 w-6 ${isDragActive ? 'text-primary' : 'text-muted-foreground'}`} />
+          </div>
+          <p className="text-sm font-medium text-foreground">
+            {isDragActive ? 'Drop images here...' : 'Click to upload or drag and drop'}
+          </p>
+          <p className="text-xs text-muted-foreground">Images only · max 5MB per file</p>
+        </div>
       </div>
 
       {/* Preview Gallery */}
       {files.length > 0 && (
-        <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-3">
-          {files.map((file, index) => (
-            <div key={index} className="relative group border rounded-lg p-2 bg-muted/50 flex gap-2 items-center min-h-[60px]">
-              <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-md border">
-                <Image 
-                  src={file.preview} 
-                  fill 
-                  alt={file.name} 
-                  className="object-cover" 
-                />
-              </div>
-              <div className="flex-grow min-w-0">
-                <p className="text-xs font-medium truncate">{file.name}</p>
-                <p className="text-[10px] text-muted-foreground">
-                  {(file.size / 1024).toFixed(1)} KB
-                </p>
-              </div>
-              <Button 
-                type="button"
-                variant="destructive"
-                size="icon"           
-                onClick={(e) => {e.stopPropagation(); handleRemovePhoto(index)}} 
-                
-                className="cursor-pointer absolute -top-2 -right-2 h-6 w-6 rounded-full shadow-sm opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity"
-              >
-                <X className="h-3 w-3" />
-                <span className="sr-only">Remove photo</span>
-              </Button>
+        <div className="space-y-3">
+          <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+            {files.length} image{files.length !== 1 ? 's' : ''} selected
+          </p>
+
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+            {files.map((file, index) => {
+              const isMain = index === mainIndex;
+              return (
+                <div
+                  key={index}
+                  className={`relative group rounded-xl overflow-hidden border-2 transition-all duration-200 ${
+                    isMain
+                      ? 'border-amber-400 shadow-md shadow-amber-100'
+                      : 'border-border hover:border-primary/40'
+                  }`}
+                >
+                  {/* Image Thumbnail */}
+                  <div className="relative aspect-video w-full overflow-hidden bg-muted/30">
+                    <Image
+                      src={file.preview}
+                      fill
+                      alt={file.name}
+                      className="object-cover"
+                    />
+
+                    {/* Main badge overlay */}
+                    {isMain && (
+                      <div className="absolute top-1.5 left-1.5 flex items-center gap-1 bg-amber-400 text-amber-900 text-[10px] font-bold px-1.5 py-0.5 rounded-full shadow-sm">
+                        <Crown className="h-2.5 w-2.5" />
+                        MAIN
+                      </div>
+                    )}
+
+                    {/* Hover overlay with actions */}
+                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                      {!isMain && (
+                        <button
+                          type="button"
+                          onClick={() => handleSetMain(index)}
+                          title="Set as main image"
+                          className="flex items-center gap-1 bg-amber-400 hover:bg-amber-500 text-amber-900 text-[10px] font-bold px-2 py-1 rounded-full shadow-sm transition-colors"
+                        >
+                          <Star className="h-3 w-3" />
+                          Set Main
+                        </button>
+                      )}
+                      <button
+                        type="button"
+                        onClick={() => handleRemovePhoto(index)}
+                        title="Remove"
+                        className="flex items-center justify-center w-6 h-6 bg-red-500 hover:bg-red-600 text-white rounded-full shadow-sm transition-colors"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* File info */}
+                  <div className={`px-2 py-1.5 ${isMain ? 'bg-amber-50 dark:bg-amber-950/20' : 'bg-background'}`}>
+                    <p className="text-[10px] font-medium truncate text-foreground">{file.name}</p>
+                    <p className="text-[10px] text-muted-foreground">
+                      {(file.size / 1024).toFixed(1)} KB
+                      {isMain && <span className="ml-1 text-amber-600 font-semibold">· Hub Card</span>}
+                      {!isMain && <span className="ml-1 text-muted-foreground">· Gallery</span>}
+                    </p>
+                  </div>
+                </div>
+              );
+            })}
+
+            {/* Add more button */}
+            <div
+              {...getRootProps()}
+              className="relative aspect-video rounded-xl border-2 border-dashed border-border hover:border-primary/50 hover:bg-primary/5 flex flex-col items-center justify-center gap-1 cursor-pointer transition-all"
+            >
+              <input {...getInputProps()} />
+              <ImageIcon className="h-5 w-5 text-muted-foreground" />
+              <p className="text-[10px] text-muted-foreground font-medium">Add more</p>
             </div>
-          ))}
+          </div>
+
+          {/* Legend */}
+          <div className="flex flex-wrap gap-4 text-xs text-muted-foreground pt-1">
+            <span className="flex items-center gap-1">
+              <Crown className="h-3 w-3 text-amber-500" />
+              <strong className="text-amber-600">Main</strong> — shown on hub card
+            </span>
+            <span className="flex items-center gap-1">
+              <ImageIcon className="h-3 w-3" />
+              <strong>Gallery</strong> — shown in hub detail page
+            </span>
+          </div>
         </div>
       )}
 
-      {/* Error Message */}
+      {/* Error Messages */}
       {rejectedNames.length > 0 && (
         <p className="text-xs text-red-500 font-medium animate-in fade-in slide-in-from-top-1">
-          Skipped (over 5MB): {rejectedNames.join(", ")}
+          Skipped (over 5MB): {rejectedNames.join(', ')}
         </p>
       )}
     </section>
-  )
-}
+  );
+};
 
-export default UploadPhoto
+export default UploadPhoto;
