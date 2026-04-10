@@ -7,34 +7,13 @@ import { useRouter } from "next/navigation";
 import { getHubBySlug, updateHub, deleteHub, addHubSocial, getHubOffers, addHubOffer, getAllServices, createService, getHubServices, addCustomService, deleteCustomService } from "@/src/actions/hubs";
 import { toast } from "react-hot-toast";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/src/app/[locale]/components/ui/alert-dialog";
+import HubGalleryManager from "@/src/app/[locale]/components/dashboard/HubGalleryManager";
 
 // General Tab - shows real hub data
 function GeneralTab({ hub, onUpdate }: { hub: any; onUpdate: () => void }) {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [isUploading, setIsUploading] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
-  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    setIsUploading(true);
-    const formData = new FormData();
-    formData.append("main_image", file);
-    
-    const res = await updateHub(hub.slug, null, formData);
-    if (res.success) {
-      toast.success("Image updated successfully!");
-      onUpdate();
-    } else {
-      toast.error(res.error || "Failed to update image");
-    }
-    setIsUploading(false);
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
-    }
-  };
+  const [isGalleryOpen, setIsGalleryOpen] = useState(false);
 
   const mainImage = hub.images?.main || hub.main_image;
   const imageUrl = mainImage ? (mainImage.startsWith('http') ? mainImage : `https://karam.idreis.net${mainImage.startsWith('/') ? '' : '/'}${mainImage}`) : null;
@@ -46,40 +25,35 @@ function GeneralTab({ hub, onUpdate }: { hub: any; onUpdate: () => void }) {
         
         <div className="space-y-4 max-w-xl">
           <div>
-            <label className="block text-sm font-medium mb-1">Cover Image / Logo</label>
-            <div className="flex items-center gap-4">
-              <div className="h-24 w-24 rounded-xl border-2 border-dashed border-border flex items-center justify-center bg-muted/30 text-muted-foreground overflow-hidden relative">
-                {isUploading && (
-                  <div className="absolute inset-0 bg-background/50 flex items-center justify-center z-10">
-                    <Loader2 className="h-6 w-6 animate-spin text-primary" />
-                  </div>
-                )}
+            <label className="block text-sm font-medium mb-1">Cover Image & Gallery</label>
+            <div className="flex items-center gap-4 border border-border p-3 rounded-xl bg-muted/10">
+              <div className="h-16 w-16 rounded-xl border border-border flex items-center justify-center bg-muted/30 text-muted-foreground overflow-hidden relative shadow-sm">
                 {imageUrl ? (
                   <img src={imageUrl} alt="Hub" className="w-full h-full object-cover" />
                 ) : (
-                  <Camera className="h-8 w-8 opacity-50" />
+                  <Camera className="h-6 w-6 opacity-50" />
                 )}
               </div>
-              <div>
-                <input 
-                  type="file" 
-                  accept="image/*" 
-                  ref={fileInputRef} 
-                  className="hidden" 
-                  onChange={handleImageChange} 
-                />
-                <button 
-                  onClick={(e) => {
-                    e.preventDefault();
-                    fileInputRef.current?.click();
-                  }}
-                  disabled={isUploading}
-                  className="px-4 py-2 bg-secondary text-secondary-foreground text-sm rounded-lg font-medium hover:bg-secondary/80 transition-colors disabled:opacity-50"
-                >
-                  {isUploading ? "Uploading..." : "Upload New"}
-                </button>
+              <div className="flex flex-col items-start gap-1">
+                <span className="text-sm font-medium">Manage Hub Gallery</span>
+                <span className="text-xs text-muted-foreground">Select main picture and upload gallery</span>
               </div>
+              <button 
+                onClick={(e) => {
+                  e.preventDefault();
+                  setIsGalleryOpen(true);
+                }}
+                className="ml-auto px-4 py-2 bg-secondary text-secondary-foreground text-sm rounded-lg font-medium hover:bg-secondary/80 transition-colors shadow-sm"
+              >
+                Manage Gallery
+              </button>
             </div>
+            <HubGalleryManager 
+              hub={hub} 
+              isOpen={isGalleryOpen} 
+              onClose={() => setIsGalleryOpen(false)} 
+              onUpdate={onUpdate} 
+            />
           </div>
 
           <div>

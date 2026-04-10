@@ -5,21 +5,60 @@ import { revalidatePath, revalidateTag } from "next/cache";
 
 const API_BASE_URL = "https://karam.idreis.net/api/v1";
 
-export async function getAdminHubs() {
+export interface HubsResponse {
+  success?: boolean;
+  error?: string;
+  data: any[];
+}
+
+export async function getAdminHubs(): Promise<HubsResponse> {
   const cookieStore = await cookies();
   const token = cookieStore.get("token")?.value;
   if (!token) return { error: "Unauthenticated", data: [] };
 
   try {
-    const res = await fetch(`${API_BASE_URL}/hubs`, {
-      method: "GET",
-      headers: { "Accept": "application/json", "Authorization": `Bearer ${token}` },
-      next: { tags: ["admin-hubs"], revalidate: 0 }
+    // Fetch from both contexts in parallel
+    // 1. Admin context (Token): Usually returns pending/rejected applications
+    // 2. Guest context (No Token): Usually returns approved public listings
+    const [adminRes, guestRes] = await Promise.all([
+      fetch(`${API_BASE_URL}/front/hubs`, {
+        method: "GET",
+        headers: { "Accept": "application/json", "Authorization": `Bearer ${token}` },
+        next: { tags: ["admin-hubs"], revalidate: 0 }
+      }),
+      fetch(`${API_BASE_URL}/front/hubs`, {
+        method: "GET",
+        headers: { "Accept": "application/json" },
+        next: { tags: ["all-hubs"], revalidate: 0 }
+      })
+    ]);
+
+    const adminResult = await adminRes.json();
+    const guestResult = await guestRes.json();
+
+    const extractHubs = (res: any) => {
+      if (!res) return [];
+      let data = res.data || res;
+      // Handle pagination wrapper
+      if (data && !Array.isArray(data) && Array.isArray(data.data)) {
+        data = data.data;
+      }
+      return Array.isArray(data) ? data : [];
+    };
+
+    const adminHubs = extractHubs(adminResult);
+    const guestHubs = extractHubs(guestResult);
+
+    // Merge and de-duplicate by ID or Slug to ensure no duplicates if contexts overlap
+    const uniqueHubs = new Map();
+    [...adminHubs, ...guestHubs].forEach(hub => {
+      const key = hub.id || hub.slug;
+      if (key) uniqueHubs.set(key, hub);
     });
-    const result = await res.json();
-    if (!res.ok) return { error: `API Error ${res.status}: ${result.message || 'Failed to load hubs'}`, data: [] };
-    return { success: true, data: result.data || result || [] };
+
+    return { success: true, data: Array.from(uniqueHubs.values()) };
   } catch (error) {
+    console.error("Error fetching admin hubs:", error);
     return { error: "Network Error", data: [] };
   }
 }
@@ -68,7 +107,12 @@ export async function updateHubStatus(slugOrId: string, status: string, rejectio
 
     const result = await res.json();
     if (res.ok) {
+      revalidatePath('/admin/hubs');
+      revalidatePath('/[locale]/admin/hubs', 'page');
+      revalidatePath('/hubs');
+      revalidatePath('/[locale]/hubs', 'page');
       revalidatePath('/', 'layout');
+      revalidateTag('admin-hubs');
       revalidateTag('all-hubs');
       return { success: true, message: "Status updated" };
     }

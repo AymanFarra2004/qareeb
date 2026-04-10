@@ -67,8 +67,8 @@ export function HubCard({ hub }: IHubCardProps) {
           </div>
         )}
         <div className="absolute bottom-3 left-3 flex flex-wrap gap-2 z-10">
-          {(hub.services || []).slice(0, 3).map((service: string) => (
-            <Badge key={service} variant="secondary" className="bg-background/90 backdrop-blur-sm hover:bg-background shadow-[0_2px_10px_rgba(0,0,0,0.1)] flex items-center gap-1.5 py-1">
+          {(hub.services || []).slice(0, 3).map((service: string, index: number) => (
+            <Badge key={`${service}-${index}`} variant="secondary" className="bg-background/90 backdrop-blur-sm hover:bg-background shadow-[0_2px_10px_rgba(0,0,0,0.1)] flex items-center gap-1.5 py-1">
               {getServiceIcon(service)}
               {service}
             </Badge>

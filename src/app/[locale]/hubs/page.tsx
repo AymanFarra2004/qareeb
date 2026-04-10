@@ -4,8 +4,6 @@ import { Metadata } from "next"
 import HubsHeader from "@/components/hubs/HubsHeader"
 import HubsClient from "@/components/hubs/HubsClient"
 import { getAllHubs } from "@/src/actions/hubs"
-import { staticHubs } from "@/data/hubs"
-
 export const metadata: Metadata = {
   title: "Browse Hubs | Habbat",
   description: "Explore available internet and electricity hubs across Gaza.",
@@ -28,12 +26,13 @@ export default async function HubsDirectory() {
     services: Array.isArray(apiHub.services) ? apiHub.services.map((s:any) => s.name?.en || s.name) : [],
     imageUrl: apiHub.images?.main ? 
       (apiHub.images.main.startsWith('http') ? apiHub.images.main : `https://karam.idreis.net${apiHub.images.main.startsWith('/') ? '' : '/'}${apiHub.images.main}`) 
-      : staticHubs[Math.floor(Math.random() * staticHubs.length)].imageUrl,
+      : "https://placehold.co/600x400?text=No+Image",
     verificationStatus: apiHub.status === "approved" ? "Verified" : "Pending",
     contact: { contactNumber: apiHub.contact || "" }
   }));
 
-  const displayHubs = mappedHubs.length > 0 ? mappedHubs : staticHubs;
+  // Only show approved hubs to the public directory
+  const displayHubs = mappedHubs.filter((h: any) => h.verificationStatus === "Verified");
 
   return (
     <div className="flex flex-col min-h-screen">

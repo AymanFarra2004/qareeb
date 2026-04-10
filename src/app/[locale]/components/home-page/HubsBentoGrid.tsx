@@ -1,7 +1,6 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { staticHubs } from "@/data/hubs";
 import Image from "next/image";
 import { MapPin, Clock, Zap } from "lucide-react";
 
@@ -18,12 +17,13 @@ export default function HubsBentoGrid({ filter, hubs = [] }: { filter: { governo
     services: Array.isArray(apiHub.services) ? apiHub.services.map((s: any) => s.name?.en || s.name) : [],
     imageUrl: apiHub.images?.main ?
       (apiHub.images.main.startsWith('http') ? apiHub.images.main : `https://karam.idreis.net${apiHub.images.main.startsWith('/') ? '' : '/'}${apiHub.images.main}`)
-      : staticHubs[Math.floor(Math.random() * staticHubs.length)].imageUrl,
+      : "https://placehold.co/600x400?text=No+Image",
     verificationStatus: apiHub.status === "approved" ? "Verified" : "Pending",
     contact: { contactNumber: apiHub.contact || "" }
   }));
 
-  const displayHubs = mappedHubs.length > 0 ? mappedHubs : staticHubs;
+  // Only show approved hubs in the featured grid
+  const displayHubs = mappedHubs.filter((apiHub: any) => apiHub.verificationStatus === "Verified");
 
   const filteredHubs = (filter.governorate === "" && filter.service === "")
     ? displayHubs

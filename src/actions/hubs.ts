@@ -8,10 +8,10 @@ const API_BASE_URL = "https://karam.idreis.net/api/v1";
 
 export async function getAllHubs() {
   try {
-    const res = await fetch(`${API_BASE_URL}/hubs`, {
+    const res = await fetch(`${API_BASE_URL}/front/hubs`, {
       method: "GET",
       headers: { "Accept": "application/json" },
-      next: { tags: ['all-hubs'], revalidate: 60 }
+      next: { tags: ['all-hubs'], revalidate: 0 }
     });
     const result = await res.json();
     if (res.ok) {
@@ -70,7 +70,7 @@ export async function getHubBySlug(slugOrId: string) {
   if (!token) return { error: "Unauthenticated", data: null };
 
   try {
-    const res = await fetch(`${API_BASE_URL}/hubs/${slugOrId}`, {
+    const res = await fetch(`${API_BASE_URL}/front/hubs/${slugOrId}`, {
       method: "GET",
       headers: {
         "Accept": "application/json",
@@ -537,57 +537,111 @@ export async function updateHub(slug: string, prevState: any, formData: FormData
   if (!token) return { error: "Unauthenticated" };
 
   try {
-    // Handling form data including dynamic selections
-    const isMultipart = Array.from(formData.keys()).some(
-      (key) => formData.get(key) instanceof File && (formData.get(key) as File).size > 0
-    );
+    const payload: any = {};
+    
+    // Extract textual JSON payload
+    Array.from(formData.entries()).forEach(([key, value]) => {
+      // Skip files for the JSON request
+      if (value instanceof File) return; 
 
-    let submitBody: BodyInit;
-    let headers: Record<string, string> = {
-      "Accept": "application/json",
-      "Authorization": `Bearer ${token}`,
-      "X-HTTP-Method-Override": "PUT" // Emulate PUT
-    };
-
-    if (isMultipart) {
-      submitBody = formData;
-    } else {
-      // It's just JSON data. We construct a payload.
-      headers["Content-Type"] = "application/json";
-      headers["X-HTTP-Method-Override"] = "PUT";
-      
-      const payload: any = {};
-      
-      Array.from(formData.entries()).forEach(([key, value]) => {
-        if (key === "service_ids" || key === "service_ids[]") {
-          payload["service_ids"] = formData.getAll(key).map(Number);
-        } else if (key === "add_service_ids" || key === "add_service_ids[]") {
-          payload["add_service_ids"] = formData.getAll(key).map(Number);
-        } else if (key === "remove_service_ids" || key === "remove_service_ids[]") {
-          payload["remove_service_ids"] = formData.getAll(key).map(Number);
-        } else {
-          payload[key] = value;
-        }
-      });
-      submitBody = JSON.stringify(payload);
-    }
-
-    const res = await fetch(`${API_BASE_URL}/hubs/${slug}`, {
-      method: "POST", // API accepts POST for multipart with method spoofing, or we just try POST
-      headers,
-      body: submitBody
+      if (key === "service_ids" || key === "service_ids[]") {
+        if (!payload["service_ids"]) payload["service_ids"] = [];
+        payload["service_ids"].push(Number(value));
+      } else if (key === "add_service_ids" || key === "add_service_ids[]") {
+        if (!payload["add_service_ids"]) payload["add_service_ids"] = [];
+        payload["add_service_ids"].push(Number(value));
+      } else if (key === "remove_service_ids" || key === "remove_service_ids[]") {
+        if (!payload["remove_service_ids"]) payload["remove_service_ids"] = [];
+        payload["remove_service_ids"].push(Number(value));
+      } else {
+        payload[key] = value;
+      }
     });
 
-    const result = await res.json();
-    if (res.ok) {
-      revalidatePath('/dashboard');
-      revalidatePath('/[locale]/dashboard', 'page');
-      revalidatePath(`/hubs/${slug}`);
-      revalidatePath('/', 'layout');
-      revalidateTag('all-hubs');
-      return { success: true, message: result.message || "Updated" };
+    // Handle custom services if present in formData
+    const customNameEn = formData.get("custom_service_en") as string;
+    const customNameAr = formData.get("custom_service_ar") as string;
+    const customDescEn = formData.get("custom_service_description_en") as string;
+    const customDescAr = formData.get("custom_service_description_ar") as string;
+    
+    if (customNameEn && customNameEn.trim() !== '') {
+      payload.custom_service = {
+        name: {
+          en: customNameEn.trim(),
+          ar: customNameAr?.trim() || customNameEn.trim(),
+        },
+        description: {
+          en: customDescEn?.trim() || "",
+          ar: customDescAr?.trim() || "",
+        }
+      };
     }
-    return { error: result.message || "Failed" };
+
+    // --- Step 1: Send JSON data ---
+    const jsonRes = await fetch(`${API_BASE_URL}/hubs/${slug}`, {
+      method: "PUT", 
+      headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`
+      },
+      body: JSON.stringify(payload)
+    });
+
+    const jsonResult = await jsonRes.json();
+    if (!jsonRes.ok && jsonResult.status !== 'success') {
+      return { error: jsonResult.message || "Failed to update hub details" };
+    }
+
+    // --- Step 2: Upload images if provided ---
+    // Safely extract potential main_image and gallery files
+    const mainImage = formData.get("main_image");
+    const galleryFiles = formData.getAll("gallery[]");
+
+    const hasMainImage = mainImage instanceof File && mainImage.size > 0;
+    const hasGallery = galleryFiles.some(f => f instanceof File && (f as File).size > 0);
+
+    if (hasMainImage || hasGallery) {
+      const imageForm = new FormData();
+      imageForm.append("_method", "PUT");
+
+      if (hasMainImage) {
+        imageForm.append("main_image", mainImage as File);
+      }
+
+      if (hasGallery) {
+        galleryFiles.forEach(file => {
+          if (file instanceof File && file.size > 0) {
+            imageForm.append("gallery[]", file);
+          }
+        });
+      }
+
+      try {
+        const imageRes = await fetch(`${API_BASE_URL}/hubs/${slug}`, {
+          method: "POST",
+          headers: {
+            "Accept": "application/json",
+            "Authorization": `Bearer ${token}`,
+            "X-HTTP-Method-Override": "PUT",
+          },
+          body: imageForm,
+        });
+        
+        if (!imageRes.ok) {
+           console.warn("Image update endpoint returned an error, but JSON text update succeeded.");
+        }
+      } catch (_) {
+        console.warn("Network error during image upload, but text update succeeded.");
+      }
+    }
+
+    revalidatePath('/dashboard');
+    revalidatePath('/[locale]/dashboard', 'page');
+    revalidatePath(`/hubs/${slug}`);
+    revalidatePath('/', 'layout');
+    revalidateTag('all-hubs');
+    return { success: true, message: jsonResult.message || "Updated" };
   } catch (e) {
     return { error: "Network Error" };
   }
@@ -597,6 +651,7 @@ export async function deleteHub(slug: string) {
   const cookieStore = await cookies();
   const token = cookieStore.get("token")?.value;
   if (!token) return { error: "Unauthenticated" };
+
 
   try {
     const res = await fetch(`${API_BASE_URL}/hubs/${slug}`, {
@@ -614,6 +669,27 @@ export async function deleteHub(slug: string) {
     return { error: result.message || "Failed" };
   } catch (e) {
     return { error: "Network Error" };
+  }
+}
+
+// Proxies image downloads to bypass strict Client-side CORS issues
+export async function downloadImageServer(url: string) {
+  try {
+    // Security mechanism: Only allow fetching from our backend
+    if (!url.startsWith(API_BASE_URL.replace('/v1', '')) && !url.startsWith("https://karam.idreis.net")) {
+      return { error: "Unauthorized image domain" };
+    }
+
+    const res = await fetch(url);
+    if (!res.ok) return { error: "Failed to fetch image" };
+    
+    const buffer = await res.arrayBuffer();
+    const base64 = Buffer.from(buffer).toString('base64');
+    const type = res.headers.get('content-type') || 'image/jpeg';
+    
+    return { success: true, base64, type };
+  } catch (e) {
+    return { error: "Failed to fetch image" };
   }
 }
 

@@ -4,7 +4,6 @@ import { Wifi, Zap, Monitor, Coffee, ChevronLeft } from "lucide-react"
 
 import { Header } from "@/components/header/Header"
 import { Footer } from "@/components/footer/Footer"
-import { staticHubs } from "@/data/hubs"
 import { getAllHubs } from "@/src/actions/hubs"
 import HubHeroImage from "@/components/hubs/hub/HubHeroImage"
 import HubMainContent from "@/components/hubs/hub/HubMainContent"
@@ -46,7 +45,12 @@ function mapApiHub(apiHub: any) {
         : `https://karam.idreis.net${
             apiHub.images.main.startsWith("/") ? "" : "/"
           }${apiHub.images.main}`
-      : staticHubs[0].imageUrl,
+      : "https://placehold.co/600x400?text=No+Image",
+    galleryUrls: Array.isArray(apiHub.images?.gallery)
+      ? apiHub.images.gallery.map((g: string) =>
+          g.startsWith("http") ? g : `https://karam.idreis.net${g.startsWith("/") ? "" : "/"}${g}`
+        )
+      : [],
     verificationStatus: (apiHub.status === "approved" ? "Verified" : "Pending") as "Verified" | "Pending",
     contact: {
       contactNumber: apiHub.contact || "",
@@ -71,17 +75,11 @@ export default async function HubDetails({
     (h: any) => String(h.id) === id || String(h.slug) === id
   )
 
-  // Fall back to static hubs only if API returned nothing
-  let hub
-  if (rawHub) {
-    hub = mapApiHub(rawHub)
-  } else {
-    const staticHub = staticHubs.find((h) => h.id === id)
-    if (!staticHub) {
-      notFound()
-    }
-    hub = staticHub!
+  if (!rawHub) {
+    notFound()
   }
+
+  const hub = mapApiHub(rawHub)
 
   return (
     <div className="flex flex-col min-h-screen">

@@ -1,5 +1,4 @@
 import { HubCard } from "@/src/app/[locale]/components/general/HubCard";
-import { staticHubs } from "@/data/hubs";
 
 export default function FeaturedHubSection({filter, hubs = []}: {filter: {governorate: string, service: string}, hubs?: any[]}){
     const mappedHubs = hubs.map(apiHub => ({
@@ -14,12 +13,12 @@ export default function FeaturedHubSection({filter, hubs = []}: {filter: {govern
         services: Array.isArray(apiHub.services) ? apiHub.services.map((s:any) => s.name?.en || s.name) : [],
         imageUrl: apiHub.images?.main ? 
           (apiHub.images.main.startsWith('http') ? apiHub.images.main : `https://karam.idreis.net${apiHub.images.main.startsWith('/') ? '' : '/'}${apiHub.images.main}`) 
-          : staticHubs[Math.floor(Math.random() * staticHubs.length)].imageUrl,
+          : "https://placehold.co/600x400?text=No+Image",
         verificationStatus: apiHub.status === "approved" ? "Verified" : "Pending",
         contact: { contactNumber: apiHub.contact || "" }
     }));
 
-    const displayHubs = mappedHubs.length > 0 ? mappedHubs : staticHubs;
+    const displayHubs = mappedHubs;
 
     const filteredHubs = (filter.governorate === "" && filter.service === "")
       ? displayHubs

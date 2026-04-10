@@ -1,6 +1,7 @@
 import React from 'react'
 import { IHub } from '@/data/hubs'
 import { ShieldCheck, MapPin } from 'lucide-react'
+import HubGallery from './HubGallery'
 
 export default function HubMainContent({hub, serviceIcons}: {hub: IHub, serviceIcons: Record<string, React.ReactNode>}) {
   return (
@@ -30,6 +31,15 @@ export default function HubMainContent({hub, serviceIcons}: {hub: IHub, serviceI
                   ))}
                 </div>
               </section>
+
+
+
+              {hub.galleryUrls && hub.galleryUrls.length > 0 && (
+                <>
+                  <hr className="border-border" />
+                  <HubGallery hubName={hub.name} galleryUrls={hub.galleryUrls} />
+                </>
+              )}
 
               <hr className="border-border" />
 

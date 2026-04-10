@@ -2,12 +2,15 @@
 
 import { useState } from "react";
 import { updateHubStatus } from "@/src/actions/admin";
-import { Loader2, Check, X } from "lucide-react";
+import { Loader2, Check, X, Clock, ShieldCheck, ShieldAlert, Box } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { toast } from "react-hot-toast";
 
+type TabType = "all" | "pending" | "active" | "rejected";
+
 export default function HubsTable({ initialHubs }: { initialHubs: any[] }) {
   const [hubs, setHubs] = useState(initialHubs);
+  const [activeTab, setActiveTab] = useState<TabType>("pending");
   const [loadingId, setLoadingId] = useState<string | null>(null);
   const router = useRouter();
 
@@ -17,8 +20,26 @@ export default function HubsTable({ initialHubs }: { initialHubs: any[] }) {
   const [rejectionReason, setRejectionReason] = useState("");
   const [isRejecting, setIsRejecting] = useState(false);
 
+  // Helper to normalize status checks
+  const getStatus = (hub: any) => {
+    const s = String(hub.status || "").toLowerCase();
+    if (s === "pending" || s === "new") return "pending";
+    if (s === "approved" || s === "active" || s === "verified") return "active";
+    if (s === "rejected" || s === "refused") return "rejected";
+    return "unknown";
+  };
+
+  // Data groupings
+  const groups = {
+    all: hubs,
+    pending: hubs.filter(h => getStatus(h) === 'pending'),
+    active: hubs.filter(h => getStatus(h) === 'active'),
+    rejected: hubs.filter(h => getStatus(h) === 'rejected')
+  };
+
+  const currentHubs = groups[activeTab];
+
   const handleStatusChange = async (hubId: string, slug: string, newStatus: string) => {
-    // API route uses slug for model binding
     const identifier = slug || hubId;
     if (!identifier) return;
 
@@ -48,7 +69,7 @@ export default function HubsTable({ initialHubs }: { initialHubs: any[] }) {
     const res = await updateHubStatus(identifier, "rejected", rejectionReason);
     
     if (res.success) {
-      setHubs(prev => prev.map(h => h.id === hubToReject.id || h.slug === hubToReject.slug ? { ...h, status: "rejected" } : h));
+      setHubs(prev => prev.map(h => h.id === hubToReject.id || h.slug === hubToReject.slug ? { ...h, status: "rejected", rejection_reason: rejectionReason } : h));
       router.refresh();
       toast.success("Hub rejected successfully");
       setRejectModalOpen(false);
@@ -66,74 +87,102 @@ export default function HubsTable({ initialHubs }: { initialHubs: any[] }) {
     setRejectModalOpen(true);
   };
 
-  if (hubs.length === 0) {
+  const TabButton = ({ type, label, icon: Icon, color }: { type: TabType, label: string, icon: any, color: string }) => {
+    const isActive = activeTab === type;
+    const count = groups[type].length;
+    
     return (
-      <div className="py-20 text-center border border-border bg-background rounded-2xl">
-        <p className="text-muted-foreground">No hubs found on the platform.</p>
-      </div>
+      <button
+        onClick={() => setActiveTab(type)}
+        className={`flex items-center gap-2 px-6 py-4 border-b-2 transition-all font-semibold text-sm ${
+          isActive 
+            ? `border-${color}-500 text-${color}-600 bg-${color}-50/50` 
+            : "border-transparent text-muted-foreground hover:text-foreground hover:bg-muted/30"
+        }`}
+      >
+        <Icon className={`h-4 w-4 ${isActive ? `text-${color}-500` : "opacity-50"}`} />
+        {label}
+        <span className={`ml-1 px-2 py-0.5 rounded-full text-[10px] ${
+          isActive ? `bg-${color}-500 text-white` : "bg-muted text-muted-foreground"
+        }`}>
+          {count}
+        </span>
+      </button>
     );
-  }
+  };
 
   return (
     <>
-      <div className="bg-background rounded-2xl border border-border shadow-sm overflow-hidden">
+      <div className="bg-background rounded-2xl border border-border shadow-sm overflow-hidden flex flex-col">
+        {/* Tabs Header */}
+        <div className="flex border-b border-border bg-muted/20 overflow-x-auto scrollbar-hide">
+          <TabButton type="pending" label="Pending Approvals" icon={Clock} color="yellow" />
+          <TabButton type="active" label="Active Hubs" icon={ShieldCheck} color="green" />
+          <TabButton type="rejected" label="Rejected Applications" icon={ShieldAlert} color="red" />
+          <TabButton type="all" label="All Records" icon={Box} color="blue" />
+        </div>
+
         <div className="overflow-x-auto">
           <table className="w-full text-sm text-left">
-            <thead className="bg-muted/50 text-muted-foreground uppercase text-xs font-semibold">
+            <thead className="bg-muted/30 text-muted-foreground uppercase text-[10px] tracking-wider font-bold">
               <tr>
-                <th className="px-6 py-4">Hub Name</th>
-                <th className="px-6 py-4">Owner</th>
+                <th className="px-6 py-4">Hub Details</th>
+                <th className="px-6 py-4">Owner Contact</th>
                 <th className="px-6 py-4">Status</th>
-                <th className="px-6 py-4">Location</th>
                 <th className="px-6 py-4 text-right">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
-              {hubs.map((hub) => {
+              {currentHubs.map((hub) => {
                 const name = hub.name?.en || hub.name || "Unnamed";
-                const isPending = hub.status === 'pending';
-                const isApproved = hub.status === 'approved' || hub.status === 'active';
+                const status = getStatus(hub);
+                const isPending = status === 'pending';
+                const isApproved = status === 'active';
+                const isRejected = status === 'rejected';
                 
                 return (
-                  <tr key={hub.id || hub.slug} className="hover:bg-muted/20 transition-colors">
-                    <td className="px-6 py-4 font-medium text-foreground">
-                      {name}
-                      <div className="text-xs text-muted-foreground font-mono mt-1">{hub.slug}</div>
+                  <tr key={hub.id || hub.slug} className="hover:bg-muted/10 transition-colors">
+                    <td className="px-6 py-6">
+                      <div className="font-bold text-foreground text-base">{name}</div>
+                      <div className="text-xs text-muted-foreground font-mono mt-1 opacity-70">{hub.slug}</div>
+                      {isRejected && hub.rejection_reason && (
+                        <div className="mt-2 p-2 bg-red-50 rounded-lg text-red-700 text-[11px] max-w-xs border border-red-100 italic">
+                          Reason: {hub.rejection_reason}
+                        </div>
+                      )}
                     </td>
-                    <td className="px-6 py-4 text-muted-foreground">
-                      {hub.owner?.name || hub.user?.name || "Unknown"}
+                    <td className="px-6 py-6 font-medium text-foreground">
+                      <div>{hub.owner?.name || hub.user?.name || "Unknown"}</div>
+                      <div className="text-xs text-muted-foreground mt-0.5">{hub.contact || "No contact info"}</div>
                     </td>
-                    <td className="px-6 py-4">
-                      <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${
-                        isPending ? 'bg-yellow-100 text-yellow-700' :
-                        isApproved ? 'bg-green-100 text-green-700' :
+                    <td className="px-6 py-6">
+                      <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${
+                        isPending ? 'bg-yellow-100 text-yellow-700 shadow-[0_0_10px_rgba(234,179,8,0.1)]' :
+                        isApproved ? 'bg-green-100 text-green-700 shadow-[0_0_10px_rgba(34,197,94,0.1)]' :
                         'bg-red-100 text-red-700'
                       }`}>
-                        {hub.status?.toUpperCase() || 'UNKNOWN'}
+                        {hub.status || 'UNKNOWN'}
                       </span>
                     </td>
-                    <td className="px-6 py-4 text-muted-foreground">
-                      {hub.address_details?.en || hub.address || "N/A"}
-                    </td>
-                    <td className="px-6 py-4 text-right">
+                    <td className="px-6 py-6 text-right">
                       {loadingId === hub.id ? (
                         <div className="flex justify-end pr-8"><Loader2 className="h-5 w-5 animate-spin text-muted-foreground" /></div>
                       ) : (
                         <div className="flex justify-end gap-2">
-                           {!isApproved && (
+                           {(isPending || isRejected) && (
                              <button 
                                onClick={() => handleStatusChange(hub.id, hub.slug, 'approved')}
-                               className="flex items-center gap-1 px-3 py-1.5 bg-green-50 text-green-700 hover:bg-green-100 rounded-lg transition-colors border border-green-200"
+                               className="flex items-center gap-1.5 px-4 py-2 bg-green-600 text-white hover:bg-green-700 rounded-xl transition-all shadow-sm font-semibold text-xs"
                              >
-                               <Check className="h-4 w-4" /> Approve
+                               <Check className="h-3.5 w-3.5" /> Approve
                              </button>
                            )}
-                           {hub.status !== 'rejected' && (
+                           {(isPending || isApproved) && (
                              <button 
                                onClick={() => openRejectModal(hub.id, hub.slug)}
-                               className="flex items-center gap-1 px-3 py-1.5 bg-red-50 text-red-700 hover:bg-red-100 rounded-lg transition-colors border border-red-200"
+                               className="flex items-center gap-1.5 px-4 py-2 bg-red-50 text-red-600 hover:bg-red-100 rounded-xl transition-all border border-red-100 font-semibold text-xs"
                              >
-                               <X className="h-4 w-4" /> Reject
+                               <X className="h-3.5 w-3.5" /> Reject
                              </button>
                            )}
                         </div>
@@ -142,6 +191,16 @@ export default function HubsTable({ initialHubs }: { initialHubs: any[] }) {
                   </tr>
                 )
               })}
+              {currentHubs.length === 0 && (
+                <tr>
+                  <td colSpan={4} className="px-6 py-20 text-center">
+                    <div className="flex flex-col items-center gap-2 opacity-40">
+                      <ShieldCheck className="h-10 w-10 text-muted-foreground" />
+                      <p className="text-base font-medium">No hubs found in this section.</p>
+                    </div>
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>
@@ -179,6 +238,7 @@ export default function HubsTable({ initialHubs }: { initialHubs: any[] }) {
                 onClick={() => {
                   setRejectModalOpen(false);
                   setHubToReject(null);
+                  setRejectionReason("");
                 }}
                 disabled={isRejecting}
                 className="px-5 py-2.5 text-sm font-medium text-foreground hover:bg-muted rounded-xl transition-colors disabled:opacity-50"
