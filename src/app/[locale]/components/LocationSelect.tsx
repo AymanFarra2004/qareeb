@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { MapPin, Loader2 } from "lucide-react";
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 
 type Location = {
   id: number;
@@ -17,14 +17,20 @@ export function LocationSelect() {
   const [locations, setLocations] = useState<Location[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const t = useTranslations("NewHub");
+  const locale = useLocale();
   
   const [governorateId, setGovernorateId] = useState<string>("");
   const [cityId, setCityId] = useState<string>("");
   const [areaId, setAreaId] = useState<string>("");
 
+  const langParams: Record<string, string> = {
+    ar: 'lang=ar',
+    en: 'lang=en',
+  };
+
   useEffect(() => {
     setIsLoading(true);
-    fetch('https://karam.idreis.net/api/v1/location')
+    fetch(`https://karam.idreis.net/api/v1/location?lang=${locale}`)
       .then(res => res.json())
       .then(data => {
         if(data.status === 'success') {
@@ -33,7 +39,7 @@ export function LocationSelect() {
       })
       .catch(err => console.error("Failed to fetch locations", err))
       .finally(() => setIsLoading(false));
-  }, []);
+  }, [locale]);
 
   const governorates = locations.filter(l => l.parent_id === null && l.type === 'governorate');
   const cities = governorateId ? locations.filter(l => l.parent_id === Number(governorateId) && l.type === 'city') : [];

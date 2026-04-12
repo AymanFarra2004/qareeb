@@ -2,6 +2,11 @@
 
 import { cookies } from "next/headers";
 
+// Map next-intl locale codes to API lang query params
+function getLangParam(locale: string = "ar"): string {
+  return `lang=${locale === 'en' ? 'en' : 'ar'}`;
+}
+
 export async function loginUser(prevState: any, formData: FormData) {
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
@@ -121,7 +126,7 @@ export async function registerUser(prevState: any, formData: FormData) {
   }
 }
 
-export async function getUserProfile() {
+export async function getUserProfile(locale: string = "ar") {
   const cookieStore = await cookies();
   const token = cookieStore.get("token")?.value;
 
@@ -130,7 +135,8 @@ export async function getUserProfile() {
   }
 
   try {
-    const res = await fetch("https://karam.idreis.net/api/v1/profile", {
+    const langParam = getLangParam(locale);
+    const res = await fetch(`https://karam.idreis.net/api/v1/profile?${langParam}`, {
       method: "GET",
       headers: {
         "Accept": "application/json",

@@ -5,28 +5,34 @@ import { revalidatePath, revalidateTag } from "next/cache";
 
 const API_BASE_URL = "https://karam.idreis.net/api/v1";
 
+// Map next-intl locale codes to API lang query params
+function getLangParam(locale: string = "ar"): string {
+  return `lang=${locale === 'en' ? 'en' : 'ar'}`;
+}
+
 export interface HubsResponse {
   success?: boolean;
   error?: string;
   data: any[];
 }
 
-export async function getAdminHubs(): Promise<HubsResponse> {
+export async function getAdminHubs(locale: string = "ar"): Promise<HubsResponse> {
   const cookieStore = await cookies();
   const token = cookieStore.get("token")?.value;
   if (!token) return { error: "Unauthenticated", data: [] };
 
   try {
+    const langParam = getLangParam(locale);
     // Fetch from both contexts in parallel
     // 1. Admin context (Token): Usually returns pending/rejected applications
     // 2. Guest context (No Token): Usually returns approved public listings
     const [adminRes, guestRes] = await Promise.all([
-      fetch(`${API_BASE_URL}/front/hubs`, {
+      fetch(`${API_BASE_URL}/front/hubs?${langParam}`, {
         method: "GET",
         headers: { "Accept": "application/json", "Authorization": `Bearer ${token}` },
         next: { tags: ["admin-hubs"], revalidate: 0 }
       }),
-      fetch(`${API_BASE_URL}/front/hubs`, {
+      fetch(`${API_BASE_URL}/front/hubs?${langParam}`, {
         method: "GET",
         headers: { "Accept": "application/json" },
         next: { tags: ["all-hubs"], revalidate: 0 }
@@ -122,13 +128,14 @@ export async function updateHubStatus(slugOrId: string, status: string, rejectio
   }
 }
 
-export async function getAdminNotifications() {
+export async function getAdminNotifications(locale: string = "ar") {
   const cookieStore = await cookies();
   const token = cookieStore.get("token")?.value;
   if (!token) return { error: "Unauthenticated", data: [] };
 
   try {
-    const res = await fetch(`${API_BASE_URL}/admin/notifications`, {
+    const langParam = getLangParam(locale);
+    const res = await fetch(`${API_BASE_URL}/admin/notifications?${langParam}`, {
       method: "GET",
       headers: { "Accept": "application/json", "Authorization": `Bearer ${token}` },
       next: { tags: ["admin-notifications"], revalidate: 0 }

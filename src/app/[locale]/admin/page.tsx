@@ -2,9 +2,11 @@ import { getAdminHubs } from "@/src/actions/admin";
 import { Link } from "@/src/i18n/routing";
 import { CheckSquare, Activity, ShieldAlert, ArrowRight } from "lucide-react";
 import { getTranslations } from "next-intl/server";
+import { getLocale } from "next-intl/server";
 
 export default async function AdminDashboardOverview() {
-  const hubsRes = await getAdminHubs();
+  const locale = await getLocale();
+  const hubsRes = await getAdminHubs(locale);
   const t = await getTranslations("Admin");
   
   // Handle pagination wrap (result.data.data) or simple array

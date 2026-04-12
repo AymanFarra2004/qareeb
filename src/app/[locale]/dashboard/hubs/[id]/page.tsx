@@ -15,8 +15,46 @@ function GeneralTab({ hub, onUpdate }: { hub: any; onUpdate: () => void }) {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isGalleryOpen, setIsGalleryOpen] = useState(false);
+  const [isSavingHours, setIsSavingHours] = useState(false);
+
   const t = useTranslations("HubManagement.general");
   const locale = useLocale();
+
+  // Parse existing hours
+  const parseTime = (timeStr: string) => {
+    if (!timeStr) return { hour: "8", period: "AM" };
+    const [h] = timeStr.split(':');
+    let hour = parseInt(h, 10);
+    const period = hour >= 12 ? "PM" : "AM";
+    hour = hour % 12 || 12;
+    return { hour: String(hour), period };
+  };
+
+  const initialStart = parseTime(hub.working_hours?.start);
+  const initialEnd = parseTime(hub.working_hours?.end);
+
+  const [startHour, setStartHour] = useState(initialStart.hour);
+  const [startPeriod, setStartPeriod] = useState(initialStart.period);
+  const [endHour, setEndHour] = useState(initialEnd.hour);
+  const [endPeriod, setEndPeriod] = useState(initialEnd.period);
+
+  const handleSaveHours = async () => {
+    setIsSavingHours(true);
+    const formData = new FormData();
+    formData.append("start_hour", startHour);
+    formData.append("start_period", startPeriod);
+    formData.append("end_hour", endHour);
+    formData.append("end_period", endPeriod);
+
+    const res = await updateHub(hub.slug, null, formData);
+    if (res.success) {
+      toast.success("Hours updated successfully");
+      onUpdate();
+    } else {
+      toast.error(res.error || "Failed to update hours");
+    }
+    setIsSavingHours(false);
+  };
 
   const mainImage = hub.images?.main || hub.main_image;
   const imageUrl = mainImage ? (mainImage.startsWith('http') ? mainImage : `https://karam.idreis.net${mainImage.startsWith('/') ? '' : '/'}${mainImage}`) : null;
@@ -104,6 +142,64 @@ function GeneralTab({ hub, onUpdate }: { hub: any; onUpdate: () => void }) {
           </div>
 
           <div className="pt-6 mt-6 border-t border-border">
+            <h4 className="text-sm font-bold mb-3 uppercase tracking-wider">{t("workingHours")}</h4>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+              <div className="p-3 border border-border rounded-xl bg-muted/5">
+                <label className="block text-xs text-muted-foreground mb-2 uppercase">{t("openingTime")}</label>
+                <div className="flex gap-2">
+                  <select 
+                    value={startHour} 
+                    onChange={(e) => setStartHour(e.target.value)}
+                    className="flex-1 bg-background border border-input rounded-lg px-2 py-1 text-sm focus:outline-none"
+                  >
+                    {[...Array(12)].map((_, i) => (
+                      <option key={i+1} value={i+1}>{String(i+1).padStart(2, '0')}</option>
+                    ))}
+                  </select>
+                  <select 
+                    value={startPeriod} 
+                    onChange={(e) => setStartPeriod(e.target.value)}
+                    className="bg-background border border-input rounded-lg px-2 py-1 text-sm focus:outline-none"
+                  >
+                    <option value="AM">{t("am")}</option>
+                    <option value="PM">{t("pm")}</option>
+                  </select>
+                </div>
+              </div>
+              <div className="p-3 border border-border rounded-xl bg-muted/5">
+                <label className="block text-xs text-muted-foreground mb-2 uppercase">{t("closingTime")}</label>
+                <div className="flex gap-2">
+                  <select 
+                    value={endHour} 
+                    onChange={(e) => setEndHour(e.target.value)}
+                    className="flex-1 bg-background border border-input rounded-lg px-2 py-1 text-sm focus:outline-none"
+                  >
+                    {[...Array(12)].map((_, i) => (
+                      <option key={i+1} value={i+1}>{String(i+1).padStart(2, '0')}</option>
+                    ))}
+                  </select>
+                  <select 
+                    value={endPeriod} 
+                    onChange={(e) => setEndPeriod(e.target.value)}
+                    className="bg-background border border-input rounded-lg px-2 py-1 text-sm focus:outline-none"
+                  >
+                    <option value="AM">{t("am")}</option>
+                    <option value="PM">{t("pm")}</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <button 
+              onClick={handleSaveHours}
+              disabled={isSavingHours}
+              className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground text-sm rounded-lg font-medium hover:bg-primary/90 transition-colors disabled:opacity-50"
+            >
+              {isSavingHours ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+              {t("save")}
+            </button>
+          </div>
+
+          <div className="pt-6 mt-6 border-t border-border">
             <button 
               onClick={() => setIsDeleteDialogOpen(true)}
               className="px-4 py-2 bg-red-100 text-red-700 text-sm rounded-lg font-medium hover:bg-red-200 transition-colors"
@@ -169,8 +265,8 @@ function ServicesTab({ hub, onUpdate }: { hub: any; onUpdate: () => void }) {
   const loadData = async () => {
     setLoading(true);
     const [globalRes, activeRes] = await Promise.all([
-      getAllServices(),
-      getHubServices(hub.slug)
+      getAllServices(locale),
+      getHubServices(hub.slug, locale)
     ]);
     
     if (globalRes.success) setGlobalServices(globalRes.data);
@@ -449,7 +545,7 @@ function OffersTab({ hubSlug }: { hubSlug: string }) {
 
   useEffect(() => {
     async function loadOffers() {
-      const res = await getHubOffers(hubSlug);
+      const res = await getHubOffers(hubSlug, locale);
       if (res.success) setOffers(res.data);
       setLoading(false);
     }
@@ -547,7 +643,7 @@ export default function HubManagementPage({ params }: { params: Promise<{ id: st
   useEffect(() => {
     async function fetchHub() {
       setLoading(true);
-      const result = await getHubBySlug(resolvedParams.id);
+      const result = await getHubBySlug(resolvedParams.id, locale);
       if (result.success && result.data) {
         setHub(result.data);
       } else {
@@ -589,7 +685,7 @@ export default function HubManagementPage({ params }: { params: Promise<{ id: st
 
   // Re-fetch hub helper for child tabs to refresh data
   const fetchHub = async () => {
-    const result = await getHubBySlug(resolvedParams.id);
+    const result = await getHubBySlug(resolvedParams.id, locale);
     if (result.success && result.data) setHub(result.data);
   };
 

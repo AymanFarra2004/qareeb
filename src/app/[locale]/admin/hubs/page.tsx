@@ -1,9 +1,11 @@
 import { getAdminHubs } from "@/src/actions/admin";
 import HubsTable from "./HubsTable";
 import { getTranslations } from "next-intl/server";
+import { getLocale } from "next-intl/server";
 
 export default async function AdminHubsPage() {
-  const res = await getAdminHubs();
+  const locale = await getLocale();
+  const res = await getAdminHubs(locale);
   const t = await getTranslations("Admin");
   
   // Guard for error state to ensure res.data exists in the success path

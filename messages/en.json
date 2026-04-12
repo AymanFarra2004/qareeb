@@ -50,7 +50,9 @@
     "description": "Discover top-rated, premium spaces across Gaza designed for productivity, connection, and comfort.",
     "viewAll": "View all locations",
     "verified": "Verified",
-    "exploreSpace": "Explore Space"
+    "exploreSpace": "Explore Space",
+    "am": "AM",
+    "pm": "PM"
   },
   "FeaturedHubs": {
     "title": "Featured Hubs",
@@ -92,7 +94,9 @@
     "recentlyAdded": "Recently Added",
     "noHubsFound": "No hubs found",
     "noHubsTry": "Try adjusting your filters or search query",
-    "clearFilters": "Clear All Filters"
+    "clearFilters": "Clear All Filters",
+    "am": "AM",
+    "pm": "PM"
   },
   "SignIn": {
     "welcomeBack": "Welcome back",
@@ -232,7 +236,13 @@
       "deleteHubDesc": "Are you sure you want to delete this hub? This action cannot be undone.",
       "deleting": "Deleting...",
       "confirmDelete": "Confirm Delete",
-      "cancel": "Cancel"
+      "cancel": "Cancel",
+      "workingHours": "Operating Hours",
+      "openingTime": "Opening Time",
+      "closingTime": "Closing Time",
+      "am": "AM",
+      "pm": "PM",
+      "save": "Save"
     },
     "services": {
       "currentTitle": "Current Hub Services",
@@ -348,7 +358,13 @@
     "area": "Area",
     "selectArea": "Select Area",
     "loadingData": "Loading hub details...",
-    "successMessage": "Hub created successfully!"
+    "successMessage": "Hub created successfully!",
+    "workingHours": "Operating Hours",
+    "openingTime": "Opening Time",
+    "closingTime": "Closing Time",
+    "am": "AM",
+    "pm": "PM",
+    "selectHour": "Select Hour"
   },
   "AdminNotifications": {
     "title": "Platform Notifications",

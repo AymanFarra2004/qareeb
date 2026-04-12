@@ -50,7 +50,9 @@
     "description": "اكتشف أفضل المساحات عبر قطاع غزة المصممة للإنتاجية والتواصل والراحة.",
     "viewAll": "عرض جميع المواقع",
     "verified": "موثق",
-    "exploreSpace": "استكشف المكان"
+    "exploreSpace": "استكشف المكان",
+    "am": "صباحاً",
+    "pm": "مساءً"
   },
   "FeaturedHubs": {
     "title": "المراكز المميزة",
@@ -92,7 +94,9 @@
     "recentlyAdded": "المضافة حديثاً",
     "noHubsFound": "لم يتم العثور على مراكز",
     "noHubsTry": "جرب تعديل الفلاتر أو استعلام البحث",
-    "clearFilters": "مسح جميع الفلاتر"
+    "clearFilters": "مسح جميع الفلاتر",
+    "am": "صباحاً",
+    "pm": "مساءً"
   },
   "SignIn": {
     "welcomeBack": "مرحباً بعودتك",
@@ -232,7 +236,13 @@
       "deleteHubDesc": "هل أنت متأكد من حذف هذا المركز؟ لا يمكن التراجع عن هذا الإجراء.",
       "deleting": "جارٍ الحذف...",
       "confirmDelete": "تأكيد الحذف",
-      "cancel": "إلغاء"
+      "cancel": "إلغاء",
+      "workingHours": "ساعات العمل",
+      "openingTime": "وقت الافتتاح",
+      "closingTime": "وقت الإغلاق",
+      "am": "صباحاً",
+      "pm": "مساءً",
+      "save": "حفظ"
     },
     "services": {
       "currentTitle": "الخدمات الحالية للمركز",
@@ -348,7 +358,13 @@
     "area": "المنطقة",
     "selectArea": "اختر المنطقة",
     "loadingData": "جارٍ تحميل تفاصيل المركز...",
-    "successMessage": "تم إنشاء المركز بنجاح!"
+    "successMessage": "تم إنشاء المركز بنجاح!",
+    "workingHours": "ساعات العمل",
+    "openingTime": "وقت الافتتاح",
+    "closingTime": "وقت الإغلاق",
+    "am": "صباحاً",
+    "pm": "مساءً",
+    "selectHour": "اختر الساعة"
   },
   "AdminNotifications": {
     "title": "إشعارات المنصة",

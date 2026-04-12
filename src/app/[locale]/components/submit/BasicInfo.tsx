@@ -87,6 +87,42 @@ const BasicInfo = () => {
           />
         </div>
       </div>
+
+      <div className="space-y-4">
+        <h3 className="text-sm font-bold text-foreground uppercase tracking-wider">{t("workingHours")}</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="p-4 border border-input rounded-xl bg-muted/5">
+            <label className="block text-xs font-semibold text-muted-foreground uppercase mb-2">{t("openingTime")}</label>
+            <div className="flex gap-2">
+              <select name="start_hour" required className="flex-1 rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
+                <option value="">{t("selectHour")}</option>
+                {[...Array(12)].map((_, i) => (
+                  <option key={i+1} value={i+1}>{String(i+1).padStart(2, '0')}</option>
+                ))}
+              </select>
+              <select name="start_period" required className="rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
+                <option value="AM">{t("am")}</option>
+                <option value="PM">{t("pm")}</option>
+              </select>
+            </div>
+          </div>
+          <div className="p-4 border border-input rounded-xl bg-muted/5">
+            <label className="block text-xs font-semibold text-muted-foreground uppercase mb-2">{t("closingTime")}</label>
+            <div className="flex gap-2">
+              <select name="end_hour" required className="flex-1 rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
+                <option value="">{t("selectHour")}</option>
+                {[...Array(12)].map((_, i) => (
+                  <option key={i+1} value={i+1}>{String(i+1).padStart(2, '0')}</option>
+                ))}
+              </select>
+              <select name="end_period" required className="rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
+                <option value="AM">{t("am")}</option>
+                <option value="PM">{t("pm")}</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
     </section>
   );
 };

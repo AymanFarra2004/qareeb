@@ -1,10 +1,11 @@
 import { getAdminNotifications } from "@/src/actions/admin";
 import NotificationsList from "./NotificationsList";
-import { getTranslations } from "next-intl/server";
+import { getTranslations, getLocale } from "next-intl/server";
 
 export default async function AdminNotificationsPage() {
+  const locale = await getLocale();
   const t = await getTranslations("AdminNotifications");
-  const res = await getAdminNotifications();
+  const res = await getAdminNotifications(locale);
   
   let notifications = res.data || [];
   if (!Array.isArray(notifications)) {

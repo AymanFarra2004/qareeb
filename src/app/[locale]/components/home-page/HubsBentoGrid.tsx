@@ -1,22 +1,26 @@
 "use client";
 
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { motion } from "framer-motion";
 import { MapPin, Zap, Clock } from "lucide-react";
+import { format24to12 } from "@/src/lib/utils";
 
 export default function HubsBentoGrid({ filter, hubs = [] }: { filter: { governorate: string, service: string }, hubs?: any[] }) {
   const t = useTranslations("HubsGrid");
+  const locale = useLocale();
 
   const mappedHubs = hubs.map(apiHub => ({
     id: String(apiHub.id),
     slug: apiHub.slug,
-    name: apiHub.name?.en || apiHub.name?.ar || apiHub.name || "Unknown Hub",
-    description: apiHub.description?.en || apiHub.description?.ar || apiHub.description || "No description",
-    location: apiHub.address_details?.en || apiHub.address_details?.ar || apiHub.address_details || "Unknown",
+    name: typeof apiHub.name === 'string' ? apiHub.name : (apiHub.name?.[locale] || apiHub.name?.en || apiHub.name?.ar || "Unknown Hub"),
+    description: typeof apiHub.description === 'string' ? apiHub.description : (apiHub.description?.[locale] || apiHub.description?.en || apiHub.description?.ar || "No description"),
+    location: typeof apiHub.address_details === 'string' ? apiHub.address_details : (apiHub.address_details?.[locale] || apiHub.address_details?.en || apiHub.address_details?.ar || "Unknown"),
     governorate: apiHub.location?.name || "Gaza",
     pricing: apiHub.pricing || "Free",
-    operatingHours: "24/7",
-    services: Array.isArray(apiHub.services) ? apiHub.services.map((s: any) => s.name?.en || s.name) : [],
+    operatingHours: apiHub.working_hours 
+      ? `${format24to12(apiHub.working_hours.start, t("am"), t("pm"))} - ${format24to12(apiHub.working_hours.end, t("am"), t("pm"))}`
+      : apiHub.operating_hours || "Contact for hours",
+    services: Array.isArray(apiHub.services) ? apiHub.services.map((s: any) => typeof s.name === 'string' ? s.name : (s.name?.[locale] || s.name?.en || s.name)) : [],
     imageUrl: apiHub.images?.main ?
       (apiHub.images.main.startsWith('http') ? apiHub.images.main : `https://karam.idreis.net${apiHub.images.main.startsWith('/') ? '' : '/'}${apiHub.images.main}`)
       : "https://placehold.co/600x400?text=No+Image",

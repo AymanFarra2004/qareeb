@@ -3,9 +3,11 @@ import { HubCard } from "../components/dashboard/HubCard";
 import { Link } from "@/src/i18n/routing";
 import { PlusCircle, Wifi } from "lucide-react";
 import { getTranslations } from "next-intl/server";
+import { getLocale } from "next-intl/server";
 
 export default async function DashboardOverviewPage() {
-  const { data: hubs, error } = await getMyHubs();
+  const locale = await getLocale();
+  const { data: hubs, error } = await getMyHubs(locale);
   const t = await getTranslations("Dashboard");
 
   return (

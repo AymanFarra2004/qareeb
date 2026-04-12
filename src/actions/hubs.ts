@@ -2,13 +2,20 @@
 
 import { cookies } from "next/headers";
 import { revalidatePath, revalidateTag } from "next/cache";
+import { format12to24 } from "../lib/utils";
 
-const API_BASE_URL = "https://karam.idreis.net/api/v1"; 
+const API_BASE_URL = "https://karam.idreis.net/api/v1";
+
+// Map next-intl locale codes to API lang query params
+function getLangParam(locale: string = "ar"): string {
+  return `lang=${locale === 'en' ? 'en' : 'ar'}`;
+}
 // Using v1 as confirmed manually; the POST endpoints for services likely need backend route matching verification
 
-export async function getAllHubs() {
+export async function getAllHubs(locale: string = "ar") {
   try {
-    const res = await fetch(`${API_BASE_URL}/front/hubs`, {
+    const langParam = getLangParam(locale);
+    const res = await fetch(`${API_BASE_URL}/front/hubs?${langParam}`, {
       method: "GET",
       headers: { "Accept": "application/json" },
       next: { tags: ['all-hubs'], revalidate: 0 }
@@ -28,7 +35,7 @@ export async function getAllHubs() {
   }
 }
 
-export async function getMyHubs() {
+export async function getMyHubs(locale: string = "ar") {
   const cookieStore = await cookies();
   const token = cookieStore.get("token")?.value;
 
@@ -37,7 +44,8 @@ export async function getMyHubs() {
   }
 
   try {
-    const res = await fetch(`${API_BASE_URL}/hubs/my`, {
+    const langParam = getLangParam(locale);
+    const res = await fetch(`${API_BASE_URL}/hubs/my?${langParam}`, {
       method: "GET",
       headers: {
         "Accept": "application/json",
@@ -64,13 +72,14 @@ export async function getMyHubs() {
   }
 }
 
-export async function getHubBySlug(slugOrId: string) {
+export async function getHubBySlug(slugOrId: string, locale: string = "ar") {
   const cookieStore = await cookies();
   const token = cookieStore.get("token")?.value;
   if (!token) return { error: "Unauthenticated", data: null };
 
   try {
-    const res = await fetch(`${API_BASE_URL}/front/hubs/${slugOrId}`, {
+    const langParam = getLangParam(locale);
+    const res = await fetch(`${API_BASE_URL}/front/hubs/${slugOrId}?${langParam}`, {
       method: "GET",
       headers: {
         "Accept": "application/json",
@@ -91,7 +100,7 @@ export async function getHubBySlug(slugOrId: string) {
     }
 
     // Fallback: If it's a 404 (possibly due to global scope 'approved' hiding pending hubs), use getMyHubs
-    const myHubsRes = await getMyHubs();
+    const myHubsRes = await getMyHubs(locale);
     if (myHubsRes.success && myHubsRes.data) {
        const found = myHubsRes.data.find((h: any) => String(h.id) === String(slugOrId) || String(h.slug) === String(slugOrId));
        if (found) {
@@ -130,6 +139,7 @@ export async function createHub(prevState: any, formData: FormData) {
         en: name_en,
         ar: name_ar || name_en,
       },
+      working_hours: {} as any, // Initialize
       description: {
         en: formData.get("description_en") as string || "",
         ar: formData.get("description_ar") as string || "",
@@ -142,6 +152,26 @@ export async function createHub(prevState: any, formData: FormData) {
       location_id: location_id,
       social_accounts: [] as any[],
     };
+
+    // Handle working hours (mandatory)
+    const startHour = formData.get("start_hour");
+    const startPeriod = formData.get("start_period") as string;
+    const endHour = formData.get("end_hour");
+    const endPeriod = formData.get("end_period") as string;
+
+    if (startHour && startPeriod && endHour && endPeriod) {
+      const start24 = format12to24(Number(startHour), startPeriod);
+      const end24 = format12to24(Number(endHour), endPeriod);
+      
+      payload.working_hours = {
+        start: start24,
+        end: end24
+      };
+      
+      // Flat keys fallback as indicated by the Arabic error message " الحقل working hours start مطلوب "
+      payload.working_hours_start = start24;
+      payload.working_hours_end = end24;
+    }
 
     if (hourly_price !== undefined && !isNaN(hourly_price)) {
       payload.hourly_price = hourly_price;
@@ -185,7 +215,8 @@ export async function createHub(prevState: any, formData: FormData) {
     if (xUrl) payload.social_accounts.push({ platform: "twitter", url: xUrl });
 
     // ─── Step 1: Create hub with JSON (text fields only) ───────────────────────
-    const res = await fetch(`${API_BASE_URL}/hubs`, {
+    const langParam = getLangParam();
+    const res = await fetch(`${API_BASE_URL}/hubs?${langParam}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -263,7 +294,7 @@ export async function createHub(prevState: any, formData: FormData) {
 
 // ============== SERVICES ==============
 
-export async function getAllServices() {
+export async function getAllServices(locale: string = "ar") {
   try {
     const cookieStore = await cookies();
     const token = cookieStore.get("token")?.value;
@@ -271,7 +302,8 @@ export async function getAllServices() {
     const headers: Record<string, string> = { "Accept": "application/json" };
     if (token) headers["Authorization"] = `Bearer ${token}`;
     
-    const res = await fetch(`${API_BASE_URL}/services`, {
+    const langParam = getLangParam(locale);
+    const res = await fetch(`${API_BASE_URL}/services?${langParam}`, {
       method: "GET",
       headers,
       next: { tags: ["services"], revalidate: 60 }
@@ -318,13 +350,14 @@ export async function createService(prevState: any, formData: FormData) {
   }
 }
 
-export async function getHubServices(slug: string) {
+export async function getHubServices(slug: string, locale: string = "ar") {
   const cookieStore = await cookies();
   const token = cookieStore.get("token")?.value;
   if (!token) return { error: "Unauthenticated", data: [] };
 
   try {
-    const res = await fetch(`${API_BASE_URL}/hubs/${slug}/services`, {
+    const langParam = getLangParam(locale);
+    const res = await fetch(`${API_BASE_URL}/hubs/${slug}/services?${langParam}`, {
       method: "GET",
       headers: { 
         "Accept": "application/json", 
@@ -409,13 +442,14 @@ export async function deleteCustomService(hubSlug: string, serviceId: number) {
 }
 
 
-export async function getProfile() {
+export async function getProfile(locale: string = "ar") {
   const cookieStore = await cookies();
   const token = cookieStore.get("token")?.value;
   if (!token) return { error: "Unauthenticated", data: null };
 
   try {
-    const res = await fetch(`${API_BASE_URL}/profile`, {
+    const langParam = getLangParam(locale);
+    const res = await fetch(`${API_BASE_URL}/profile?${langParam}`, {
       method: "GET",
       headers: { "Accept": "application/json", "Authorization": `Bearer ${token}` },
       next: { revalidate: 60 }
@@ -429,13 +463,14 @@ export async function getProfile() {
 
 // ============== OFFERS ==============
 
-export async function getHubOffers(hubSlug: string) {
+export async function getHubOffers(hubSlug: string, locale: string = "ar") {
   const cookieStore = await cookies();
   const token = cookieStore.get("token")?.value;
   if (!token) return { error: "Unauthenticated", data: [] };
 
   try {
-    const res = await fetch(`${API_BASE_URL}/hubs/${hubSlug}/offers`, {
+    const langParam = getLangParam(locale);
+    const res = await fetch(`${API_BASE_URL}/hubs/${hubSlug}/offers?${langParam}`, {
       headers: { Authorization: `Bearer ${token}`, "Accept": "application/json" },
       next: { tags: [`offers-${hubSlug}`], revalidate: 0 }
     });
@@ -486,14 +521,15 @@ export async function addHubOffer(hubSlug: string, prevState: any, formData: For
 
 // ============== SOCIALS ==============
 
-export async function getHubSocials(hubId: string) {
+export async function getHubSocials(hubId: string, locale: string = "ar") {
   const cookieStore = await cookies();
   const token = cookieStore.get("token")?.value;
   if (!token) return { error: "Unauthenticated", data: [] };
 
   try {
-    const res = await fetch(`${API_BASE_URL}/hubs/${hubId}/social-accounts`, {
-      headers: { Authorization: `Bearer ${token}` },
+    const langParam = getLangParam(locale);
+    const res = await fetch(`${API_BASE_URL}/hubs/${hubId}/social-accounts?${langParam}`, {
+      headers: { Authorization: `Bearer ${token}`, "Accept": "application/json" },
       next: { tags: [`socials-${hubId}`], revalidate: 0 }
     });
     const result = await res.json();
@@ -541,8 +577,9 @@ export async function updateHub(slug: string, prevState: any, formData: FormData
     
     // Extract textual JSON payload
     Array.from(formData.entries()).forEach(([key, value]) => {
-      // Skip files for the JSON request
+      // Skip files and temporary UI fields for the JSON request
       if (value instanceof File) return; 
+      if (["start_hour", "start_period", "end_hour", "end_period"].includes(key)) return;
 
       if (key === "service_ids" || key === "service_ids[]") {
         if (!payload["service_ids"]) payload["service_ids"] = [];
@@ -557,6 +594,25 @@ export async function updateHub(slug: string, prevState: any, formData: FormData
         payload[key] = value;
       }
     });
+
+    // Handle working hours specifically if present
+    const startHour = formData.get("start_hour");
+    const startPeriod = formData.get("start_period") as string;
+    const endHour = formData.get("end_hour");
+    const endPeriod = formData.get("end_period") as string;
+
+    if (startHour && startPeriod && endHour && endPeriod) {
+      const start24 = format12to24(Number(startHour), startPeriod);
+      const end24 = format12to24(Number(endHour), endPeriod);
+      
+      payload.working_hours = {
+        start: start24,
+        end: end24
+      };
+      
+      payload.working_hours_start = start24;
+      payload.working_hours_end = end24;
+    }
 
     // Handle custom services if present in formData
     const customNameEn = formData.get("custom_service_en") as string;
@@ -578,7 +634,8 @@ export async function updateHub(slug: string, prevState: any, formData: FormData
     }
 
     // --- Step 1: Send JSON data ---
-    const jsonRes = await fetch(`${API_BASE_URL}/hubs/${slug}`, {
+    const langParam = getLangParam();
+    const jsonRes = await fetch(`${API_BASE_URL}/hubs/${slug}?${langParam}`, {
       method: "PUT", 
       headers: {
         "Accept": "application/json",

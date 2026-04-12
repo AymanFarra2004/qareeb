@@ -1,9 +1,10 @@
 import { getAllServices } from "@/src/actions/hubs";
 import ServicesList from "./ServicesList";
-import { getTranslations } from "next-intl/server";
+import { getTranslations, getLocale } from "next-intl/server";
 
 export default async function AdminServicesPage() {
-  const res = await getAllServices();
+  const locale = await getLocale();
+  const res = await getAllServices(locale);
   const t = await getTranslations("AdminServices");
   
   const services = res.data || [];

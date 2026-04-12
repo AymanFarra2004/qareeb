@@ -2,9 +2,11 @@ import { Header } from "@/components/header/Header";
 import ModernHomeView from "./components/home-page/ModernHomeView";
 import { Footer } from "@/components/footer/Footer";
 import { getAllHubs } from "@/src/actions/hubs";
+import { getLocale } from "next-intl/server";
 
 export default async function Home() {
-  const res = await getAllHubs();
+  const locale = await getLocale();
+  const res = await getAllHubs(locale);
   let hubs = res.data || [];
   if (!Array.isArray(hubs)) hubs = [];
 

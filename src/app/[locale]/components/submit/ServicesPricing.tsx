@@ -14,14 +14,14 @@ const ServicesPricing = () => {
 
   useEffect(() => {
     async function fetchServices() {
-      const res = await getAllServices();
+      const res = await getAllServices(locale);
       if (res.success) {
         setGlobalServices(res.data);
       }
       setLoading(false);
     }
     fetchServices();
-  }, []);
+  }, [locale]);
 
   return (
     <section className="space-y-6">
@@ -89,7 +89,7 @@ const ServicesPricing = () => {
                 className="flex items-center space-x-2 rtl:space-x-reverse border border-border p-3 rounded-lg cursor-pointer hover:bg-muted transition-colors has-[:checked]:border-primary has-[:checked]:bg-primary/5"
               >
                 <input name="service_ids" value={service.id} type="checkbox" className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary" />
-                <span className="text-sm font-medium">{service.name?.[locale] || service.name?.en || service.name}</span>
+                <span className="text-sm font-medium">{typeof service.name === 'string' ? service.name : (service.name?.[locale] || service.name?.en || service.name)}</span>
               </label>
             ))}
             
