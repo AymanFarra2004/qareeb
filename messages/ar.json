@@ -96,7 +96,9 @@
     "noHubsTry": "جرب تعديل الفلاتر أو استعلام البحث",
     "clearFilters": "مسح جميع الفلاتر",
     "am": "صباحاً",
-    "pm": "مساءً"
+    "pm": "مساءً",
+    "previous": "السابق",
+    "next": "التالي"
   },
   "SignIn": {
     "welcomeBack": "مرحباً بعودتك",
@@ -181,7 +183,8 @@
     "deleteServiceDesc": "لا يمكن التراجع عن هذا الإجراء. سيتم إزالة الخدمة نهائياً من النظام.",
     "confirmDelete": "تأكيد الحذف",
     "globalServicesTitle": "الخدمات العامة",
-    "globalServicesDesc": "إدارة الخدمات المتاحة لجميع المراكز."
+    "globalServicesDesc": "إدارة الخدمات المتاحة لجميع المراكز.",
+    "cancel": "إلغاء"
   },
   "Dashboard": {
     "myHubs": "مراكزي",
@@ -308,7 +311,11 @@
       "save": "حفظ التغييرات",
       "noImages": "لا توجد صور. قم بإسقاط بعض الصور هنا!",
       "total": "الإجمالي",
-      "setMain": "تعيين كرئيسية"
+      "setMain": "تعيين كرئيسية",
+      "dropzonePrimary": "الصورة الرئيسية",
+      "dropzoneSecondary": "صور المعرض",
+      "cancel": "إلغاء",
+      "remove": "إزالة"
     }
   },
   "NewHub": {

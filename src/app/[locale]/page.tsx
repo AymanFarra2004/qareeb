@@ -3,6 +3,8 @@ import ModernHomeView from "./components/home-page/ModernHomeView";
 import { Footer } from "@/components/footer/Footer";
 import { getAllHubs } from "@/src/actions/hubs";
 import { getLocale } from "next-intl/server";
+// import APITest from "@/API tests/APITest";
+
 
 export default async function Home() {
   const locale = await getLocale();

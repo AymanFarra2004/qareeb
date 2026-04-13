@@ -27,7 +27,8 @@ export default function HubsBentoGrid({ filter, hubs = [] }: { filter: { governo
       : "https://placehold.co/600x400?text=No+Image",
     verificationStatus: apiHub.status === "approved" ? "Verified" : "Pending",
     contact: { contactNumber: apiHub.contact || "" },
-    activeOffer: (apiHub.hasOffer || apiHub.offers) && Array.isArray(apiHub.hasOffer || apiHub.offers) && (apiHub.hasOffer || apiHub.offers).length > 0 ? (apiHub.hasOffer || apiHub.offers)[0] : null,
+    activeOffer: apiHub.offers,
+    // activeOffer: (apiHub.offers || apiHub.offers) && Array.isArray(apiHub.offers || apiHub.offers) && (apiHub.offers || apiHub.offers).length > 0 ? (apiHub.offers || apiHub.offers)[0] : null,
   }));
 
   // Only show approved hubs in the featured grid

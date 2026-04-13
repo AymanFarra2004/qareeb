@@ -96,7 +96,9 @@
     "noHubsTry": "Try adjusting your filters or search query",
     "clearFilters": "Clear All Filters",
     "am": "AM",
-    "pm": "PM"
+    "pm": "PM",
+    "previous": "Previous",
+    "next": "Next"
   },
   "SignIn": {
     "welcomeBack": "Welcome back",
@@ -181,7 +183,8 @@
     "deleteServiceDesc": "This action cannot be undone. This will permanently remove the service from the system.",
     "confirmDelete": "Confirm Delete",
     "globalServicesTitle": "Global Services",
-    "globalServicesDesc": "Manage the services available to all hubs."
+    "globalServicesDesc": "Manage the services available to all hubs.",
+    "cancel": "Cancel"
   },
   "Dashboard": {
     "myHubs": "My Hubs",
@@ -308,7 +311,11 @@
       "save": "Save Changes",
       "noImages": "No images found. Drop some above!",
       "total": "Total",
-      "setMain": "Set Main"
+      "setMain": "Set Main",
+      "dropzonePrimary": "Main Image",
+      "dropzoneSecondary": "Gallery Images",
+      "cancel": "Cancel",
+      "remove": "Remove"
     }
   },
   "NewHub": {

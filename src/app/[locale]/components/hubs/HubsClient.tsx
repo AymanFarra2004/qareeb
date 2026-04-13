@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Filter, Search, MapPin, Zap, Wifi, X } from "lucide-react";
 import { HubCard } from "../general/HubCard";
 import { useTranslations } from "next-intl";
@@ -16,6 +16,9 @@ export default function HubsClient({ hubs }: HubsClientProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedGovernorates, setSelectedGovernorates] = useState<string[]>([]);
   const [selectedServices, setSelectedServices] = useState<string[]>([]);
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 9;
 
   // Fixed standard Gaza governorates with translations
   const governorateOptions = [
@@ -89,6 +92,16 @@ export default function HubsClient({ hubs }: HubsClientProps) {
       return true;
     });
   }, [hubs, searchQuery, selectedGovernorates, selectedServices]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, selectedGovernorates, selectedServices]);
+
+  const totalPages = Math.ceil(filteredHubs.length / itemsPerPage);
+  const paginatedHubs = filteredHubs.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
 
   return (
     <div className="flex flex-col lg:flex-row gap-8">
@@ -193,11 +206,43 @@ export default function HubsClient({ hubs }: HubsClientProps) {
           </select>
         </div>
 
-        {filteredHubs.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-            {filteredHubs.map((hub: any) => (
-              <HubCard key={hub.id} hub={hub} />
-            ))}
+        {paginatedHubs.length > 0 ? (
+          <div>
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+              {paginatedHubs.map((hub: any) => (
+                <HubCard key={hub.id} hub={hub} />
+              ))}
+            </div>
+
+            {totalPages > 1 && (
+              <div className="flex justify-center items-center gap-2 mt-8">
+                <button
+                  onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                  disabled={currentPage === 1}
+                  className="px-4 py-2 border border-input bg-background rounded-md text-sm font-medium hover:bg-muted disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  {t("previous", { fallback: "Previous" })}
+                </button>
+                <div className="flex flex-wrap gap-1">
+                  {Array.from({ length: totalPages }).map((_, i) => (
+                    <button
+                      key={i}
+                      onClick={() => setCurrentPage(i + 1)}
+                      className={`w-8 h-8 flex items-center justify-center rounded-md text-sm font-medium transition-colors ${currentPage === i + 1 ? 'bg-primary text-primary-foreground' : 'hover:bg-muted bg-background border border-input'}`}
+                    >
+                      {i + 1}
+                    </button>
+                  ))}
+                </div>
+                <button
+                  onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                  disabled={currentPage === totalPages}
+                  className="px-4 py-2 border border-input bg-background rounded-md text-sm font-medium hover:bg-muted disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  {t("next", { fallback: "Next" })}
+                </button>
+              </div>
+            )}
           </div>
         ) : (
           <div className="py-20 text-center border border-dashed border-border rounded-2xl bg-muted/10">

@@ -15,7 +15,7 @@ function getLangParam(locale: string = "ar"): string {
 export async function getAllHubs(locale: string = "ar") {
   try {
     const langParam = getLangParam(locale);
-    const res = await fetch(`${API_BASE_URL}/front/hubs?${langParam}`, {
+    const res = await fetch(`${API_BASE_URL}/front/hubs?${langParam}&per_page=1000`, {
       method: "GET",
       headers: { "Accept": "application/json" },
       next: { tags: ['all-hubs'], revalidate: 0 }
