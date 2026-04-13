@@ -145,6 +145,13 @@
     "returnHome": "العودة إلى الرئيسية",
     "admin": "الإدارة"
   },
+  "AdminHeader": {
+    "adminPanel": "لوحة التحكم للمسؤول",
+    "home": "العودة للموقع",
+    "signOut": "تسجيل الخروج",
+    "toggleTheme": "تغيير المظهر",
+    "switchLanguage": "التبديل إلى الإنجليزية"
+  },
   "AdminHubsTable": {
     "pendingApprovals": "الموافقات المعلقة",
     "activeHubs": "المراكز النشطة",
@@ -203,8 +210,11 @@
     "signOut": "تسجيل الخروج"
   },
   "DashboardHeader": {
+    "home": "الرئيسية",
     "dashboard": "لوحة التحكم",
-    "signOut": "تسجيل الخروج"
+    "signOut": "تسجيل الخروج",
+    "toggleTheme": "تغيير المظهر",
+    "switchLanguage": "التبديل إلى الإنجليزية"
   },
   "DashboardHubCard": {
     "noImage": "لا توجد صورة",

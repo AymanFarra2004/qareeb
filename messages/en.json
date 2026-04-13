@@ -145,6 +145,13 @@
     "returnHome": "Return to Home",
     "admin": "Admin"
   },
+  "AdminHeader": {
+    "adminPanel": "Admin Panel",
+    "home": "Return to Site",
+    "signOut": "Sign Out",
+    "toggleTheme": "Toggle theme",
+    "switchLanguage": "Switch to Arabic"
+  },
   "AdminHubsTable": {
     "pendingApprovals": "Pending Approvals",
     "activeHubs": "Active Hubs",
@@ -203,8 +210,11 @@
     "signOut": "Sign Out"
   },
   "DashboardHeader": {
+    "home": "Home",
     "dashboard": "Dashboard",
-    "signOut": "Sign Out"
+    "signOut": "Sign Out",
+    "toggleTheme": "Toggle theme",
+    "switchLanguage": "Switch to Arabic"
   },
   "DashboardHubCard": {
     "noImage": "No Image",

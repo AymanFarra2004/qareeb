@@ -1,33 +1,29 @@
 "use client";
 
-import { Menu, Bell, User, LogOut, ChevronDown, Home, Sun, Moon, Languages } from "lucide-react";
-import { useState, useEffect } from "react";
-import { useDispatch } from "react-redux";
+import { Menu, Bell, User, LogOut, ChevronDown, Home, Sun, Moon, Languages, Shield } from "lucide-react";
+import { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { logout } from "@/src/store/authSlice";
 import { logoutUser } from "@/src/actions/auth";
 import { useRouter, Link, usePathname } from "@/src/i18n/routing";
 import { useTranslations, useLocale } from "next-intl";
 import { useTheme } from "next-themes";
 
-export function DashboardHeader() {
+interface AdminHeaderProps {
+  onMenuClick: () => void;
+}
+
+export function AdminHeader({ onMenuClick }: AdminHeaderProps) {
   const [showMenu, setShowMenu] = useState(false);
-  const [userName, setUserName] = useState("User");
   const dispatch = useDispatch();
   const router = useRouter();
   const pathname = usePathname();
   const locale = useLocale();
   const { setTheme, theme } = useTheme();
-  const t = useTranslations("DashboardHeader");
-
-  useEffect(() => {
-    try {
-      const raw = document.cookie.split(';').find(c => c.trim().startsWith('user='));
-      if (raw) {
-        const user = JSON.parse(decodeURIComponent(raw.split('=').slice(1).join('=')));
-        setUserName(user.name || "User");
-      }
-    } catch {}
-  }, []);
+  const t = useTranslations("AdminHeader");
+  
+  const auth = useSelector((state: any) => state.auth);
+  const userName = auth?.user?.name || "Admin";
 
   const handleSignOut = async () => {
     await logoutUser();
@@ -44,7 +40,10 @@ export function DashboardHeader() {
   return (
     <header className="h-16 border-b border-border bg-background/80 backdrop-blur-md sticky top-0 z-30 flex items-center justify-between px-4 sm:px-6">
       <div className="flex items-center gap-2 sm:gap-4">
-        <button className="md:hidden p-2 text-muted-foreground hover:bg-muted rounded-lg transition-colors">
+        <button 
+          onClick={onMenuClick}
+          className="md:hidden p-2 text-muted-foreground hover:bg-muted rounded-lg transition-colors"
+        >
           <Menu className="h-5 w-5" />
         </button>
         <div className="flex items-center gap-1 sm:gap-2">
@@ -57,7 +56,10 @@ export function DashboardHeader() {
             <span className="hidden sm:inline-block">{t("home")}</span>
           </Link>
           <div className="h-4 w-px bg-border mx-0.5 sm:mx-1"></div>
-          <h1 className="text-base sm:text-lg font-semibold text-foreground truncate max-w-[100px] sm:max-w-none">{t("dashboard")}</h1>
+          <div className="flex items-center gap-1.5 px-2">
+            <Shield className="h-4 w-4 text-primary" />
+            <h1 className="text-base sm:text-lg font-semibold text-foreground truncate max-w-[100px] sm:max-w-none">{t("adminPanel")}</h1>
+          </div>
         </div>
       </div>
 
@@ -101,6 +103,10 @@ export function DashboardHeader() {
 
           {showMenu && (
             <div className="absolute right-0 rtl:left-0 rtl:right-auto mt-2 w-48 bg-background border border-border rounded-xl shadow-lg py-1 z-50">
+              <div className="px-4 py-2 border-b border-border mb-1">
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Administrator</p>
+                <p className="text-sm font-medium text-foreground truncate">{userName}</p>
+              </div>
               <button 
                 onClick={handleSignOut}
                 className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 transition-colors"
