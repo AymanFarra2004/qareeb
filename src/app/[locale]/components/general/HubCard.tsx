@@ -115,11 +115,15 @@ export function HubCard({ hub }: IHubCardProps) {
         </p>
         
         <div className="flex flex-col gap-2 text-sm">
-          {hub.pricing && (
+          {hub.pricing !== undefined && hub.pricing !== null && (
             <div className="flex items-center text-foreground font-medium">
-              <span className="text-primary font-bold mr-1">{hub.pricing.split('/')[0]}</span>
-              {hub.pricing.includes('/') && (
-                <span className="text-muted-foreground font-normal">/{hub.pricing.split('/').slice(1).join('/')}</span>
+              {String(hub.pricing).toLowerCase() === "free" ? (
+                <span className="text-primary font-bold mr-1">{hub.pricing}</span>
+              ) : (
+                <>
+                  <span className="text-primary font-bold mr-1">₪{hub.pricing}</span>
+                  <span className="text-muted-foreground font-normal">/hour</span>
+                </>
               )}
             </div>
           )}

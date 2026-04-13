@@ -26,7 +26,7 @@ export default async function HubsDirectory() {
     location: typeof apiHub.address_details === 'string' ? apiHub.address_details : (apiHub.address_details?.[locale] || apiHub.address_details?.en || apiHub.address_details?.ar || "Unknown"),
     locationId: apiHub.location_id || apiHub.location?.id || null,
     governorate: apiHub.location?.name || "Gaza",
-    pricing: apiHub.pricing || "Free",
+    pricing: apiHub.hourly_price || "Free",
     operatingHours: apiHub.working_hours 
       ? `${format24to12(apiHub.working_hours.start, t("am"), t("pm"))} - ${format24to12(apiHub.working_hours.end, t("am"), t("pm"))}`
       : apiHub.operating_hours || "Contact for hours",
