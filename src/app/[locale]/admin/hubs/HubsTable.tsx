@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { updateHubStatus } from "@/src/actions/admin";
-import { Loader2, Check, X, Clock, ShieldCheck, ShieldAlert, Box } from "lucide-react";
+import { Loader2, Check, X, Clock, ShieldCheck, ShieldAlert, Box, ExternalLink, Eye } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { toast } from "react-hot-toast";
 import { useTranslations, useLocale } from "next-intl";
@@ -172,6 +173,31 @@ export default function HubsTable({ initialHubs }: { initialHubs: any[] }) {
                         <div className="flex justify-end pr-8"><Loader2 className="h-5 w-5 animate-spin text-muted-foreground" /></div>
                       ) : (
                         <div className="flex justify-end gap-2">
+                           {/* View Hub — conditional link */}
+                           {hub.slug && (
+                             isApproved ? (
+                               <Link
+                                 href={`/${locale}/hubs/${hub.slug}`}
+                                 target="_blank"
+                                 rel="noopener noreferrer"
+                                 title={t("view_live")}
+                                 className="flex items-center gap-1.5 px-3 py-2 border border-border text-muted-foreground hover:text-foreground hover:bg-muted/40 rounded-xl transition-all font-semibold text-xs"
+                               >
+                                 <ExternalLink className="h-3.5 w-3.5" />
+                                 {t("view_live")}
+                               </Link>
+                             ) : (
+                               <Link
+                                 href={`/${locale}/admin/hubs/${hub.slug}/preview`}
+                                 title={t("view_preview")}
+                                 className="flex items-center gap-1.5 px-3 py-2 border border-border text-muted-foreground hover:text-foreground hover:bg-muted/40 rounded-xl transition-all font-semibold text-xs"
+                               >
+                                 <Eye className="h-3.5 w-3.5" />
+                                 {t("view_preview")}
+                               </Link>
+                             )
+                           )}
+
                            {(isPending || isRejected) && (
                              <button 
                                 onClick={() => handleStatusChange(hub.id, hub.slug, 'approved')}
