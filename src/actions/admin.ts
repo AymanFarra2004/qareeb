@@ -118,8 +118,8 @@ export async function updateHubStatus(slugOrId: string, status: string, rejectio
       revalidatePath('/hubs');
       revalidatePath('/[locale]/hubs', 'page');
       revalidatePath('/', 'layout');
-      revalidateTag('admin-hubs');
-      revalidateTag('all-hubs');
+      revalidateTag('admin-hubs', 'layout');
+      revalidateTag('all-hubs', 'layout');
       return { success: true, message: "Status updated" };
     }
     return { error: result.message || "Failed" };
