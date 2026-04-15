@@ -105,7 +105,7 @@ export async function updateHubStatus(slugOrId: string, status: string, rejectio
       const retryResult = await retryRes.json();
       if (retryRes.ok) {
         revalidatePath('/', 'layout');
-        revalidateTag('all-hubs');
+        revalidateTag('all-hubs', 'layout');
         return { success: true, message: "Status updated" };
       }
       return { error: retryResult.message || "Failed" };
