@@ -987,7 +987,10 @@ export async function getMyHubReview(hubSlug: string) {
   }
 }
 
-/** Create (POST) or update (PUT) the authenticated user's review for a hub */
+/** Create (POST) or update (PUT) the authenticated user's review for a hub.
+ *  Only includes `comment` in the body when it is non-empty to avoid backend validation errors.
+ *  `isUpdate` must be explicitly `true` (passed by the caller who knows the user already has a review).
+ */
 export async function submitHubReview(hubSlug: string, rating: number, comment: string, isUpdate = false) {
   const cookieStore = await cookies();
   const token = cookieStore.get("token")?.value;
@@ -995,6 +998,11 @@ export async function submitHubReview(hubSlug: string, rating: number, comment: 
 
   try {
     const method = isUpdate ? "PUT" : "POST";
+    const body: Record<string, any> = { rating };
+    if (comment && comment.trim().length > 0) {
+      body.comment = comment.trim();
+    }
+
     const res = await fetch(`${API_BASE_URL}/hubs/${hubSlug}/reviews`, {
       method,
       headers: {
@@ -1002,7 +1010,7 @@ export async function submitHubReview(hubSlug: string, rating: number, comment: 
         "Accept": "application/json",
         "Authorization": `Bearer ${token}`,
       },
-      body: JSON.stringify({ rating, comment }),
+      body: JSON.stringify(body),
     });
 
     let result: any = null;
@@ -1012,7 +1020,56 @@ export async function submitHubReview(hubSlug: string, rating: number, comment: 
       revalidateTag(`reviews-${hubSlug}`);
       return { success: true, data: result?.data || result };
     }
+
+    // If PUT failed because no prior review exists (e.g. stale isUpdate flag), retry with POST
+    if (isUpdate && !res.ok) {
+      const retryRes = await fetch(`${API_BASE_URL}/hubs/${hubSlug}/reviews`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify(body),
+      });
+      let retryResult: any = null;
+      try { retryResult = await retryRes.json(); } catch { retryResult = null; }
+      if (retryRes.ok) {
+        revalidateTag(`reviews-${hubSlug}`);
+        return { success: true, data: retryResult?.data || retryResult };
+      }
+      return { error: retryResult?.message || "Failed to submit review" };
+    }
+
     return { error: result?.message || `Failed to ${isUpdate ? 'update' : 'submit'} review` };
+  } catch {
+    return { error: "Network Error" };
+  }
+}
+
+/** Delete the authenticated user's own review for a hub */
+export async function deleteMyHubReview(hubSlug: string) {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("token")?.value;
+  if (!token) return { error: "Unauthenticated" };
+
+  try {
+    const res = await fetch(`${API_BASE_URL}/hubs/${hubSlug}/reviews`, {
+      method: "DELETE",
+      headers: {
+        "Accept": "application/json",
+        "Authorization": `Bearer ${token}`,
+      },
+    });
+
+    let result: any = null;
+    try { result = await res.json(); } catch { result = null; }
+
+    if (res.ok) {
+      revalidateTag(`reviews-${hubSlug}`);
+      return { success: true, message: result?.message || "Review deleted" };
+    }
+    return { error: result?.message || "Failed to delete review" };
   } catch {
     return { error: "Network Error" };
   }

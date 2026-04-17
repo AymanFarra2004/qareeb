@@ -3,7 +3,7 @@ import ModernHomeView from "./components/home-page/ModernHomeView";
 import { Footer } from "@/components/footer/Footer";
 import { getAllHubs } from "@/src/actions/hubs";
 import { getLocale } from "next-intl/server";
-// import APITest from "@/API tests/APITest";
+import{APITest} from "@/API tests/APITest";
 
 
 export default async function Home() {
@@ -22,7 +22,7 @@ export default async function Home() {
       <div className="relative z-50">
         <Header />
       </div>
-      
+      <APITest />
       <main className="flex-1">
         <ModernHomeView initialHubs={hubs} />
       </main>

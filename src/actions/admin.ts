@@ -185,3 +185,80 @@ export async function deleteService(serviceId: number | string) {
     return { error: "Network Error" };
   }
 }
+
+// ============== ADMIN REVIEWS ==============
+
+/** Fetch all reviews across all hubs — admin only */
+export async function getAdminReviews() {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("token")?.value;
+
+  if (!token) {
+    return { success: false, error: "Unauthenticated", data: [] };
+  }
+
+  try {
+    const res = await fetch(`https://karam.idreis.net/api/v1/admin/reviews`, {
+      method: "GET",
+      headers: {
+        "Accept": "application/json",
+        "Authorization": `Bearer ${token}`,
+      },
+      next: { tags: ["admin-reviews"], revalidate: 0 },
+    });
+
+    if (!res.ok) {
+      const errorData = await res.json().catch(() => ({}));
+      return { 
+        success: false, 
+        error: errorData.message || `Server Error: ${res.status}`, 
+        data: [] 
+      };
+    }
+
+    const result = await res.json();
+
+    const reviewsArray = result?.data?.data?.data || [];
+    
+    const paginationMeta = result?.data?.meta || null;
+
+    return { 
+      success: true, 
+      data: reviewsArray, 
+      meta: paginationMeta 
+    };
+
+  } catch (error) {
+    console.error("Fetch Error in getAdminReviews:", error);
+    return { success: false, error: "Network Error", data: [] };
+  }
+}
+
+/** Delete any review by ID — admin only */
+export async function deleteAdminReview(reviewId: number | string) {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("token")?.value;
+  if (!token) return { error: "Unauthenticated" };
+
+  try {
+    const res = await fetch(`${API_BASE_URL}/admin/reviews/${reviewId}`, {
+      method: "DELETE",
+      headers: {
+        "Accept": "application/json",
+        "Authorization": `Bearer ${token}`,
+      },
+    });
+
+    let result: any = null;
+    try { result = await res.json(); } catch { result = null; }
+
+    if (res.ok) {
+      revalidatePath("/admin/reviews");
+      revalidatePath("/[locale]/admin/reviews", "page");
+      return { success: true, message: result?.message || "Review deleted" };
+    }
+    return { error: result?.message || "Failed to delete review" };
+  } catch (error) {
+    return { error: "Network Error" };
+  }
+}
