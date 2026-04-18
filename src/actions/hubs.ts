@@ -51,7 +51,7 @@ export async function getMyHubs(locale: string = "ar") {
         "Accept": "application/json",
         "Authorization": `Bearer ${token}`
       },
-      next: { tags: ['my-hubs'], revalidate: 60 }
+      next: { tags: ['my-hubs'], revalidate: 0 }
     });
 
     const result = await res.json();
@@ -155,6 +155,7 @@ export async function getPrivateHubBySlug(slugOrId: string, locale: string = "ar
         "Accept": "application/json",
         "Authorization": `Bearer ${token}`,
       },
+      cache: 'no-store',
       next: { revalidate: 0 }
     });
     

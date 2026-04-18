@@ -1057,7 +1057,7 @@ export default function HubManagementPage({ params }: { params: Promise<{ id: st
 
   // Re-fetch hub helper for child tabs to refresh data
   const fetchHub = async () => {
-    const result = await getHubBySlug(resolvedParams.id, locale);
+    const result = await getPrivateHubBySlug(resolvedParams.id, locale);
     if (result.success && result.data) setHub(result.data);
   };
 

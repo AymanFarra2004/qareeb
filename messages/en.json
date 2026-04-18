@@ -374,7 +374,9 @@
       "dropzonePrimary": "Main Image",
       "dropzoneSecondary": "Gallery Images",
       "cancel": "Cancel",
-      "remove": "Remove"
+      "remove": "Remove",
+      "mainImageProtected": "The main image cannot be deleted; another image must be set as main before deleting this one",
+      "mainImageWarning": "Note: The main image cannot be deleted. Please set another image as main to enable deletion for this one."
     }
   },
   "NewHub": {

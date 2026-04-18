@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback, useEffect } from "react";
-import { X, Upload, Star, Crown, Image as ImageIcon, Loader2 } from "lucide-react";
+import { X, Upload, Star, Crown, Image as ImageIcon, Loader2, Trash2, AlertCircle } from "lucide-react";
 import { useDropzone } from "react-dropzone";
 import Image from "next/image";
 import { updateHub, downloadImageServer } from "@/src/actions/hubs";
@@ -9,18 +9,21 @@ import { toast } from "react-hot-toast";
 import { useTranslations } from "next-intl";
 import { uploadWithProgress } from "@/src/lib/uploadHelper";
 import { motion } from "framer-motion";
+import { useRouter } from "next/navigation";
 
 interface FileWithPreview extends File {
   preview: string;
 }
 
 interface OldPhoto {
+  id: string | number;
   url: string;
   isMain: boolean;
 }
 
 export default function HubGalleryManager({ hub, isOpen, onClose, onUpdate }: { hub: any, isOpen: boolean, onClose: () => void, onUpdate: () => void }) {
   const t = useTranslations("HubManagement.gallery");
+  const router = useRouter();
   
   // Existing API photos
   const [oldPhotos, setOldPhotos] = useState<OldPhoto[]>([]);
@@ -32,6 +35,7 @@ export default function HubGalleryManager({ hub, isOpen, onClose, onUpdate }: { 
   
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
+  const [deleteGalleryIds, setDeleteGalleryIds] = useState<(string | number)[]>([]);
 
   // Initialize from hub data
   useEffect(() => {
@@ -45,23 +49,31 @@ export default function HubGalleryManager({ hub, isOpen, onClose, onUpdate }: { 
       let mainResolvedStr = null;
 
       if (mainImg) {
-        mainResolvedStr = resolveUrl(mainImg);
-        parsedOld.push({ url: mainResolvedStr, isMain: true });
+        const url = typeof mainImg === 'string' ? mainImg : (mainImg?.url || mainImg?.path);
+        const id = typeof mainImg === 'string' ? url : (mainImg?.id || url);
+        mainResolvedStr = resolveUrl(url);
+        parsedOld.push({ id, url: mainResolvedStr, isMain: true });
         setMainPhotoId(mainResolvedStr);
       }
       
       if (Array.isArray(gallery)) {
-        gallery.forEach((g: string) => {
-          const resolved = resolveUrl(g);
+        gallery.forEach((g: any) => {
+          const url = typeof g === 'string' ? g : (g?.url || g?.path);
+          if (!url) return;
+          
+          const resolved = resolveUrl(url);
+          const id = typeof g === 'string' ? url : (g?.id || url);
+
           // prevent duplicate if main is miraculously inside gallery
           if (resolved !== mainResolvedStr) {
-            parsedOld.push({ url: resolved, isMain: false });
+            parsedOld.push({ id, url: resolved, isMain: false });
           }
         });
       }
 
       setOldPhotos(parsedOld);
       setNewFiles([]);
+      setDeleteGalleryIds([]);
       setUploadProgress(0);
     }
   }, [hub, isOpen]);
@@ -118,6 +130,16 @@ export default function HubGalleryManager({ hub, isOpen, onClose, onUpdate }: { 
 
   const handleSetMain = (id: string) => {
     setMainPhotoId(id);
+  };
+
+  const handleRemoveOld = (id: string | number) => {
+    const photo = oldPhotos.find(p => p.id === id);
+    if (photo?.url === mainPhotoId) {
+      toast.error(t("mainImageProtected") || "Cannot delete main image");
+      return;
+    }
+    // Optimistic UI: Just add to delete list, we filter in the render
+    setDeleteGalleryIds(prev => [...prev, id]);
   };
 
   const fetchUrlAsFile = async (url: string): Promise<File> => {
@@ -183,18 +205,31 @@ export default function HubGalleryManager({ hub, isOpen, onClose, onUpdate }: { 
          }
       });
 
+      deleteGalleryIds.forEach(id => {
+         formData.append("delete_gallery_ids[]", String(id));
+      });
+
       // Upload Images with Progress leveraging the proxy route
       await uploadWithProgress(`/api/hubs/${hub.slug}/images`, formData, (progress) => {
         setUploadProgress(progress);
       });
 
       toast.success("Gallery updated successfully!");
+      
+      // Permanently update local state before re-validating
+      setOldPhotos(prev => prev.filter(img => !deleteGalleryIds.includes(img.id)));
+      setDeleteGalleryIds([]);
+      setNewFiles([]);
+      
+      router.refresh();
       onUpdate();
       onClose();
 
     } catch(err) {
       console.error(err);
       toast.error("An error occurred during upload. Please try again.");
+      // Restore Optimistic UI on failure
+      setDeleteGalleryIds([]);
     } finally {
       setIsSubmitting(false);
     }
@@ -251,14 +286,24 @@ export default function HubGalleryManager({ hub, isOpen, onClose, onUpdate }: { 
              <div className="flex items-center justify-between">
                 <h3 className="font-semibold text-lg">{t("title").split(' ')[2] || "Photos"}</h3>
                 <span className="text-xs font-medium text-muted-foreground bg-muted px-2 py-1 rounded">
-                   {oldPhotos.length + newFiles.length} {t("total")}
+                   {oldPhotos.filter(p => !deleteGalleryIds.includes(p.id)).length + newFiles.length} {t("total")}
                 </span>
+             </div>
+
+             {/* Small Warning Banner */}
+             <div className="flex items-start gap-3 p-3 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 animate-in fade-in slide-in-from-top-2 duration-500">
+                <AlertCircle className="h-4 w-4 mt-0.5 flex-shrink-0" />
+                <p className="text-xs font-medium leading-relaxed">
+                   {t("mainImageWarning")}
+                </p>
              </div>
 
              {/* Grid */}
              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
                {/* ─── OLD PHOTOS ─── */}
-               {oldPhotos.map((photo, idx) => {
+               {oldPhotos
+                 .filter(p => !deleteGalleryIds.includes(p.id))
+                 .map((photo, idx) => {
                  const isMain = mainPhotoId === photo.url;
                  return (
                    <div 
@@ -279,18 +324,27 @@ export default function HubGalleryManager({ hub, isOpen, onClose, onUpdate }: { 
                        {t("uploaded")}
                      </div>
 
-                     {/* Hover Actions */}
-                     <div className={`absolute inset-0 bg-black/50 transition-opacity flex items-center justify-center gap-2 ${isMain ? 'opacity-0' : 'opacity-0 group-hover:opacity-100'}`}>
-                       {!isMain && (
-                         <button 
-                           onClick={(e) => { e.stopPropagation(); handleSetMain(photo.url); }}
-                           className="flex items-center gap-1.5 bg-amber-400 hover:bg-amber-500 text-amber-950 text-xs font-bold px-3 py-1.5 rounded-full shadow-xl transition-transform hover:scale-105"
-                         >
-                           <Star className="h-3.5 w-3.5" /> {t("setMain")}
-                         </button>
-                       )}
-                     </div>
-                   </div>
+                      {/* Hover Actions */}
+                      <div className={`absolute inset-0 bg-black/50 transition-opacity flex flex-col items-center justify-center gap-2 ${isMain ? 'opacity-0' : 'opacity-0 group-hover:opacity-100'}`}>
+                        {!isMain && (
+                          <>
+                            <button 
+                              onClick={(e) => { e.stopPropagation(); handleSetMain(photo.url); }}
+                              className="flex items-center gap-1.5 bg-amber-400 hover:bg-amber-500 text-amber-950 text-xs font-bold px-3 py-1.5 rounded-full shadow-xl transition-transform hover:scale-105"
+                            >
+                              <Star className="h-3.5 w-3.5" /> {t("setMain")}
+                            </button>
+                            <button 
+                              onClick={(e) => { e.stopPropagation(); handleRemoveOld(photo.id); }}
+                              className="flex items-center justify-center w-8 h-8 bg-red-500 hover:bg-red-600 text-white rounded-full shadow-xl transition-transform hover:scale-105"
+                              title={t("remove") || "Remove"}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </button>
+                          </>
+                        )}
+                      </div>
+                    </div>
                  );
                })}
 
@@ -339,7 +393,7 @@ export default function HubGalleryManager({ hub, isOpen, onClose, onUpdate }: { 
                })}
              </div>
              
-             {(oldPhotos.length === 0 && newFiles.length === 0) && (
+             {(oldPhotos.filter(p => !deleteGalleryIds.includes(p.id)).length === 0 && newFiles.length === 0) && (
                <div className="py-12 flex flex-col items-center justify-center text-center bg-muted/10 border border-dashed border-border rounded-xl">
                  <ImageIcon className="h-12 w-12 text-muted-foreground opacity-30 mb-3" />
                  <p className="font-medium text-muted-foreground">{t("noImages")}</p>
@@ -374,8 +428,8 @@ export default function HubGalleryManager({ hub, isOpen, onClose, onUpdate }: { 
             </button>
             <button 
               onClick={handleSubmit}
-              disabled={isSubmitting || (!newFiles.length && mainPhotoId === (oldPhotos.find(p=>p.isMain)?.url))}
-              className={`px-6 py-2.5 bg-primary text-primary-foreground font-semibold rounded-xl hover:bg-primary/90 transition-colors shadow-lg flex items-center gap-2 ${(isSubmitting || (!newFiles.length && mainPhotoId === (oldPhotos.find(p=>p.isMain)?.url))) ? "opacity-50 shadow-none cursor-not-allowed" : ""}`}
+              disabled={isSubmitting || (newFiles.length === 0 && deleteGalleryIds.length === 0 && mainPhotoId === (oldPhotos.find(p=>p.isMain)?.url))}
+              className={`px-6 py-2.5 bg-primary text-primary-foreground font-semibold rounded-xl hover:bg-primary/90 transition-colors shadow-lg flex items-center gap-2 ${(isSubmitting || (newFiles.length === 0 && deleteGalleryIds.length === 0 && mainPhotoId === (oldPhotos.find(p=>p.isMain)?.url))) ? "opacity-50 shadow-none cursor-not-allowed" : ""}`}
             >
               {isSubmitting && <Loader2 className="h-4 w-4 animate-spin" />}
               {isSubmitting ? `${uploadProgress}% | ${t("saving") || "Saving..."}` : (t("save") || "Save")}
