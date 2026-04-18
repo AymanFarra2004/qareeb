@@ -21,6 +21,8 @@ interface LocationFormProps {
   initialParentId?: number | null;
   locations: Location[]; // All locations for parent selection
   locale: string;
+  locationAR: string;
+  locationEN: string;
 }
 
 export default function LocationForm({
@@ -30,14 +32,16 @@ export default function LocationForm({
   initialData,
   initialParentId,
   locations,
-  locale
+  locale,
+  locationAR,
+  locationEN
 }: LocationFormProps) {
   const t = useTranslations("AdminLocations");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const [nameAr, setNameAr] = useState("");
-  const [nameEn, setNameEn] = useState("");
+  const [nameAr, setNameAr] = useState(locationAR);
+  const [nameEn, setNameEn] = useState(locationEN);
   const [type, setType] = useState<"governorate" | "city" | "area">("governorate");
   const [parentId, setParentId] = useState<number | null>(null);
   
@@ -197,7 +201,7 @@ export default function LocationForm({
                 type="text"
                 required
                 dir="rtl"
-                value={nameAr}
+                defaultValue={nameAr}
                 onChange={(e) => setNameAr(e.target.value)}
                 placeholder="مثال: الشمال"
                 className="w-full px-4 py-3 bg-muted/50 border border-border rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
@@ -209,7 +213,7 @@ export default function LocationForm({
                 type="text"
                 required
                 dir="ltr"
-                value={nameEn}
+                defaultValue={nameEn}
                 onChange={(e) => setNameEn(e.target.value)}
                 placeholder="e.g. North Gaza"
                 className="w-full px-4 py-3 bg-muted/50 border border-border rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"

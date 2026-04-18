@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Plus, MapPin, Loader2, RefreshCw } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useLocale } from "next-intl";
@@ -17,6 +17,7 @@ import {
 import LocationTreeView from "./LocationTreeView";
 import LocationForm from "./LocationForm";
 import DeleteLocationModal from "./DeleteLocationModal";
+import { getLocationDataBySlugForManagement } from "@/src/actions/locations";
 
 export default function AdminLocationsPage() {
   const t = useTranslations("AdminLocations");
@@ -25,6 +26,10 @@ export default function AdminLocationsPage() {
   const [locations, setLocations] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [locationAR, setLocationAR] = useState<any>("")
+  const [locationEN, setLocationEN] = useState<any>("");
+
+  const originalDataRef = useRef<any>(null);
 
   // Modal states
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -54,6 +59,20 @@ export default function AdminLocationsPage() {
   useEffect(() => {
     fetchLocations();
   }, [locale]);
+  useEffect(() => {
+      async function fetchData() {
+        if (!selectedLocation?.slug) return;
+        setIsLoading(true);
+        const res = await getLocationDataBySlugForManagement(selectedLocation.slug);
+        if (res.success && res.data) {
+          originalDataRef.current = res.data;
+          setLocationAR(res.data.nameAR || "");
+          setLocationEN(res.data.nameEN || "");
+        }
+        setIsLoading(false);
+      }
+      fetchData();
+    }, [selectedLocation?.slug]);
 
   const handleAddLocation = () => {
     setSelectedLocation(null);
@@ -176,6 +195,8 @@ export default function AdminLocationsPage() {
         initialParentId={prefilledParent?.id}
         locations={locations}
         locale={locale}
+        locationAR={locationAR}
+        locationEN={locationEN}
       />
 
       <DeleteLocationModal 

@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { LocationSelect } from "../../components/LocationSelect";
+import { LocationSelect } from "../location/LocationSelect";
 import { useTranslations } from "next-intl";
 import { TimePicker } from "../ui/time-picker";
 
@@ -93,7 +93,7 @@ const BasicInfo = () => {
         <h3 className="text-sm font-bold text-foreground uppercase tracking-wider">{t("workingHours")}</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="p-4 border border-input rounded-xl bg-muted/5">
-            <TimePicker 
+            <TimePicker
               name="start_time"
               label={t("openingTime")}
               defaultPeriod="AM"
@@ -102,7 +102,7 @@ const BasicInfo = () => {
             />
           </div>
           <div className="p-4 border border-input rounded-xl bg-muted/5">
-            <TimePicker 
+            <TimePicker
               name="end_time"
               label={t("closingTime")}
               defaultPeriod="PM"

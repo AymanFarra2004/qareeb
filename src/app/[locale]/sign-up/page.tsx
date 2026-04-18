@@ -7,49 +7,49 @@ import { Footer } from "@/components/footer/Footer"
 import { registerUser } from "@/src/actions/auth"
 import { useState, useActionState, useEffect } from "react"
 import { useFormStatus } from "react-dom";
-import { LocationSelect } from "../components/LocationSelect";
+import { LocationSelect } from "../components/location/LocationSelect";
 
 
 function SubmitButton() {
-      const { pending } = useFormStatus();
-      return (
-        <button
-          type="submit"
-          disabled={pending}
-          className="w-full flex justify-center items-center gap-2 py-3 px-4 border border-transparent rounded-xl shadow-md text-sm font-medium text-primary-foreground bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-all disabled:opacity-70 disabled:cursor-not-allowed"
-        >
-          {pending ? <Loader2 className="h-5 w-5 animate-spin" /> : "Sign up"}
-          {!pending && <ArrowRight className="h-4 w-4" />}
-        </button>
-      );
-    }
+  const { pending } = useFormStatus();
+  return (
+    <button
+      type="submit"
+      disabled={pending}
+      className="w-full flex justify-center items-center gap-2 py-3 px-4 border border-transparent rounded-xl shadow-md text-sm font-medium text-primary-foreground bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-all disabled:opacity-70 disabled:cursor-not-allowed"
+    >
+      {pending ? <Loader2 className="h-5 w-5 animate-spin" /> : "Sign up"}
+      {!pending && <ArrowRight className="h-4 w-4" />}
+    </button>
+  );
+}
 
 export default function SignUpPage() {
   const [state, formAction] = useActionState(registerUser, null);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const router = useRouter();
-      if(state?.error) console.log(state.error);
+  if (state?.error) console.log(state.error);
 
   useEffect(() => {
-      if (state?.success) {
-        // Redirect to home page upon successful login
-        router.push("/");
-        router.refresh();
-      }
-    }, [state, router]);
+    if (state?.success) {
+      // Redirect to home page upon successful login
+      router.push("/");
+      router.refresh();
+    }
+  }, [state, router]);
 
-  
+
   return (
     <div className="flex flex-col min-h-screen bg-background">
       <Header />
-      
+
       <div className="flex-1 flex flex-col md:flex-row-reverse">
-        
+
         {/* Right side - Form Container */}
         <div className="flex-1 flex flex-col justify-center items-center px-4 sm:px-6 lg:px-20 xl:px-24">
           <div className="w-full max-w-sm">
-            
+
             <Link href="/" className="flex items-center gap-2 mb-10">
               <MapPin className="h-8 w-8 text-primary" />
               <span className="font-bold text-2xl tracking-tight text-foreground">
@@ -135,7 +135,7 @@ export default function SignUpPage() {
                     {showPassword ? (
                       <EyeOff className="h-5 w-5" />
                     ) : (
-                       <Eye className="h-5 w-5" />
+                      <Eye className="h-5 w-5" />
                     )}
                   </button>
                 </div>
@@ -164,7 +164,7 @@ export default function SignUpPage() {
                     {showConfirmPassword ? (
                       <EyeOff className="h-5 w-5" />
                     ) : (
-                       <Eye className="h-5 w-5" />
+                      <Eye className="h-5 w-5" />
                     )}
                   </button>
                 </div>
@@ -173,7 +173,7 @@ export default function SignUpPage() {
 
 
               <LocationSelect />
-              
+
               <div className="space-y-2">
                 <label className="block text-sm font-medium text-foreground">Account Type</label>
                 <div className="grid grid-cols-2 gap-3">
@@ -188,7 +188,7 @@ export default function SignUpPage() {
                 </div>
               </div>
 
-               <div>
+              <div>
                 <SubmitButton />
               </div>
             </form>
@@ -203,11 +203,11 @@ export default function SignUpPage() {
             </div>
           </div>
         </div>
-        
+
         {/* Left side - Image Container */}
         <div className="hidden md:block md:flex-1 relative">
           <div className="absolute inset-0 bg-linear-to-tr from-primary/20 to-background/10 z-10" />
-          <div 
+          <div
             className="absolute inset-0 bg-cover bg-center"
             style={{ backgroundImage: "url('https://images.unsplash.com/photo-1542744173-8e7e53415bb0?q=80&w=1500&auto=format&fit=crop')" }}
           />
