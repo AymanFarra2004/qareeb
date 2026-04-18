@@ -51,6 +51,8 @@
     "viewAll": "View all locations",
     "verified": "Verified",
     "exploreSpace": "Explore Space",
+    "price": "Price",
+    "hour": "hr",
     "am": "AM",
     "pm": "PM"
   },
@@ -331,7 +333,14 @@
       "title": "Social Links",
       "description": "Help people find your hub online",
       "socialAdded": "Social Account Added!",
-      "add": "Add"
+      "add": "Add Account",
+      "newAccount": "New Social Account",
+      "noAccounts": "No social accounts added yet. Click \"Add Account\" to get started.",
+      "saved": "Social accounts saved successfully!",
+      "save": "Save Changes",
+      "platform": "Platform",
+      "url": "URL",
+      "addSocial": "Add Social Account"
     },
     "offers": {
       "title": "Special Offers",
@@ -586,5 +595,27 @@
     "selectTime": "Select Time",
     "am": "AM",
     "pm": "PM"
+  },
+  "Profile": {
+    "title": "My Profile",
+    "subtitle": "Manage your personal information and account settings.",
+    "name": "Full Name",
+    "email": "Email Address",
+    "phone": "Phone Number",
+    "role": "Role",
+    "location": "Location",
+    "joinedDate": "Member Since",
+    "editProfile": "Edit Profile",
+    "changePassword": "Change Password",
+    "notAvailable": "Not provided",
+    "roles": {
+      "hub_owner": "Hub Owner",
+      "admin": "Administrator",
+      "user": "Regular User"
+    },
+    "unauthenticated": "You must be signed in to view your profile.",
+    "signIn": "Sign In",
+    "errorTitle": "Could not load profile",
+    "errorDesc": "Your session may have expired. Please sign in again."
   }
 }

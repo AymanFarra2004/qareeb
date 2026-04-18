@@ -42,9 +42,7 @@ export default function SubmitHub() {
 
     try {
       // 1. Create Hub with JSON
-      console.log("Starting Step 1: Create Hub...");
       const result = await createHub(null, formData);
-      console.log("Received Step 1 Response:", result);
       
       if (!result?.success || !result.hub?.slug) {
         console.error("Hub Creation failed:", result);
@@ -58,7 +56,6 @@ export default function SubmitHub() {
 
       // 2. Upload Images to API route with progress
       if (hasMainImage || hasGallery) {
-        console.log("Starting Step 2: Upload Images for hub slug:", hubSlug);
         setIsUploading(true);
         setUploadProgress(0);
 

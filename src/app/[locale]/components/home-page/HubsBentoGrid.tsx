@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { motion } from "framer-motion";
-import { MapPin, Zap, Clock, Tag } from "lucide-react";
+import { MapPin, Zap, Clock, Tag, Coins } from "lucide-react";
 import { format24to12 } from "@/src/lib/utils";
 import { getGovernorateKeyByLocationId } from "@/src/lib/locationMapping";
 
@@ -18,8 +18,18 @@ export default function HubsBentoGrid({ filter, hubs = [] }: { filter: { governo
     description: typeof apiHub.description === 'string' ? apiHub.description : (apiHub.description?.[locale] || apiHub.description?.en || apiHub.description?.ar || "No description"),
     location: typeof apiHub.address_details === 'string' ? apiHub.address_details : (apiHub.address_details?.[locale] || apiHub.address_details?.en || apiHub.address_details?.ar || "Unknown"),
     locationId: apiHub.location?.id || apiHub.location_id,
-    governorate: apiHub.location?.name || "Gaza",
+    city: (() => {
+      const breadcrumb = apiHub.location.breadcrumb || [];
+      const city = breadcrumb[1]?.name || "";
+      return city.trim();
+    })(),
+    area: (() => {
+      const breadcrumb = apiHub.location.breadcrumb || [];
+      const area = breadcrumb[2]?.name || "";
+      return area;
+    })(),
     pricing: apiHub.pricing || "Free",
+    hourlyPrice: apiHub.hourly_price,
     operatingHours: apiHub.working_hours
       ? `${format24to12(apiHub.working_hours.start, t("am"), t("pm"))} - ${format24to12(apiHub.working_hours.end, t("am"), t("pm"))}`
       : apiHub.operating_hours || "Contact for hours",
@@ -132,18 +142,23 @@ export default function HubsBentoGrid({ filter, hubs = [] }: { filter: { governo
                     <div className="flex flex-wrap items-center gap-4 text-gray-200 dark:text-gray-300 text-sm mb-4">
                       <div className="flex items-center gap-1">
                         <MapPin className="w-4 h-4 text-blue-400" />
-                        <span>{hub.governorate}</span>
+                        <span>{(hub.city || "") + " - " + (hub.area || "")}</span>
                       </div>
                       <div className="flex items-center gap-1">
                         <Clock className="w-4 h-4 text-purple-400" />
                         <span>{hub.operatingHours}</span>
                       </div>
+                      {hub.hourlyPrice && (
+                        <div className="flex items-center gap-1">
+                          <Coins className="w-4 h-4 text-amber-400" />
+                          <span>₪{hub.hourlyPrice}/{t("hour")}</span>
+                        </div>
+                      )}
                     </div>
 
                     <p className="text-gray-200 dark:text-gray-400 text-sm md:text-base line-clamp-2 mb-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-100">
                       {hub.description}
                     </p>
-                    {console.log(hub)}
                     {hub.activeOffer && (
                       <div className="mb-6 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-150">
                         <div className="px-2 py-1 bg-white/10 backdrop-blur-md border border-white/20 rounded-lg">

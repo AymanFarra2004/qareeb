@@ -741,6 +741,11 @@ export async function getHubSocials(hubId: string, locale: string = "ar") {
   }
 }
 
+export interface SocialAccount {
+  platform: string;
+  url: string;
+}
+
 export async function addHubSocial(hubSlug: string, prevState: any, formData: FormData) {
   const cookieStore = await cookies();
   const token = cookieStore.get("token")?.value;
@@ -764,6 +769,39 @@ export async function addHubSocial(hubSlug: string, prevState: any, formData: Fo
       return { success: true, message: "Added" };
     }
     return { error: result.message || "Failed" };
+  } catch (e) {
+    return { error: "Network Error" };
+  }
+}
+
+/**
+ * Saves the full social_accounts array to the hub via PUT.
+ * Sends: { social_accounts: [{ platform, url }, ...] }
+ */
+export async function updateHubSocials(hubSlug: string, socials: SocialAccount[]) {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("token")?.value;
+  if (!token) return { error: "Unauthenticated" };
+
+  try {
+    const payload = { social_accounts: socials };
+    const res = await fetch(`${API_BASE_URL}/hubs/${hubSlug}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(payload),
+    });
+    const result = await res.json();
+    if (res.ok && result.status === "success") {
+      revalidatePath(`/hubs/${hubSlug}`);
+      revalidatePath(`/dashboard/hubs/${hubSlug}`);
+      revalidateTag(`socials-${hubSlug}`, "page");
+      return { success: true, message: result.message || "Social accounts updated" };
+    }
+    return { error: result.message || "Failed to update social accounts" };
   } catch (e) {
     return { error: "Network Error" };
   }

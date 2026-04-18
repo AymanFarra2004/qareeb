@@ -11,7 +11,6 @@ export default async function Home() {
   const res = await getAllHubs(locale);
   let hubs = res.data || [];
   if (!Array.isArray(hubs)) hubs = [];
-
   return (
     <div className="flex flex-col min-h-screen bg-gray-50 dark:bg-[#050505]">
       {/* 

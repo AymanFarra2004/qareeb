@@ -1,4 +1,9 @@
 
+export interface SocialAccount {
+    platform: string;
+    url: string;
+}
+
 interface Icontact {
     contactNumber: string;
     links?: string[];
@@ -18,4 +23,5 @@ export interface IHub {
     verificationStatus: "Verified" | "Pending";
     contact:Icontact;
     activeOffer?: any;
+    socialAccounts?: SocialAccount[];
 }

@@ -61,8 +61,12 @@ function mapApiHub(apiHub: any, locale: string = "ar", amLabel: string = "AM", p
       contactNumber: apiHub.contact || "",
       email: apiHub.email || "",
     },
+    socialAccounts: Array.isArray(apiHub.social_accounts)
+      ? apiHub.social_accounts.map((s: any) => ({ platform: s.platform || "other", url: s.url || "" })).filter((s: any) => s.url)
+      : [],
   }
 }
+
 
 export default async function HubDetails({
   params,

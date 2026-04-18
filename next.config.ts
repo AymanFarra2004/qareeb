@@ -34,6 +34,11 @@ const nextConfig: NextConfig = {
         revalidate: 86400,
         expire: 2592000,
       },
+      page: {
+        stale: 3600,     
+        revalidate: 60,  
+        expire: 86400,   
+      },
     },
   },
 };

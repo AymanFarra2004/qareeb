@@ -71,7 +71,6 @@ export async function logoutUser() {
 
 export async function registerUser(prevState: any, formData: FormData) {
   const name = formData.get("name") as string;
-  console.log("name: ++++++++++++++++++",name, "++++++++++++++++");
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
   const password_confirmation = formData.get("password_confirmation") as string;
@@ -120,7 +119,6 @@ export async function registerUser(prevState: any, formData: FormData) {
 
   return { success: true, message: body.message || "Registered and logged in successfully" };
 } catch (error) {
-  console.log(error)
   console.error("Registration Error:", error);
     return { error: "An unexpected error occurred while registering.", fields: { name, email, role, location_id: locationIid } };
   }

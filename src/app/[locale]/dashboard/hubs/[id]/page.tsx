@@ -1,11 +1,12 @@
 "use client";
 
 import { useState, use, useEffect, useActionState, useRef } from "react";
-import { Settings, Box, Tag, Link as LinkIcon, Camera, Save, ArrowLeft, Loader2, AlertTriangle, MapPin, Phone, Trash2, Clock, Calendar, Edit, X, User } from "lucide-react";
+import { Settings, Box, Tag, Link as LinkIcon, Camera, Save, ArrowLeft, Loader2, AlertTriangle, MapPin, Phone, Trash2, Clock, Calendar, Edit, X, User, Plus, Globe } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "@/src/i18n/routing";
 import { useRouter } from "next/navigation";
-import { getPrivateHubBySlug, updateHub, deleteHub, addHubSocial, getHubOffers, addHubOffer, updateHubOffer, deleteHubOffer, getAllServices, createService, getHubServices, addCustomService, deleteCustomService, getHubDataBySlugForManagement } from "@/src/actions/hubs";
+import { getPrivateHubBySlug, updateHub, deleteHub, addHubSocial, updateHubSocials, getHubOffers, addHubOffer, updateHubOffer, deleteHubOffer, getAllServices, createService, getHubServices, addCustomService, deleteCustomService, getHubDataBySlugForManagement, getHubSocials } from "@/src/actions/hubs";
+import type { SocialAccount } from "@/src/actions/hubs";
 import { toast } from "react-hot-toast";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/src/app/[locale]/components/ui/alert-dialog";
 import HubGalleryManager from "@/src/app/[locale]/components/dashboard/HubGalleryManager";
@@ -731,10 +732,72 @@ function ServicesTab({ hub, onUpdate }: { hub: any; onUpdate: () => void }) {
 }
 
 
-// Socials Tab - functional form
+// Socials Tab - full CRUD
+const PLATFORM_OPTIONS = [
+  { value: "facebook",  label: "Facebook" },
+  { value: "instagram", label: "Instagram" },
+  { value: "twitter",   label: "Twitter (X)" },
+  { value: "linkedin",  label: "LinkedIn" },
+  { value: "other",     label: "Other" },
+];
+
 function SocialsTab({ hubSlug }: { hubSlug: string }) {
-  const [state, formAction] = useActionState(addHubSocial.bind(null, hubSlug), null);
   const t = useTranslations("HubManagement.socials");
+
+  const [socials, setSocials]             = useState<SocialAccount[]>([]);
+  const [loading, setLoading]             = useState(true);
+  const [saving, setSaving]               = useState(false);
+  const [editingIndex, setEditingIndex]   = useState<number | null>(null);
+
+  // New-entry form state
+  const [newPlatform, setNewPlatform] = useState("facebook");
+  const [newUrl, setNewUrl]           = useState("");
+  const [showAddForm, setShowAddForm] = useState(false);
+
+  // Load existing accounts
+  const loadSocials = async () => {
+    setLoading(true);
+    const res = await getHubSocials(hubSlug);
+    if (res.success && Array.isArray(res.data)) {
+      setSocials(res.data.map((s: any) => ({ platform: s.platform || "other", url: s.url || "" })));
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => { loadSocials(); }, [hubSlug]);
+
+  // Save the whole array
+  const handleSave = async () => {
+    setSaving(true);
+    const res = await updateHubSocials(hubSlug, socials);
+    if (res.success) {
+      toast.success(t("saved") || "Social accounts saved!");
+    } else {
+      toast.error(res.error || "Failed to save social accounts");
+    }
+    setSaving(false);
+  };
+
+  const handleAdd = () => {
+    if (!newUrl.trim()) return;
+    setSocials(prev => [...prev, { platform: newPlatform, url: newUrl.trim() }]);
+    setNewUrl("");
+    setNewPlatform("facebook");
+    setShowAddForm(false);
+  };
+
+  const handleDelete = (idx: number) => {
+    setSocials(prev => prev.filter((_, i) => i !== idx));
+    if (editingIndex === idx) setEditingIndex(null);
+  };
+
+  const handleEditPlatform = (idx: number, val: string) => {
+    setSocials(prev => prev.map((s, i) => i === idx ? { ...s, platform: val } : s));
+  };
+
+  const handleEditUrl = (idx: number, val: string) => {
+    setSocials(prev => prev.map((s, i) => i === idx ? { ...s, url: val } : s));
+  };
 
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
@@ -744,30 +807,157 @@ function SocialsTab({ hubSlug }: { hubSlug: string }) {
             <h3 className="text-lg font-bold">{t("title")}</h3>
             <p className="text-sm text-muted-foreground mt-1">{t("description")}</p>
           </div>
+          <button
+            onClick={() => setShowAddForm(v => !v)}
+            className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground text-sm rounded-xl font-medium hover:bg-primary/90 transition-colors shadow-sm"
+          >
+            <Plus className="h-4 w-4" />
+            {t("add")}
+          </button>
         </div>
 
-        <form action={formAction} className="max-w-xl space-y-4">
-          {state?.error && <div className="text-red-500 text-sm bg-red-50 p-2 rounded">{state.error}</div>}
-          {state?.success && <div className="text-green-600 text-sm bg-green-50 p-2 rounded">{t("socialAdded")}</div>}
-          <div className="flex gap-3">
-            <select name="platform" className="px-4 py-2 border border-input rounded-xl bg-background text-sm">
-              <option value="facebook">Facebook</option>
-              <option value="instagram">Instagram</option>
-              <option value="twitter">Twitter</option>
-            </select>
-            <input 
-              name="url"
-              type="url" 
-              placeholder="https://..."
-              required
-              className="flex-1 px-4 py-2 border border-input rounded-xl bg-background text-sm" 
-            />
-            <button type="submit" className="px-4 py-2 bg-secondary text-secondary-foreground text-sm rounded-xl font-medium">{t("add")}</button>
+        {/* Add-new-entry form */}
+        <AnimatePresence>
+          {showAddForm && (
+            <motion.div
+              key="add-form"
+              initial={{ opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.18 }}
+              className="mb-6 p-4 border border-dashed border-primary/40 rounded-xl bg-primary/5 space-y-3"
+            >
+              <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">{t("newAccount") || "New Social Account"}</p>
+              <div className="flex flex-col sm:flex-row gap-3">
+                <select
+                  value={newPlatform}
+                  onChange={e => setNewPlatform(e.target.value)}
+                  className="px-3 py-2 border border-input rounded-xl bg-background text-sm w-40 shrink-0"
+                >
+                  {PLATFORM_OPTIONS.map(o => (
+                    <option key={o.value} value={o.value}>{o.label}</option>
+                  ))}
+                </select>
+                <input
+                  type="url"
+                  value={newUrl}
+                  onChange={e => setNewUrl(e.target.value)}
+                  placeholder="https://..."
+                  className="flex-1 px-3 py-2 border border-input rounded-xl bg-background text-sm"
+                  onKeyDown={e => { if (e.key === "Enter") { e.preventDefault(); handleAdd(); } }}
+                />
+                <button
+                  onClick={handleAdd}
+                  disabled={!newUrl.trim()}
+                  className="px-4 py-2 bg-primary text-primary-foreground text-sm rounded-xl font-medium hover:bg-primary/90 transition-colors disabled:opacity-40"
+                >
+                  {t("add")}
+                </button>
+                <button
+                  onClick={() => setShowAddForm(false)}
+                  className="p-2 text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg transition-colors"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Accounts list */}
+        {loading ? (
+          <div className="py-12 text-center"><Loader2 className="h-8 w-8 animate-spin mx-auto text-primary" /></div>
+        ) : socials.length === 0 ? (
+          <div className="py-12 flex flex-col items-center justify-center gap-3 border border-dashed border-border rounded-2xl text-center bg-muted/5">
+            <Globe className="h-10 w-10 text-muted-foreground opacity-30" />
+            <p className="text-muted-foreground text-sm font-medium">{t("noAccounts") || "No social accounts added yet"}</p>
           </div>
-        </form>
+        ) : (
+          <div className="space-y-3">
+            {socials.map((s, idx) => (
+              <div key={idx} className="flex items-center gap-3 p-3 border border-border rounded-xl group hover:bg-muted/10 transition-colors">
+                {editingIndex === idx ? (
+                  // ── Edit mode row ──────────────────────────────────────
+                  <>
+                    <select
+                      value={s.platform}
+                      onChange={e => handleEditPlatform(idx, e.target.value)}
+                      className="px-3 py-1.5 border border-input rounded-lg bg-background text-sm w-36 shrink-0"
+                    >
+                      {PLATFORM_OPTIONS.map(o => (
+                        <option key={o.value} value={o.value}>{o.label}</option>
+                      ))}
+                    </select>
+                    <input
+                      type="url"
+                      value={s.url}
+                      onChange={e => handleEditUrl(idx, e.target.value)}
+                      className="flex-1 px-3 py-1.5 border border-input rounded-lg bg-background text-sm"
+                    />
+                    <button
+                      onClick={() => setEditingIndex(null)}
+                      className="p-1.5 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
+                    >
+                      <Save className="h-4 w-4" />
+                    </button>
+                  </>
+                ) : (
+                  // ── View mode row ──────────────────────────────────────
+                  <>
+                    <span className={`px-2.5 py-1 text-[10px] font-bold uppercase rounded-full ${
+                      s.platform === "facebook"  ? "bg-blue-100 text-blue-700" :
+                      s.platform === "instagram" ? "bg-pink-100 text-pink-700" :
+                      s.platform === "twitter"   ? "bg-muted text-foreground" :
+                      s.platform === "linkedin"  ? "bg-sky-100 text-sky-700" :
+                      "bg-primary/10 text-primary"
+                    }`}>
+                      {PLATFORM_OPTIONS.find(o => o.value === s.platform)?.label || s.platform}
+                    </span>
+                    <a
+                      href={s.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex-1 text-sm text-primary hover:underline truncate"
+                      dir="ltr"
+                    >
+                      {s.url}
+                    </a>
+                    <button
+                      onClick={() => setEditingIndex(idx)}
+                      className="p-1.5 text-muted-foreground hover:text-primary hover:bg-primary/5 rounded-lg transition-all opacity-0 group-hover:opacity-100"
+                    >
+                      <Edit className="h-4 w-4" />
+                    </button>
+                  </>
+                )}
+                <button
+                  onClick={() => handleDelete(idx)}
+                  className="p-1.5 text-red-500 hover:bg-red-50 rounded-lg transition-all opacity-0 group-hover:opacity-100"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Save button */}
+        {!loading && (
+          <div className="flex justify-end mt-6">
+            <button
+              onClick={handleSave}
+              disabled={saving}
+              className="flex items-center gap-2 px-6 py-2.5 bg-primary text-primary-foreground text-sm rounded-xl font-bold hover:bg-primary/90 transition-all shadow-md shadow-primary/20 disabled:opacity-50 active:scale-95"
+            >
+              {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+              {t("save") || "Save Changes"}
+            </button>
+          </div>
+        )}
       </div>
-      </div>
-      )}
+    </div>
+  );
+}
 
 // Offers Tab - functional form
 function OffersTab({ hubSlug }: { hubSlug: string }) {

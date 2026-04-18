@@ -165,8 +165,16 @@ export function Header() {
                             {t('userMenu.adminDashboard')}
                           </Link>
                         )}
-                        <Link href="/dashboard/settings" className="flex items-center gap-3 px-4 py-2 text-sm text-foreground hover:bg-muted transition-colors">
-                           <User className="h-4 w-4 text-muted-foreground" />
+                        <Link
+                          href="/profile"
+                          onClick={() => setIsUserMenuOpen(false)}
+                          className={`flex items-center gap-3 px-4 py-2 text-sm transition-colors ${
+                            pathname === '/profile'
+                              ? 'bg-primary/10 text-primary font-semibold'
+                              : 'text-foreground hover:bg-muted'
+                          }`}
+                        >
+                           <User className="h-4 w-4" />
                            {t('userMenu.profile')}
                         </Link>
                       </div>
@@ -265,6 +273,17 @@ export function Header() {
                          <Settings className="h-5 w-5" /> {t('userMenu.adminDashboard')}
                       </Link>
                     )}
+                    <Link
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      href="/profile"
+                      className={`flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-colors ${
+                        pathname === '/profile'
+                          ? 'bg-primary/10 text-primary'
+                          : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+                      }`}
+                    >
+                      <User className="h-5 w-5" /> {t('userMenu.profile')}
+                    </Link>
                     <button 
                       onClick={handleLogout}
                       className="flex items-center gap-3 px-4 py-3 text-sm text-destructive hover:bg-destructive/10 rounded-xl w-full text-start transition-colors font-medium border border-transparent hover:border-destructive/20"

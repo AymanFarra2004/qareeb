@@ -1,8 +1,9 @@
 import React from 'react'
 import { IHub } from '@/data/hubs'
-import { ShieldCheck, MapPin } from 'lucide-react'
+import { ShieldCheck } from 'lucide-react'
 import HubGallery from './HubGallery'
 import HubOffers from './HubOffers'
+import HubSocialAccounts from './HubSocialAccounts'
 
 export default function HubMainContent({hub, serviceIcons, offers = []}: {hub: IHub, serviceIcons: Record<string, React.ReactNode>, offers?: any[]}) {
   return (
@@ -40,8 +41,6 @@ export default function HubMainContent({hub, serviceIcons, offers = []}: {hub: I
                 </div>
               </section>
 
-
-
               {hub.galleryUrls && hub.galleryUrls.length > 0 && (
                 <>
                   <hr className="border-border" />
@@ -49,21 +48,17 @@ export default function HubMainContent({hub, serviceIcons, offers = []}: {hub: I
                 </>
               )}
 
+              {/* Social Accounts */}
+              {hub.socialAccounts && hub.socialAccounts.length > 0 && (
+                <>
+                  <hr className="border-border" />
+                  <HubSocialAccounts socials={hub.socialAccounts} />
+                </>
+              )}
+
               <hr className="border-border" />
 
               {/* Location/Map placeholder */}
-              <section>
-                <h2 className="text-2xl font-bold mb-4">Location</h2>
-                <div className="aspect-video w-full rounded-xl bg-muted border border-border overflow-hidden relative group cursor-pointer flex items-center justify-center">
-                    <div className="absolute inset-0 bg-primary/5 group-hover:bg-primary/10 transition-colors z-10" />
-                    <div className="text-center relative z-20">
-                      <MapPin className="h-10 w-10 text-primary mx-auto mb-2 opacity-80" />
-                      <span className="font-medium text-muted-foreground group-hover:text-foreground transition-colors">
-                        Click to view on interactive map
-                      </span>
-                    </div>
-                </div>
-              </section>
 
             </div>
 

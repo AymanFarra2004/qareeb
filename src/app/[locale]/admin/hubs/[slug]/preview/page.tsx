@@ -7,7 +7,6 @@ import {
   MapPin,
   Phone,
   Clock,
-  Share2,
   Tag,
   CheckCircle2,
   XCircle,
@@ -21,6 +20,7 @@ import {
 } from "lucide-react";
 import HubPreviewActions from "./HubPreviewActions";
 import HubGallery from "@/components/hubs/hub/HubGallery";
+import HubSocialAccounts from "@/components/hubs/hub/HubSocialAccounts";
 import { format24to12 } from "@/src/lib/utils";
 
 interface PageProps {
@@ -333,38 +333,13 @@ export default async function AdminHubPreviewPage({ params }: PageProps) {
               <p className="text-muted-foreground text-sm">{addressDetail}</p>
             )}
             {/* Map placeholder */}
-            <div className="mt-4 aspect-video w-full rounded-xl bg-muted border border-border overflow-hidden relative group cursor-pointer flex items-center justify-center">
-              <div className="absolute inset-0 bg-primary/5 group-hover:bg-primary/10 transition-colors z-10" />
-              <div className="text-center relative z-20">
-                <MapPin className="h-10 w-10 text-primary mx-auto mb-2 opacity-80" />
-                <span className="font-medium text-muted-foreground group-hover:text-foreground transition-colors">
-                  Interactive map coming soon
-                </span>
-              </div>
-            </div>
           </section>
 
           {/* Social accounts */}
           {socials.length > 0 && (
             <>
               <hr className="border-border" />
-              <section>
-                <h2 className="text-2xl font-bold mb-4">{t("socialAccounts")}</h2>
-                <div className="flex flex-wrap gap-3">
-                  {socials.map((s: any, i: number) => (
-                    <a
-                      key={i}
-                      href={s.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-2 px-4 py-2.5 border border-border rounded-xl text-sm font-semibold hover:bg-muted/40 transition-colors capitalize"
-                    >
-                      <Share2 className="h-4 w-4 text-muted-foreground" />
-                      {s.platform}
-                    </a>
-                  ))}
-                </div>
-              </section>
+              <HubSocialAccounts socials={socials} title={t("socialAccounts")} />
             </>
           )}
         </div>
