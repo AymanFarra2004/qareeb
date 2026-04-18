@@ -188,8 +188,6 @@ export default async function AdminHubPreviewPage({ params }: PageProps) {
           {isApproved && (
             <Link
               href={`/${currentLocale}/hubs/${slug}`}
-              target="_blank"
-              rel="noopener noreferrer"
               className="flex items-center gap-1.5 px-3 py-1.5 border border-border rounded-xl text-xs font-semibold hover:bg-muted/40 transition-colors"
             >
               <ExternalLink className="h-3.5 w-3.5" />

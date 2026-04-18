@@ -177,7 +177,12 @@
     "rejectionReason": "سبب الرفض",
     "rejectionPlaceholder": "مثال: فشل التحقق من الهوية...",
     "cancel": "إلغاء",
-    "confirmRejection": "تأكيد الرفض"
+    "confirmRejection": "تأكيد الرفض",
+    "showing": "عرض {count} من {total} نتيجة",
+    "previous": "السابق",
+    "next": "التالي",
+    "search": "البحث عن مركز",
+    "searchPlaceholder": "ابحث بالاسم، المعرف أو المالك..."
   },
   "AdminHubPreview": {
     "hubNotFound": "المركز غير موجود",

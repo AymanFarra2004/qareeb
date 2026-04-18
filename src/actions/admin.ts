@@ -27,12 +27,12 @@ export async function getAdminHubs(locale: string = "ar"): Promise<HubsResponse>
     // 1. Admin context (Token): Usually returns pending/rejected applications
     // 2. Guest context (No Token): Usually returns approved public listings
     const [adminRes, guestRes] = await Promise.all([
-      fetch(`${API_BASE_URL}/front/hubs?${langParam}`, {
+      fetch(`${API_BASE_URL}/front/hubs?${langParam}&per_page=1000`, {
         method: "GET",
         headers: { "Accept": "application/json", "Authorization": `Bearer ${token}` },
         next: { tags: ["admin-hubs"], revalidate: 0 }
       }),
-      fetch(`${API_BASE_URL}/front/hubs?${langParam}`, {
+      fetch(`${API_BASE_URL}/front/hubs?${langParam}&per_page=1000`, {
         method: "GET",
         headers: { "Accept": "application/json" },
         next: { tags: ["all-hubs"], revalidate: 0 }

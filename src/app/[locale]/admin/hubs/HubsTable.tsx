@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { updateHubStatus } from "@/src/actions/admin";
-import { Loader2, Check, X, Clock, ShieldCheck, ShieldAlert, Box, ExternalLink, Eye } from "lucide-react";
+import { Loader2, Check, X, Clock, ShieldCheck, ShieldAlert, Box, ExternalLink, Eye, Search } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { toast } from "react-hot-toast";
 import { useTranslations, useLocale } from "next-intl";
@@ -14,6 +14,9 @@ export default function HubsTable({ initialHubs }: { initialHubs: any[] }) {
   const [hubs, setHubs] = useState(initialHubs);
   const [activeTab, setActiveTab] = useState<TabType>("pending");
   const [loadingId, setLoadingId] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [searchQuery, setSearchQuery] = useState("");
+  const itemsPerPage = 9;
   const router = useRouter();
   const t = useTranslations("AdminHubsTable");
   const locale = useLocale();
@@ -42,6 +45,28 @@ export default function HubsTable({ initialHubs }: { initialHubs: any[] }) {
   };
 
   const currentHubs = groups[activeTab];
+
+  // Search filtering logic
+  const filteredHubs = currentHubs.filter((hub) => {
+    if (!searchQuery) return true;
+    const q = searchQuery.toLowerCase();
+    const name = (hub.name?.[locale] || hub.name?.en || hub.name?.ar || hub.name || "").toLowerCase();
+    const slug = (hub.slug || "").toLowerCase();
+    const ownerName = (hub.owner?.name || hub.user?.name || "").toLowerCase();
+    const contact = (hub.contact || "").toLowerCase();
+    
+    return name.includes(q) || slug.includes(q) || ownerName.includes(q) || contact.includes(q);
+  });
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [activeTab, searchQuery]);
+
+  const totalPages = Math.ceil(filteredHubs.length / itemsPerPage);
+  const paginatedHubs = filteredHubs.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
 
   const handleStatusChange = async (hubId: string, slug: string, newStatus: string) => {
     const identifier = slug || hubId;
@@ -118,6 +143,20 @@ export default function HubsTable({ initialHubs }: { initialHubs: any[] }) {
   return (
     <>
       <div className="bg-background rounded-2xl border border-border shadow-sm overflow-hidden flex flex-col">
+        {/* Search Bar */}
+        <div className="p-4 border-b border-border bg-background">
+          <div className="relative max-w-md">
+            <Search className="absolute start-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <input
+              type="text"
+              placeholder={t("searchPlaceholder")}
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full h-10 ps-10 pe-4 rounded-xl border border-input bg-muted/20 text-sm focus:bg-background focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all outline-none"
+            />
+          </div>
+        </div>
+
         {/* Tabs Header */}
         <div className="flex border-b border-border bg-muted/20 overflow-x-auto scrollbar-hide">
           <TabButton type="pending" label={t("pendingApprovals")} icon={Clock} color="yellow" />
@@ -137,7 +176,7 @@ export default function HubsTable({ initialHubs }: { initialHubs: any[] }) {
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
-              {currentHubs.map((hub) => {
+              {paginatedHubs.map((hub) => {
                 const name = hub.name?.[locale] || hub.name?.en || hub.name?.ar || hub.name || "Unnamed";
                 const status = getStatus(hub);
                 const isPending = status === 'pending';
@@ -178,8 +217,6 @@ export default function HubsTable({ initialHubs }: { initialHubs: any[] }) {
                              isApproved ? (
                                <Link
                                  href={`/${locale}/hubs/${hub.slug}`}
-                                 target="_blank"
-                                 rel="noopener noreferrer"
                                  title={t("view_live")}
                                  className="flex items-center gap-1.5 px-3 py-2 border border-border text-muted-foreground hover:text-foreground hover:bg-muted/40 rounded-xl transition-all font-semibold text-xs"
                                >
@@ -189,8 +226,6 @@ export default function HubsTable({ initialHubs }: { initialHubs: any[] }) {
                              ) : (
                                <Link
                                  href={`/${locale}/admin/hubs/${hub.slug}/preview`}
-                                 target="_blank"
-                                 rel="noopener noreferrer"
                                  title={t("view_preview")}
                                  className="flex items-center gap-1.5 px-3 py-2 border border-border text-muted-foreground hover:text-foreground hover:bg-muted/40 rounded-xl transition-all font-semibold text-xs"
                                >
@@ -235,6 +270,57 @@ export default function HubsTable({ initialHubs }: { initialHubs: any[] }) {
             </tbody>
           </table>
         </div>
+
+        {/* Pagination Footer */}
+        {currentHubs.length > 0 && (
+          <div className="px-6 py-4 bg-muted/20 border-t border-border flex flex-col sm:flex-row items-center justify-between gap-4">
+            <p className="text-xs text-muted-foreground font-medium">
+              {t("showing", {
+                count: paginatedHubs.length,
+                total: filteredHubs.length,
+              })}
+            </p>
+
+            {totalPages > 1 && (
+              <div className="flex items-center gap-1.5">
+                <button
+                  onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                  disabled={currentPage === 1}
+                  className="px-3 py-1.5 border border-border bg-background rounded-lg text-xs font-semibold hover:bg-muted transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {t("previous")}
+                </button>
+                
+                <div className="flex items-center gap-1">
+                  {Array.from({ length: totalPages }).map((_, i) => {
+                    const pageNum = i + 1;
+                    return (
+                      <button
+                        key={pageNum}
+                        onClick={() => setCurrentPage(pageNum)}
+                        className={`w-8 h-8 flex items-center justify-center rounded-lg text-xs font-bold transition-all ${
+                          currentPage === pageNum
+                            ? "bg-primary text-white shadow-sm"
+                            : "hover:bg-muted text-muted-foreground border border-transparent"
+                        }`}
+                      >
+                        {pageNum}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                <button
+                  onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                  disabled={currentPage === totalPages}
+                  className="px-3 py-1.5 border border-border bg-background rounded-lg text-xs font-semibold hover:bg-muted transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {t("next")}
+                </button>
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Reject Reason Modal Overlay */}

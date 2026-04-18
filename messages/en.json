@@ -177,7 +177,12 @@
     "rejectionReason": "Rejection Reason",
     "rejectionPlaceholder": "e.g. Identity verification failed...",
     "cancel": "Cancel",
-    "confirmRejection": "Confirm Rejection"
+    "confirmRejection": "Confirm Rejection",
+    "showing": "Showing {count} of {total} results",
+    "previous": "Previous",
+    "next": "Next",
+    "search": "Search Hubs",
+    "searchPlaceholder": "Search by name, slug or owner..."
   },
   "AdminHubPreview": {
     "hubNotFound": "Hub not found",
