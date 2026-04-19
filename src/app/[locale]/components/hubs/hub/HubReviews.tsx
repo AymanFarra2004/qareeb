@@ -15,6 +15,7 @@ interface Review {
   rating: number;
   comment: string | null;
   user: { id: number; name: string } | null;
+  has_reviewed: boolean;
   created_at?: string;
 }
 
@@ -67,23 +68,54 @@ function StarSelector({
 }
 
 // ── Read-only star display ─────────────────────────────────────────────────
-function StarDisplay({ value, size = "sm" }: { value: number; size?: "sm" | "md" | "lg" }) {
+function StarDisplay({
+  value,
+  size = "sm",
+  onClick,
+  clickLabel,
+}: {
+  value: number;
+  size?: "sm" | "md" | "lg";
+  onClick?: () => void;
+  clickLabel?: string;
+}) {
   const dim =
     size === "sm" ? "h-4 w-4" : size === "lg" ? "h-7 w-7" : "h-5 w-5";
-  return (
-    <div className="flex gap-0.5">
+
+  const stars = (
+    <div className={`flex gap-0.5 ${onClick ? "cursor-pointer" : ""}`}>
       {[1, 2, 3, 4, 5].map((star) => (
         <Star
           key={star}
-          className={`${dim} ${
+          className={`${dim} transition-colors duration-100 ${
             star <= value
               ? "fill-amber-400 text-amber-400"
               : "fill-muted text-muted-foreground/20"
-          }`}
+          } ${onClick ? "group-hover:text-amber-500 group-hover:fill-amber-500" : ""}`}
         />
       ))}
     </div>
   );
+
+  if (onClick) {
+    return (
+      <button
+        type="button"
+        onClick={onClick}
+        className="group flex items-center gap-2 hover:opacity-80 transition-opacity"
+        aria-label={clickLabel ?? "Edit rating"}
+      >
+        {stars}
+        {clickLabel && (
+          <span className="text-xs text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+            {clickLabel}
+          </span>
+        )}
+      </button>
+    );
+  }
+
+  return stars;
 }
 
 // ── Individual review card ─────────────────────────────────────────────────
@@ -149,7 +181,9 @@ export default function HubReviews({
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  const hasExistingReview = myReview != null;
+  console.log("myReview", myReview?.has_reviewed);
+  const hasExistingReview = myReview?.has_reviewed == true;
+  console.log("hasExistingReview", hasExistingReview);
 
   const avg =
     averageRating ??
@@ -278,9 +312,26 @@ export default function HubReviews({
                 </button>
               </div>
 
-              {/* Layout Swap: Star display below buttons/text */}
+              {/* Layout Swap: Star display below buttons/text — click to edit */}
+              
+              
               <div className="pt-2">
-                <StarDisplay value={myReview!.rating} size="lg" />
+              
+              {hasExistingReview ? <StarDisplay
+                  value={myReview!.rating}
+                  size="lg"
+                  onClick={() => {
+                    setEditRating(myReview!.rating);
+                    setEditComment(myReview!.comment ?? "");
+                    setIsEditing(true);
+                  }}
+                />: <StarDisplay
+                  value={0}
+                  onClick={() => {
+                    console.log("hasExistingReview", hasExistingReview);
+                  }}
+                  size="lg"
+                />}
               </div>
 
               {/* Delete confirmation inline panel */}
