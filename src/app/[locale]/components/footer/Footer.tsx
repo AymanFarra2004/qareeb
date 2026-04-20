@@ -13,8 +13,8 @@ export function Footer() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div className="col-span-1 md:col-span-2">
-            <Link href="/" className="flex items-center gap-2 mb-4">
-              <MapPin className="h-6 w-6 text-primary" />
+            <Link href="/" className="flex items-center gap-3 mb-4">
+              <img src="/logo.png" alt="Qareeb Logo" className="h-8 w-auto object-contain" />
               <span className="font-bold text-xl tracking-tight text-foreground">
                 Qareeb | قريب
               </span>

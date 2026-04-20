@@ -62,10 +62,8 @@ export function Header() {
           
           {/* Logo */}
           <div className="shrink-0 flex items-center">
-            <Link href="/" className="flex items-center gap-2 group">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-primary flex items-center justify-center transform group-hover:scale-105 transition-transform shadow-lg shadow-primary/20">
-                <MapPin className="h-6 w-6 text-white" />
-              </div>
+            <Link href="/" className="flex items-center gap-3 transition-transform hover:scale-105 active:scale-95">
+              <img src="/logo.png" alt="Qareeb Logo" className="h-10 w-auto object-contain drop-shadow-md" />
               <span className="font-extrabold text-2xl tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-foreground to-foreground/70">
                 Qareeb | قريب
               </span>
