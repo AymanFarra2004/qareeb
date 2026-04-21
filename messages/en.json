@@ -22,10 +22,10 @@
     }
   },
   "Hero": {
-    "titleQareeb": "Find Your <br></br> <primary>Digital Sanctuary</primary>",
-    "title": "Find the connection <br></br> <primary>you need in Gaza.</primary>",
-    "descriptionQareeb": "Curated digital spaces designed for deep work. Discover meticulously vetted environments blending high-end design with uncompromising utility.",
-    "description": "Discover safe, accessible hubs providing reliable internet, electricity, and quiet workspaces when you need them most.",
+    "titleQareeb": "Find your <br></br> <primary>perfect workspace.</primary>",
+    "title": "Find the workspace <br></br> <primary>you need in Gaza.</primary>",
+    "descriptionQareeb": "Discover quiet, well-equipped spaces for remote work and study. We verify every location to ensure you get reliable internet and a comfortable environment.",
+    "description": "Find nearby cafes and workspaces with reliable internet, electricity, and the quiet you need to focus.",
     "searchByNamePlaceholder": "Search by Name...",
     "searchButton": "Search",
     "exploreHubs": "Explore Hubs",
@@ -53,7 +53,7 @@
     "viewDetails": "View Details",
     "title": "Featured",
     "titleHighlight": "Hubs",
-    "description": "Discover top-rated, premium spaces across Gaza designed for productivity, connection, and comfort.",
+    "description": "Explore top-rated workspaces designed to help you stay productive, connected, and comfortable.",
     "viewAll": "View all locations",
     "verified": "Verified",
     "exploreSpace": "Explore Space",
@@ -68,11 +68,11 @@
     "viewAll": "View all hubs"
   },
   "Cta": {
-    "title": "Ready to find your",
-    "titleHighlight": "perfect space?",
-    "description": "Join thousands of users discovering the best workspaces, cafes, and creative hubs in Gaza. Add your own hub to reach more people.",
+    "title": "Ready to add your",
+    "titleHighlight": "hub (workspace)?",
+    "description": "Join our community of professionals and students finding great places to work in Gaza. Share your space and reach more people.",
     "getStarted": "Get Started for Free",
-    "listHub": "List Your Hub"
+    "listHub": "Add Your Hub"
   },
   "Footer": {
     "tagline": "Empowering communities in Gaza by connecting people to essential hubs that provide internet, electricity, and safe workspaces.",
