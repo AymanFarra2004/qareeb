@@ -102,7 +102,7 @@ export default function ContactView() {
       icon: Phone,
       labelKey: "info.phone.label",
       valueKey: "info.phone.value",
-      hrefPrefix: "tel:",
+      hrefPrefix: "https://wa.me/",
     },
     {
       icon: Instagram,
@@ -146,10 +146,10 @@ export default function ContactView() {
           </motion.p>
         </motion.div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-10">
+        <div className="grid grid-cols-1  lg:grid-cols-5 gap-10">
           {/* ── Left: Contact info ── */}
           <motion.aside
-            className="lg:col-span-2 flex flex-col gap-6"
+            className="lg:col-span-2 flex flex-col gap-6 order-2 lg:order-none"
             initial="hidden"
             animate="visible"
             variants={stagger}
@@ -190,7 +190,7 @@ export default function ContactView() {
             <motion.div
               variants={fadeUp}
               custom={3}
-              className="flex items-start gap-3 p-4 rounded-2xl bg-primary/5 border border-primary/20"
+              className="flex items-start gap-3 p-4 rounded-2xl bg-primary/5 border border-primary/20 "
             >
               <MessageSquare className="w-5 h-5 text-purple-600 shrink-0 mt-0.5" />
               <p className="text-sm text-muted-foreground leading-relaxed">
@@ -201,7 +201,7 @@ export default function ContactView() {
 
           {/* ── Right: Form ── */}
           <motion.div
-            className="lg:col-span-3"
+            className="lg:col-span-3 order-1 lg:order-none"
             initial={{ opacity: 0, y: 32 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{
