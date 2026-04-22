@@ -656,11 +656,15 @@
       },
       "phone": {
         "label": "Phone / WhatsApp",
-        "value": "+970 59 000 0000"
+        "value": "+970 592135146"
       },
       "location": {
         "label": "Location",
         "value": "Gaza, Palestine"
+      },
+      "instagram": {
+        "label": "Instagram",
+        "value": "@qareeb_gaza"
       },
       "responseNote": "We typically respond within 24 hours. For urgent matters related to hub availability, please reach out via WhatsApp."
     },
