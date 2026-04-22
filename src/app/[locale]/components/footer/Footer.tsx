@@ -47,6 +47,11 @@ export function Footer() {
                   {t("submitHub")}
                 </Link>
               </li>
+              <li>
+                <Link href="/contact" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                  {t("contactUs")}
+                </Link>
+              </li>
             </ul>
           </div>
 
