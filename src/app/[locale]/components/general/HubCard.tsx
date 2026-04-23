@@ -1,6 +1,6 @@
 import Image from "next/image"
 import {Link} from '@/src/i18n/routing'
-import { MapPin, Wifi, Zap, Clock, ShieldCheck, Monitor, Coffee, Tag } from "lucide-react"
+import { MapPin, Wifi, Zap, Clock, ShieldCheck, Monitor, Coffee, Tag, Star } from "lucide-react"
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { IHub } from "@/data/hubs"
@@ -93,6 +93,18 @@ export function HubCard({ hub }: IHubCardProps) {
               <MapPin className="h-3.5 w-3.5 mr-1 shrink-0" />
               {hub.governorate}{hub.location ? ` • ${hub.location}` : ""}
             </div>
+          </div>
+          <div className="flex items-center gap-1 shrink-0 bg-secondary/50 px-2 py-1 rounded-md text-sm font-medium">
+             {hub.review && hub.review > 0 ? (
+               <>
+                 <span>{Number(Number(hub.review).toFixed(1))}/5</span>
+                 <Star className="h-4 w-4 fill-amber-500 text-amber-500" />
+               </>
+             ) : (
+               <span className="text-xs text-muted-foreground whitespace-nowrap">
+                 {locale === "ar" ? "لا يوجد تقييمات بعد" : "no reviews yet"}
+               </span>
+             )}
           </div>
         </div>
       </CardHeader>

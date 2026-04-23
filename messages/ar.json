@@ -137,7 +137,8 @@
     "confirmPasswordPlaceholder": "أعد إدخال كلمة المرور",
     "accountType": "نوع الحساب",
     "regularUser": "مستخدم عادي",
-    "hubOwner": "مالك المركز"
+    "hubOwner": "مالك المركز",
+    "redirecting": "جارٍ التحويل..."
   },
   "Admin": {
     "platformOverview": "نظرة عامة على المنصة",

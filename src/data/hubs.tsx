@@ -27,6 +27,7 @@ export interface IHub {
     contact:Icontact;
     activeOffer?: any;
     socialAccounts?: SocialAccount[];
+    review?: number;
 }
 
 export function getServiceIcon(serviceName: string, className: string = "h-5 w-5"): React.ReactNode {

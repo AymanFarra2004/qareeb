@@ -20,7 +20,8 @@ export default function FeaturedHubSection({filter, hubs = []}: {filter: {govern
           (apiHub.images.main.startsWith('http') ? apiHub.images.main : `https://karam.idreis.net${apiHub.images.main.startsWith('/') ? '' : '/'}${apiHub.images.main}`) 
           : "https://placehold.co/600x400?text=No+Image",
         verificationStatus: apiHub.status === "approved" ? "Verified" : "Pending",
-        contact: { contactNumber: apiHub.contact || "" }
+        contact: { contactNumber: apiHub.contact || "" },
+        review: apiHub.reviews.average_rating || 0,
     }));
 
     const displayHubs = mappedHubs;

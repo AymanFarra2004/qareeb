@@ -1,7 +1,7 @@
 "use client";
 import { useTranslations, useLocale } from "next-intl";
 import { motion } from "framer-motion";
-import { MapPin, Zap, Clock, Coins, Wifi, Power, Users } from "lucide-react";
+import { MapPin, Zap, Clock, Coins, Wifi, Power, Users, Star } from "lucide-react";
 import { format24to12 } from "@/src/lib/utils";
 import { getServiceIcon } from "@/src/data/hubs";
 
@@ -39,6 +39,7 @@ export default function HubsBentoGrid({ hubs = [] }: { hubs?: any[] }) {
       (apiHub.images.main.startsWith('http') ? apiHub.images.main : `https://karam.idreis.net${apiHub.images.main.startsWith('/') ? '' : '/'}${apiHub.images.main}`)
       : "https://placehold.co/600x400?text=No+Image",
     verificationStatus: apiHub.status === "approved" ? "Verified" : "Pending",
+    review: apiHub.reviews?.average_rating || 0,
   }));
 
   // Only show approved hubs
@@ -111,10 +112,26 @@ export default function HubsBentoGrid({ hubs = [] }: { hubs?: any[] }) {
               </div>
 
               <div className="p-6 flex-1 flex flex-col">
-                <h3 className="text-xl font-bold text-foreground mb-1 line-clamp-1">{hub.name}</h3>
-                <p className="text-sm text-muted-foreground mb-6 line-clamp-1">
-                  {(hub.city || "") + (hub.city && hub.area ? " - " : "") + (hub.area || "")}
-                </p>
+                <div className="flex justify-between items-start gap-4 mb-6">
+                  <div className="w-full">
+                    <h3 className="text-xl font-bold text-foreground mb-1 line-clamp-1">{hub.name}</h3>
+                    <p className="text-sm text-muted-foreground line-clamp-1">
+                      {(hub.city || "") + (hub.city && hub.area ? " - " : "") + (hub.area || "")}
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-1 shrink-0 bg-secondary/50 px-2 py-1 rounded-md text-sm font-medium">
+                    {hub.review && hub.review > 0 ? (
+                      <>
+                        <span>{Number(Number(hub.review).toFixed(1))}/5</span>
+                        <Star className="h-4 w-4 fill-amber-500 text-amber-500" />
+                      </>
+                    ) : (
+                      <span className="text-xs text-muted-foreground whitespace-nowrap">
+                        {locale === "ar" ? "لا يوجد تقييمات بعد" : "no reviews yet"}
+                      </span>
+                    )}
+                  </div>
+                </div>
 
                 {/* Utility Icons */}
                 <div className="flex flex-wrap gap-4 mb-6 mt-auto">

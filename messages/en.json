@@ -137,7 +137,8 @@
     "confirmPasswordPlaceholder": "Confirm your password",
     "accountType": "Account Type",
     "regularUser": "Regular User",
-    "hubOwner": "Hub Owner"
+    "hubOwner": "Hub Owner",
+    "redirecting": "Redirecting..."
   },
   "Admin": {
     "platformOverview": "Platform Overview",

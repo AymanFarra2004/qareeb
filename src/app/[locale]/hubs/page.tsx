@@ -36,6 +36,7 @@ export default async function HubsDirectory() {
       : "https://placehold.co/600x400?text=No+Image",
     verificationStatus: apiHub.status === "approved" ? "Verified" : "Pending",
     contact: { contactNumber: apiHub.contact || "" },
+    review: apiHub.reviews?.average_rating || 0
   }));
 
   // Only show approved hubs to the public directory
