@@ -44,8 +44,8 @@ function CallbackHandler() {
         // 3. Set auth cookies via Server Action for SSR support
         await handleGoogleCallback(token, userStr);
 
-        // 4. Redirect to dashboard
-        router.push("/dashboard");
+        // 4. Redirect
+        router.push("/");
         router.refresh();
       } catch (e) {
         console.error("Failed to process auth callback", e);

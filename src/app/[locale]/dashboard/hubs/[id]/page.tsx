@@ -1175,14 +1175,14 @@ function OffersTab({ hubSlug }: { hubSlug: string }) {
                 <div className="flex items-center gap-2">
                   <button 
                     onClick={() => handleEdit(offer)}
-                    className="p-3 text-muted-foreground hover:text-primary hover:bg-primary/5 rounded-xl transition-all opacity-0 group-hover:opacity-100"
+                    className="p-3 text-muted-foreground hover:text-primary hover:bg-primary/5 rounded-xl transition-all opacity-100 md:opacity-0 md:group-hover:opacity-100"
                   >
                     <Edit className="h-5 w-5" />
                   </button>
                   <button 
                     onClick={() => handleDelete(offer.id)}
                     disabled={deletingId === offer.id}
-                    className="p-3 text-red-500 hover:bg-red-50 rounded-xl transition-all opacity-0 group-hover:opacity-100 disabled:opacity-50"
+                    className="p-3 text-red-500 hover:bg-red-50 rounded-xl transition-all opacity-100 md:opacity-0 md:group-hover:opacity-100 disabled:opacity-50"
                   >
                     {deletingId === offer.id ? <Loader2 className="h-5 w-5 animate-spin" /> : <Trash2 className="h-5 w-5" />}
                   </button>

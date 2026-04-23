@@ -57,7 +57,12 @@ export function DashboardHeader() {
             <span className="hidden sm:inline-block">{t("home")}</span>
           </Link>
           <div className="h-4 w-px bg-border mx-0.5 sm:mx-1"></div>
-          <h1 className="text-base sm:text-lg font-semibold text-foreground truncate max-w-[100px] sm:max-w-none">{t("dashboard")}</h1>
+          <div className="flex items-center gap-2 px-2">
+            <img src="/logo.png" alt="Qareeb Logo" className="h-8 w-auto object-contain" />
+            <h1 className="text-base sm:text-lg font-bold text-foreground truncate max-w-[120px] sm:max-w-none">
+              Qareeb | قريب
+            </h1>
+          </div>
         </div>
       </div>
 
