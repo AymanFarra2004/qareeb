@@ -710,6 +710,48 @@
       }
     }
   },
+  "AboutUs": {
+    "meta": {
+      "title": "About Us",
+      "description": "Learn about Qareeb's mission to empower communities in Gaza by connecting them to essential hubs for internet, electricity, and workspace."
+    },
+    "badge": "Our Story",
+    "heading": "Empowering Gaza's <br></br> <primary>Resilient Communities</primary>",
+    "subheading": "Qareeb was born out of a critical need for connection, consistency, and a place to grow despite the challenges.",
+    "mission": {
+      "title": "Our Mission",
+      "description": "To bridge the gap between essential resources and the people who need them most. We believe that every student, professional, and community member in Gaza deserves a reliable space to work, learn, and stay connected."
+    },
+    "vision": {
+      "title": "Our Vision",
+      "description": "A future where Gaza's digital and physical infrastructure is resilient, accessible, and community-driven, enabling everyone to reach their full potential."
+    },
+    "whyQareeb": {
+      "title": "Why Qareeb?",
+      "reason1": {
+        "title": "Verified Hubs",
+        "desc": "We manually verify every location to ensure it meets our standards for internet speed, electricity reliability, and safety."
+      },
+      "reason2": {
+        "title": "Community First",
+        "desc": "Our platform is built for the community, by the community. User reviews help everyone find the best spots."
+      },
+      "reason3": {
+        "title": "Easy Access",
+        "desc": "With localized search and detailed filters, finding the nearest workspace has never been easier."
+      }
+    },
+    "stats": {
+      "hubs": "Verified Hubs",
+      "users": "Active Users",
+      "cities": "Cities Covered"
+    },
+    "cta": {
+      "title": "Ready to find your next workspace?",
+      "subtitle": "Join thousands of professionals and students using Qareeb to stay productive in Gaza.",
+      "button": "Explore Hubs"
+    }
+  },
    "servicesIcons": {
     "wifi": "Wi-Fi",
     "electricity": "Electricity",
