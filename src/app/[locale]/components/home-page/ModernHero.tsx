@@ -201,7 +201,7 @@ export default function ModernHero({ hubs = [] }: { hubs?: any[] }) {
             {/* Center Overlay Element */}
             <div className="absolute w-32 h-32  rounded-full flex flex-col items-center justify-center  z-10">
               <span className="text-[#9333EA] font-extrabold text-2xl tracking-tight">
-                <img src="/qareeb_logo.png" alt="Logo" className="w-[350px] h-[350px] object-cover" />
+                <img src="/qareeb-logo-location.png" alt="Logo" className="w-auto h-[120px] object-cover" />
               </span>
             </div>
           </div>

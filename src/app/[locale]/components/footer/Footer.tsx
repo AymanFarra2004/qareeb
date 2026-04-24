@@ -56,7 +56,7 @@ export function Footer() {
 
             <div className="flex space-x-4 rtl:space-x-reverse text-muted-foreground">
               <span className="flex items-center gap-2 text-sm">
-                <Mail className="h-4 w-4" /> support@habbat.example.com
+                <Mail className="h-4 w-4" /> support@qareeb.gaza.com
               </span>
             </div>
           </div>
@@ -88,14 +88,6 @@ export function Footer() {
                   className="text-sm text-muted-foreground hover:text-primary transition-colors"
                 >
                   {t("submitHub")}
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/contact"
-                  className="text-sm text-muted-foreground hover:text-primary transition-colors"
-                >
-                  {t("contactUs")}
                 </Link>
               </li>
             </ul>

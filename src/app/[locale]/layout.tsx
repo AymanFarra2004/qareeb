@@ -35,10 +35,10 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
     metadataBase: new URL(baseUrl),
     title: t('meta.title'),
     description: t('meta.description'),
-    keywords: ["Gaza", "hubs", "internet", "electricity", "workspace", "Qareeb", "Palestine", "غزة", "قريب"],
+    keywords: ["Gaza", "hubs", "internet", "electricity", "workspace", "Qareeb", "Palestine", "غزة", "قريب", "مساحة عمل", "مساحات عمل", "اماكن عمل", "اماكن كهرباء", "اماكن انترنت", "هب", "هبات"],
     authors: [{ name: "Qareeb Team" }],
     icons: {
-      icon: '/favicon.png',
+      icon: '/qareeb-logo-location.png',
     },
     alternates: {
       canonical: `${baseUrl}/${locale}`,
@@ -86,7 +86,6 @@ export default async function RootLayout({
       user = JSON.parse(decodedUser);
     }
     
-    console.log("✅ User parsed successfully:", user.name);
   } catch (e) {
     console.error("Layout JSON Parse Error:", e);
     try { user = JSON.parse(userCookie); } catch(e2) {}
