@@ -1,5 +1,6 @@
 "use client";
 
+import { submitContactForm } from "@/src/actions/contact";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   AlertCircle,
@@ -16,8 +17,8 @@ import {
   User,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
+import Link from "next/link";
 import { useState } from "react";
-import { submitContactForm } from "@/src/actions/contact";
 
 type FormState = "idle" | "pending" | "success" | "error";
 
@@ -35,7 +36,11 @@ const fadeUp = {
   visible: (i: number) => ({
     opacity: 1,
     y: 0,
-    transition: { delay: i * 0.08, duration: 0.45, ease: [0.22, 1, 0.36, 1] as const },
+    transition: {
+      delay: i * 0.08,
+      duration: 0.45,
+      ease: [0.22, 1, 0.36, 1] as const,
+    },
   }),
 };
 
@@ -162,9 +167,13 @@ export default function ContactView() {
                   custom={i}
                   className="group flex items-start gap-4 p-5 rounded-2xl bg-card border border-border hover:border-purple-600/40 hover:shadow-lg hover:shadow-primary/5 transition-all duration-300"
                 >
-                  <div className="shrink-0 w-11 h-11 flex items-center justify-center rounded-xl bg-purple-600/10 text-purple-600 group-hover:bg-purple-600 group-hover:text-primary-foreground transition-colors duration-300">
+                  <Link
+                    href={hrefPrefix ? `${hrefPrefix}${t(valueKey)}` : "#"}
+                    target="_blank"
+                    className="shrink-0 w-11 h-11 flex items-center justify-center rounded-xl bg-purple-600/10 text-purple-600 group-hover:bg-purple-600 group-hover:text-primary-foreground transition-colors duration-300"
+                  >
                     <Icon className="w-5 h-5" />
-                  </div>
+                  </Link>
                   <div className="min-w-0">
                     <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1">
                       {t(labelKey)}
