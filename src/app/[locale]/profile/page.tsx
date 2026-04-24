@@ -14,8 +14,15 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "Profile" });
   return {
-    title: `${t("title")} | Habbat`,
-    description: t("subtitle"),
+    title: t("meta.title"),
+    description: t("meta.description"),
+    alternates: {
+      canonical: `/${locale}/profile`,
+      languages: {
+        en: '/en/profile',
+        ar: '/ar/profile',
+      },
+    },
   };
 }
 

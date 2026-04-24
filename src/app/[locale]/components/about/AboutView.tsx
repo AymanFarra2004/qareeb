@@ -164,9 +164,13 @@ export default function AboutView() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.1 }}
-                className="flex flex-col items-center p-6"
+                className="flex flex-col items-center p-6 group"
               >
-                <div className={`w-16 h-16 rounded-2xl bg-${feature.color}-600/10 flex items-center justify-center text-${feature.color}-600 mb-6`}>
+                <div className={`w-16 h-16 rounded-2xl flex items-center justify-center mb-6 transition-all duration-300 group-hover:scale-110 ${
+                  feature.icon === Search 
+                    ? 'bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-500 shadow-sm' 
+                    : `bg-${feature.color}-600/10 text-${feature.color}-600`
+                }`}>
                   <feature.icon className="w-8 h-8" />
                 </div>
                 <h3 className="text-xl font-bold mb-3">{t(feature.titleKey)}</h3>

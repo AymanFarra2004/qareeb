@@ -4,11 +4,19 @@ import ContactView from "@/components/contact/ContactView";
 import { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 
-export async function generateMetadata(): Promise<Metadata> {
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params;
   const t = await getTranslations("ContactUs");
   return {
     title: `${t("meta.title")} | Qareeb`,
     description: t("meta.description"),
+    alternates: {
+      canonical: `/${locale}/contact`,
+      languages: {
+        en: '/en/contact',
+        ar: '/ar/contact',
+      },
+    },
   };
 }
 

@@ -6,9 +6,20 @@ import HubsClient from "@/components/hubs/HubsClient"
 import { getAllHubs } from "@/src/actions/hubs"
 import { getLocale, getTranslations } from "next-intl/server"
 import { format24to12 } from "@/src/lib/utils"
-export const metadata: Metadata = {
-  title: "Browse Hubs | Qareeb",
-  description: "Explore available internet and electricity hubs across Gaza.",
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations("HubsPage");
+  return {
+    title: t("meta.title"),
+    description: t("meta.description"),
+    alternates: {
+      canonical: `/${locale}/hubs`,
+      languages: {
+        en: '/en/hubs',
+        ar: '/ar/hubs',
+      },
+    },
+  };
 }
 
 export default async function HubsDirectory() {

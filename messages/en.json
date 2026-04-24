@@ -1,4 +1,10 @@
 {
+  "Index": {
+    "meta": {
+      "title": "Qareeb - Connect to Essential Services in Gaza",
+      "description": "Discover quiet, well-equipped spaces for remote work and study in Gaza. Find reliable internet, electricity, and a comfortable environment."
+    }
+  },
   "Header": {
     "nav": {
       "home": "Home",
@@ -91,6 +97,10 @@
   "HubsPage": {
     "title": "Find a Hub",
     "description": "Browse all available hubs across Gaza. Use the filters to find the exact services and locations you need.",
+    "meta": {
+      "title": "Explore Hubs | Qareeb",
+      "description": "Search and filter through verified hubs in Gaza. Find the best places for internet, electricity, and focused work."
+    },
     "filters": "Filters",
     "clearAll": "Clear all",
     "searchName": "Search Name",
@@ -112,6 +122,10 @@
   "SignIn": {
     "welcomeBack": "Welcome back",
     "subtitle": "Sign in to manage your hubs or save your favorites.",
+    "meta": {
+      "title": "Sign In | Qareeb",
+      "description": "Sign in to your Qareeb account to manage your hubs or explore workspaces."
+    },
     "emailLabel": "Email address",
     "passwordLabel": "Password",
     "rememberMe": "Remember me",
@@ -126,6 +140,10 @@
   "SignUp": {
     "createAccount": "Create an account",
     "subtitle": "Join Qareeb to connect with hubs across Gaza.",
+    "meta": {
+      "title": "Create an Account | Qareeb",
+      "description": "Join Qareeb today to find and list essential service hubs across Gaza."
+    },
     "nameLabel": "Full Name",
     "emailLabel": "Email address",
     "passwordLabel": "Password",
@@ -626,6 +644,10 @@
   "Profile": {
     "title": "My Profile",
     "subtitle": "Manage your personal information and account settings.",
+    "meta": {
+      "title": "My Profile | Qareeb",
+      "description": "Manage your Qareeb profile and account settings."
+    },
     "name": "Full Name",
     "email": "Email Address",
     "phone": "Phone Number",

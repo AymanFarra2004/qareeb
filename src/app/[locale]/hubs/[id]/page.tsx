@@ -11,6 +11,39 @@ import HhubSideBar from "@/components/hubs/hub/HhubSideBar"
 import HubReviews from "@/components/hubs/hub/HubReviews"
 import { getLocale, getTranslations } from "next-intl/server"
 import { format24to12 } from "@/src/lib/utils"
+import { Metadata } from "next"
+
+export async function generateMetadata({ params }: { params: Promise<{ id: string, locale: string }> }): Promise<Metadata> {
+  const { id, locale } = await params;
+  const hubRes = await getHubBySlug(id, locale);
+  const rawHub = hubRes.success ? hubRes.data : null;
+
+  if (!rawHub) {
+    return {
+      title: "Hub Not Found | Qareeb",
+    };
+  }
+
+  const name = typeof rawHub.name === 'string' ? rawHub.name : (rawHub.name?.[locale] || rawHub.name?.en || rawHub.name?.ar || id);
+  const description = typeof rawHub.description === 'string' ? rawHub.description : (rawHub.description?.[locale] || rawHub.description?.en || rawHub.description?.ar || "");
+
+  return {
+    title: `${name} | Qareeb`,
+    description: description.substring(0, 160),
+    alternates: {
+      canonical: `/${locale}/hubs/${id}`,
+      languages: {
+        en: `/en/hubs/${id}`,
+        ar: `/ar/hubs/${id}`,
+      },
+    },
+    openGraph: {
+      title: `${name} | Qareeb`,
+      description: description.substring(0, 160),
+      type: "website",
+    },
+  };
+}
 
 
 

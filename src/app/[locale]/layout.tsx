@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono, Noto_Sans_Arabic } from "next/font/google";
 import "./globals.css";
 import { NextIntlClientProvider } from 'next-intl';
-import { getMessages } from 'next-intl/server';
+import { getTranslations, getMessages } from 'next-intl/server';
 import StoreProvider from "@/src/providers/storeProvider";
 import AuthHydrator from "@/src/providers/AuthHydrator";
 import { ThemeProvider } from "@/src/providers/ThemeProvider";
@@ -25,26 +25,42 @@ const notoSansArabic = Noto_Sans_Arabic({
   weight: ["400", "500", "600", "700", "800"],
 });
 
-export const metadata: Metadata = {
-  title: "Qareeb - Connect to Essential Services in Gaza",
-  description: "Qareeb connects people in Gaza to essential hubs providing internet, electricity, workspaces, and essential services.",
-  keywords: ["Gaza", "hubs", "internet", "electricity", "workspace", "Qareeb", "Palestine"],
-  authors: [{ name: "Qareeb Team" }],
-  icons: {
-    icon: '/favicon.png',
-  },
-  openGraph: {
-    title: "Qareeb - Connect to Essential Services in Gaza",
-    description: "Find the nearest internet, electricity, and workspace hubs in Gaza through Habbat.",
-    siteName: "Habbat",
-    type: "website",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Habbat - Connect to Essential Services in Gaza",
-    description: "Find the nearest internet, electricity, and workspace hubs in Gaza through Habbat.",
-  },
-};
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: 'Index' });
+
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://qareeb.ps';
+
+  return {
+    metadataBase: new URL(baseUrl),
+    title: t('meta.title'),
+    description: t('meta.description'),
+    keywords: ["Gaza", "hubs", "internet", "electricity", "workspace", "Qareeb", "Palestine", "غزة", "قريب"],
+    authors: [{ name: "Qareeb Team" }],
+    icons: {
+      icon: '/favicon.png',
+    },
+    alternates: {
+      canonical: `${baseUrl}/${locale}`,
+      languages: {
+        en: `${baseUrl}/en`,
+        ar: `${baseUrl}/ar`,
+      },
+    },
+    openGraph: {
+      title: t('meta.title'),
+      description: t('meta.description'),
+      siteName: "Qareeb",
+      type: "website",
+      locale: locale === 'ar' ? 'ar_EG' : 'en_US',
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: t('meta.title'),
+      description: t('meta.description'),
+    },
+  };
+}
 
 export default async function RootLayout({
   children,
