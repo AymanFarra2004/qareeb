@@ -14,6 +14,7 @@ import {
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { EditProfileModal } from "./EditProfileModal";
+import { ChangePasswordModal } from "./ChangePasswordModal";
 
 interface ProfileData {
   id?: number;
@@ -112,6 +113,7 @@ const itemVariants = {
 export function ProfileView({ profile }: ProfileViewProps) {
   const t = useTranslations("Profile");
   const [showEditModal, setShowEditModal] = useState(false);
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
 
   const initials = (profile.name ?? "U")
     .split(" ")
@@ -222,6 +224,7 @@ export function ProfileView({ profile }: ProfileViewProps) {
               </button>
               <button
                 type="button"
+                onClick={() => setShowPasswordModal(true)}
                 className="cursor-pointer w-full flex items-center gap-3 px-4 py-3 rounded-xl border border-border text-foreground font-medium text-sm hover:bg-muted hover:-translate-y-0.5 transition-all active:scale-95"
               >
                 <Lock className="h-4 w-4 shrink-0" />
@@ -248,6 +251,12 @@ export function ProfileView({ profile }: ProfileViewProps) {
         <EditProfileModal
           profile={profile}
           onClose={() => setShowEditModal(false)}
+        />
+      )}
+
+      {showPasswordModal && (
+        <ChangePasswordModal
+          onClose={() => setShowPasswordModal(false)}
         />
       )}
     </>
