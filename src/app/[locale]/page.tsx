@@ -4,7 +4,8 @@ import { Footer } from "@/components/footer/Footer";
 import { getAllHubs } from "@/src/actions/hubs";
 import { getLocale, getTranslations } from "next-intl/server";
 import { Metadata } from "next";
-// import{APITest} from "@/API tests/APITest";
+import { getUserLocationContext } from "@/src/lib/getUserLocationContext";
+import { filterBentoHubs } from "@/src/lib/filterBentoHubs";
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
@@ -39,9 +40,17 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 
 export default async function Home() {
   const locale = await getLocale();
-  const res = await getAllHubs(locale);
-  let hubs = res.data || [];
+
+  const [hubsRes, userLocationContext] = await Promise.all([
+    getAllHubs(locale),
+    getUserLocationContext(locale),
+  ]);
+
+  let hubs = hubsRes.data || [];
   if (!Array.isArray(hubs)) hubs = [];
+
+  const bentoHubs = filterBentoHubs(hubs, userLocationContext);
+
   return (
     <div className="flex flex-col min-h-screen bg-gray-50 dark:bg-[#050505]">
       {/* 
@@ -53,7 +62,7 @@ export default async function Home() {
         <Header />
       </div>
       <main className="flex-1">
-        <ModernHomeView initialHubs={hubs} />
+        <ModernHomeView initialHubs={hubs} bentoHubs={bentoHubs} />
       </main>
 
       <div className="relative z-50 bg-white dark:bg-[#0A0A0B] border-t border-border">

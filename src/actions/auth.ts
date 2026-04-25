@@ -51,6 +51,31 @@ export async function loginUser(prevState: any, formData: FormData) {
         secure: process.env.NODE_ENV === "production",
         maxAge: 60 * 60 * 24 * 7, // 1 week
       });
+
+      // Sync user_location_id — fetch profile to get the stored location
+      try {
+        const profileRes = await fetch("https://karam.idreis.net/api/v1/profile?lang=ar", {
+          headers: {
+            "Accept": "application/json",
+            "Authorization": `Bearer ${body.data.token}`,
+          },
+          next: { revalidate: 0 },
+        });
+        const profileBody = await profileRes.json();
+        const locationId = profileBody?.data?.location?.id ?? profileBody?.data?.location_id ?? null;
+        if (locationId) {
+          cookieStore.set({
+            name: "user_location_id",
+            value: String(locationId),
+            path: "/",
+            secure: process.env.NODE_ENV === "production",
+            maxAge: 60 * 60 * 24 * 365, // 1 year
+          });
+        }
+      } catch {
+        // Non-fatal — location cookie will be missing but login still succeeds
+      }
+
       return { success: true, message: body.message || "Logged in successfully" };
     }
 
@@ -79,6 +104,30 @@ export async function handleGoogleCallback(token: string, userStr: string | null
       secure: process.env.NODE_ENV === "production",
       maxAge: 60 * 60 * 24 * 7,
     });
+
+    // Sync user_location_id from profile
+    try {
+      const profileRes = await fetch("https://karam.idreis.net/api/v1/profile?lang=ar", {
+        headers: {
+          "Accept": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+        next: { revalidate: 0 },
+      });
+      const profileBody = await profileRes.json();
+      const locationId = profileBody?.data?.location?.id ?? profileBody?.data?.location_id ?? null;
+      if (locationId) {
+        cookieStore.set({
+          name: "user_location_id",
+          value: String(locationId),
+          path: "/",
+          secure: process.env.NODE_ENV === "production",
+          maxAge: 60 * 60 * 24 * 365,
+        });
+      }
+    } catch {
+      // Non-fatal
+    }
   }
 
   if (userStr) {
@@ -201,6 +250,18 @@ export async function updateUserProfile(data: any) {
 
     if (!res.ok) {
       return { error: body.message || "Failed to update profile" };
+    }
+
+    // Sync user_location_id cookie whenever the user saves a new location
+    const newLocationId = data.location_id ?? null;
+    if (newLocationId) {
+      cookieStore.set({
+        name: "user_location_id",
+        value: String(newLocationId),
+        path: "/",
+        secure: process.env.NODE_ENV === "production",
+        maxAge: 60 * 60 * 24 * 365, // 1 year
+      });
     }
 
     return { success: true, data: body.data || body };

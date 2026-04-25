@@ -1,13 +1,17 @@
 "use client";
 
-import { useState } from "react";
 import ModernHero from "./ModernHero";
 import HeebatRibbon from "./HeebatRibbon";
 import HubsBentoGrid from "./HubsBentoGrid";
 import ModernCta from "./ModernCta";
 import { motion } from "framer-motion";
 
-export default function ModernHomeView({ initialHubs = [] }: { initialHubs?: any[] }) {
+type ModernHomeViewProps = {
+  initialHubs?: any[];
+  bentoHubs?: any[];
+};
+
+export default function ModernHomeView({ initialHubs = [], bentoHubs = [] }: ModernHomeViewProps) {
   return (
     <div className="bg-gray-50 dark:bg-[#050505] text-foreground min-h-screen pt-12">
       <ModernHero hubs={initialHubs} />
@@ -27,7 +31,7 @@ export default function ModernHomeView({ initialHubs = [] }: { initialHubs?: any
         viewport={{ once: true, margin: "-80px" }}
         transition={{ duration: 0.8 }}
       >
-        <HubsBentoGrid hubs={initialHubs} />
+        <HubsBentoGrid hubs={bentoHubs} />
       </motion.div>
 
       <motion.div

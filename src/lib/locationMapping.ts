@@ -33,7 +33,7 @@ export function getGovernorateKeyByLocationId(locationId: number | null | undefi
   }
   
   if ((GOVERNORATE_ID_MAP.middleArea as readonly number[]).includes(locationId)) {
-    return "deirAlBalah"; // Using Deir Al Balah key as it represents Middle Area conventionally in your app
+    return "middleArea"; 
   }
   
   if ((GOVERNORATE_ID_MAP.khanYunis as readonly number[]).includes(locationId)) {

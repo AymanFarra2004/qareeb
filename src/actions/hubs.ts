@@ -12,6 +12,43 @@ function getLangParam(locale: string = "ar"): string {
 }
 // Using v1 as confirmed manually; the POST endpoints for services likely need backend route matching verification
 
+/**
+ * Fetches the full flat locations list (governorates, cities, areas) from the public API.
+ * No authentication required.
+ */
+export async function getPublicLocations(locale: string = "ar") {
+  try {
+    const langParam = getLangParam(locale);
+    const res = await fetch(`${API_BASE_URL}/locations?${langParam}`, {
+      method: "GET",
+      headers: { "Accept": "application/json" },
+      next: { tags: ["public-locations"], revalidate: 3600 }, // cache for 1 hour
+    });
+    const result = await res.json();
+    if (res.ok && result.status === "success") {
+      return { success: true, data: result.data as LocationEntry[] };
+    }
+    return { error: result.message || "Failed to fetch locations", data: [] as LocationEntry[] };
+  } catch (error) {
+    return { error: "Network Error", data: [] as LocationEntry[] };
+  }
+}
+
+export type LocationEntry = {
+  id: number;
+  name: string;
+  slug: string;
+  parent_id: number | null;
+  type: "governorate" | "city" | "area";
+};
+
+export type UserLocationContext = {
+  userAreaId: number | null;
+  userCityId: number | null;
+  userGovernorateId: number | null;
+  allLocations: LocationEntry[];
+};
+
 export async function getAllHubs(locale: string = "ar") {
   try {
     const langParam = getLangParam(locale);

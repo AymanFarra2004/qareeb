@@ -1,7 +1,7 @@
 "use client";
 import { useTranslations, useLocale } from "next-intl";
 import { motion } from "framer-motion";
-import { MapPin, Zap, Clock, Coins, Wifi, Power, Users, Star } from "lucide-react";
+import { Coins, Star } from "lucide-react";
 import { format24to12 } from "@/src/lib/utils";
 import { getServiceIcon } from "@/src/data/hubs";
 
@@ -18,13 +18,11 @@ export default function HubsBentoGrid({ hubs = [] }: { hubs?: any[] }) {
     locationId: apiHub.location?.id || apiHub.location_id,
     city: (() => {
       const breadcrumb = apiHub.location?.breadcrumb || [];
-      const city = breadcrumb[1]?.name || "";
-      return city.trim();
+      return (breadcrumb[1]?.name || "").trim();
     })(),
     area: (() => {
       const breadcrumb = apiHub.location?.breadcrumb || [];
-      const area = breadcrumb[2]?.name || "";
-      return area;
+      return breadcrumb[2]?.name || "";
     })(),
     pricing: apiHub.pricing || "Free",
     hourlyPrice: apiHub.hourly_price,
@@ -32,35 +30,22 @@ export default function HubsBentoGrid({ hubs = [] }: { hubs?: any[] }) {
       ? `${format24to12(apiHub.working_hours.start, t("am"), t("pm"))} - ${format24to12(apiHub.working_hours.end, t("am"), t("pm"))}`
       : apiHub.operating_hours || "Contact for hours",
     services: [
-      ...Array.isArray(apiHub.all_services || apiHub.services) ? (apiHub.all_services || apiHub.services).map((s: any) => typeof s.name === 'string' ? s.name : (s.name?.[locale] || s.name?.en || s.name)) : [],
-      ...Array.isArray(apiHub.custom_services) ? apiHub.custom_services.map((s: any) => typeof s.name === 'string' ? s.name : (s.name?.[locale] || s.name?.en || s.name)) : [],
+      ...Array.isArray(apiHub.all_services || apiHub.services)
+        ? (apiHub.all_services || apiHub.services).map((s: any) =>
+            typeof s.name === 'string' ? s.name : (s.name?.[locale] || s.name?.en || s.name))
+        : [],
+      ...Array.isArray(apiHub.custom_services)
+        ? apiHub.custom_services.map((s: any) =>
+            typeof s.name === 'string' ? s.name : (s.name?.[locale] || s.name?.en || s.name))
+        : [],
     ],
-    imageUrl: apiHub.images?.main ?
-      (apiHub.images.main.startsWith('http') ? apiHub.images.main : `https://karam.idreis.net${apiHub.images.main.startsWith('/') ? '' : '/'}${apiHub.images.main}`)
+    imageUrl: apiHub.images?.main
+      ? (apiHub.images.main.startsWith('http')
+          ? apiHub.images.main
+          : `https://karam.idreis.net${apiHub.images.main.startsWith('/') ? '' : '/'}${apiHub.images.main}`)
       : "https://placehold.co/600x400?text=No+Image",
-    verificationStatus: apiHub.status === "approved" ? "Verified" : "Pending",
     review: apiHub.reviews?.average_rating || 0,
   }));
-
-  // Only show approved hubs
-  const displayHubs = mappedHubs.filter((apiHub: any) => apiHub.verificationStatus === "Verified");
-  const bentoHubs = displayHubs.slice(0, 6);
-
-  // Helper to map a service string to an icon (simple matching)
-  // const renderServiceIcon = (service: string, key: number) => {
-  //   const s = service.toLowerCase();
-  //   let Icon = MapPin;
-  //   if (s.includes("internet") || s.includes("wifi") || s.includes("fiber")) Icon = Wifi;
-  //   else if (s.includes("power") || s.includes("electricity") || s.includes("solar")) Icon = Power;
-  //   else if (s.includes("space") || s.includes("room") || s.includes("desk")) Icon = Users;
-    
-  //   return (
-  //     <div key={key} className="flex items-center gap-2 text-sm text-muted-foreground">
-  //       <Icon className="text-purple-600 dark:text-purple-400 w-5 h-5" />
-  //       <span className="truncate max-w-[80px]">{service}</span>
-  //     </div>
-  //   );
-  // };
 
   return (
     <section className="py-24 bg-background relative z-10 transition-colors duration-300" id="hubs">
@@ -77,14 +62,16 @@ export default function HubsBentoGrid({ hubs = [] }: { hubs?: any[] }) {
               {t("description")}
             </p>
           </div>
-          <a href="/hubs" className="cursor-pointer hidden md:flex items-center gap-2 text-[#9333EA] font-medium hover:text-[#7e22ce] transition-colors">
+          <a
+            href="/hubs"
+            className="cursor-pointer hidden md:flex items-center gap-2 text-[#9333EA] font-medium hover:text-[#7e22ce] transition-colors"
+          >
             {t("viewAll")} <span className="transform rtl:rotate-180">&rarr;</span>
           </a>
         </div>
 
-        {/* 3-Column Grid Layout matching HTML exactly */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {bentoHubs.map((hub: any, i: number) => (
+          {mappedHubs.map((hub, i) => (
             <motion.div
               key={hub.id}
               initial={{ opacity: 0, y: 20 }}
@@ -133,13 +120,16 @@ export default function HubsBentoGrid({ hubs = [] }: { hubs?: any[] }) {
                   </div>
                 </div>
 
-                {/* Utility Icons */}
                 <div className="flex flex-wrap gap-4 mb-6 mt-auto">
-                  {hub.services.slice(0, 3).map((service: string, idx: number) => <div key={idx} className="text-foreground flex items-center gap-1 text-xs">{service} {getServiceIcon(service, "h-4 w-4")}</div>)}
+                  {hub.services.slice(0, 3).map((service: string, idx: number) => (
+                    <div key={idx} className="text-foreground flex items-center gap-1 text-xs">
+                      {service} {getServiceIcon(service, "h-4 w-4")}
+                    </div>
+                  ))}
                 </div>
 
-                <a 
-                  href={`/hubs/${hub.slug}`} 
+                <a
+                  href={`/hubs/${hub.slug}`}
                   className="cursor-pointer w-full text-center py-3 rounded-xl bg-[#9333EA] hover:bg-[#7e22ce] text-white font-medium transition-colors block"
                 >
                   {t("viewDetails")}
