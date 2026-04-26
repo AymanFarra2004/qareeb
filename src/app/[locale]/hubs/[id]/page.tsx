@@ -173,7 +173,13 @@ export default async function HubDetails({
           </Link>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
-            <div className="lg:col-span-2 space-y-10">
+            {/* Sidebar: Top on mobile (order-1), Right on desktop (lg:order-2) */}
+            <div className="order-1 lg:order-2">
+              <HhubSideBar hub={hub} />
+            </div>
+
+            {/* Main Content: Bottom on mobile (order-2), Left on desktop (lg:order-1) */}
+            <div className="lg:col-span-2 space-y-10 order-2 lg:order-1">
               <HubMainContent hub={hub} offers={offers} />
 
               <hr className="border-border" />
@@ -186,7 +192,6 @@ export default async function HubDetails({
                 averageRating={averageRating}
               />
             </div>
-            <HhubSideBar hub={hub} />
           </div>
 
         </div>
