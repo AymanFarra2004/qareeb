@@ -52,7 +52,7 @@ export default function HubsBentoGrid({ hubs = [] }: { hubs?: any[] }) {
   return (
     <section className="py-24 bg-background relative z-10 transition-colors duration-300" id="hubs">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-16 gap-6">
           <div className="max-w-2xl">
             <h2 className="text-3xl md:text-4xl font-extrabold tracking-tight text-foreground mb-2">
               {t("titleQareeb")}{" "}
@@ -66,7 +66,7 @@ export default function HubsBentoGrid({ hubs = [] }: { hubs?: any[] }) {
           </div>
           <a
             href="/hubs"
-            className="cursor-pointer hidden md:flex items-center gap-2 text-[#9333EA] font-medium hover:text-[#7e22ce] transition-colors"
+            className="cursor-pointer flex items-center gap-2 text-[#9333EA] font-medium hover:text-[#7e22ce] transition-colors"
           >
             {t("viewAll")} <span className="transform rtl:rotate-180">&rarr;</span>
           </a>

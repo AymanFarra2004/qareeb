@@ -192,7 +192,7 @@ export function Header() {
           </div>
 
           {/* Mobile menu button */}
-          <div className="flex md:hidden items-center space-x-3 rtl:space-x-reverse">
+          <div className="flex md:hidden items-center space-x-1 rtl:space-x-reverse">
             {/* Language Switcher Mobile */}
             <button
               onClick={handleLocaleSwitch}

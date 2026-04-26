@@ -101,7 +101,7 @@ export default async function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} ${notoSansArabic.variable} antialiased`}
       >
         <NextIntlClientProvider messages={messages} locale={locale}>
-          <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+          <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false} disableTransitionOnChange>
             <StoreProvider> 
               {token && <AuthHydrator user={user} />}
               {children}
