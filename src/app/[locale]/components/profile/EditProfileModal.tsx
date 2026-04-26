@@ -6,6 +6,8 @@ import { updateUserProfile } from "@/src/actions/auth";
 import toast from "react-hot-toast";
 import { useTranslations, useLocale } from "next-intl";
 import { useRouter } from "@/src/i18n/routing";
+import { useDispatch, useSelector } from "react-redux";
+import { loginSuccess } from "@/src/store/authSlice";
 
 interface Location {
   id: number;
@@ -28,6 +30,8 @@ export function EditProfileModal({
   const tNewHub = useTranslations("NewHub");
   const locale = useLocale();
   const router = useRouter();
+  const dispatch = useDispatch();
+  const currentUser = useSelector((state: any) => state.auth?.user);
   
   const [formData, setFormData] = useState({
     name: profile?.name || "",
@@ -122,6 +126,14 @@ export function EditProfileModal({
     
     setLoading(false);
     if (res.success) {
+      // Update Redux store immediately so the Dashboard nav link
+      // and any role-gated UI reflects the new role without logout/login.
+      dispatch(loginSuccess({
+        ...currentUser,
+        name: formData.name,
+        email: formData.email,
+        role: formData.role,
+      }));
       toast.success(t("updatedSuccess"));
       router.refresh();
       onClose();

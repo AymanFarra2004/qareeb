@@ -264,7 +264,32 @@ export async function updateUserProfile(data: any) {
       });
     }
 
-    return { success: true, data: body.data || body };
+    // Sync the "user" cookie with the updated profile so that the dashboard
+    // layout's server-side role check reflects the new role immediately
+    // (without requiring the user to log out and back in).
+    const updatedUser = body.data || {};
+    const existingUserCookie = cookieStore.get("user")?.value;
+    let existingUser: Record<string, any> = {};
+    try {
+      if (existingUserCookie) existingUser = JSON.parse(existingUserCookie);
+    } catch {}
+
+    const mergedUser = {
+      ...existingUser,
+      name:  updatedUser.name  ?? data.name  ?? existingUser.name,
+      email: updatedUser.email ?? data.email ?? existingUser.email,
+      role:  updatedUser.role  ?? data.role  ?? existingUser.role,
+    };
+
+    cookieStore.set({
+      name: "user",
+      value: JSON.stringify(mergedUser),
+      path: "/",
+      secure: process.env.NODE_ENV === "production",
+      maxAge: 60 * 60 * 24 * 7, // 1 week
+    });
+
+    return { success: true, data: mergedUser };
   } catch (error) {
     console.error("Update Profile Error:", error);
     return { error: "Network Error" };
