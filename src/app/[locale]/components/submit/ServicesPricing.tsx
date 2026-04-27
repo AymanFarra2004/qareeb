@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { Loader2 } from "lucide-react";
 import { getAllServices } from "@/src/actions/hubs";
 import { useTranslations, useLocale } from "next-intl";
+import { useInputValidation } from "@/src/hooks/useInputValidation";
 
 const ServicesPricing = () => {
   const [globalServices, setGlobalServices] = useState<any[]>([]);
@@ -11,6 +12,12 @@ const ServicesPricing = () => {
   const [showOther, setShowOther] = useState(false);
   const t = useTranslations("NewHub");
   const locale = useLocale();
+
+  // Per-field validation for custom service inputs
+  const customNameEn = useInputValidation("en");
+  const customNameAr = useInputValidation("ar");
+  const customDescEn = useInputValidation("en");
+  const customDescAr = useInputValidation("ar");
 
   useEffect(() => {
     async function fetchServices() {
@@ -120,37 +127,53 @@ const ServicesPricing = () => {
                 <input 
                   name="custom_service_en"
                   required={showOther}
+                  onBlur={customNameEn.onBlur}
                   className="w-full px-4 py-2 border rounded-lg bg-background" 
                   placeholder={t("customNamePlaceholderEn")}
                 />
+                {customNameEn.error && (
+                  <p className="mt-1 text-xs text-red-500">{customNameEn.error}</p>
+                )}
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1 text-right">{t("customServiceNameAr")}</label>
                 <input 
                   name="custom_service_ar"
-                  dir="rtl" 
+                  dir="rtl"
+                  onBlur={customNameAr.onBlur}
                   className="w-full px-4 py-2 border rounded-lg bg-background" 
                   placeholder={t("customNamePlaceholderAr")}
                 />
+                {customNameAr.error && (
+                  <p className="mt-1 text-xs text-red-500 text-right">{customNameAr.error}</p>
+                )}
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1">{t("customServiceDescEn")}</label>
                 <textarea 
                   name="custom_service_description_en"
+                  onBlur={customDescEn.onBlur}
                   className="w-full px-4 py-2 border rounded-lg bg-background resize-none" 
                   placeholder="..." 
                   rows={2}
                 />
+                {customDescEn.error && (
+                  <p className="mt-1 text-xs text-red-500">{customDescEn.error}</p>
+                )}
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1 text-right">{t("customServiceDescAr")}</label>
                 <textarea 
                   name="custom_service_description_ar"
-                  dir="rtl" 
+                  dir="rtl"
+                  onBlur={customDescAr.onBlur}
                   className="w-full px-4 py-2 border rounded-lg bg-background resize-none" 
                   placeholder="..." 
                   rows={2}
                 />
+                {customDescAr.error && (
+                  <p className="mt-1 text-xs text-red-500 text-right">{customDescAr.error}</p>
+                )}
               </div>
             </div>
           </div>

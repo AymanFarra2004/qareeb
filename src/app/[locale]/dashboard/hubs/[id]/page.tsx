@@ -12,12 +12,21 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import HubGalleryManager from "@/src/app/[locale]/components/dashboard/HubGalleryManager";
 import { useTranslations, useLocale } from "next-intl";
 import { TimePicker } from "@/src/app/[locale]/components/ui/time-picker";
+import { useInputValidation } from "@/src/hooks/useInputValidation";
 // import { cookies } from "next/headers";
 
 // General Tab - shows real hub data
 function GeneralTab({ hub, onUpdate }: { hub: any; onUpdate: () => void }) {
   const t = useTranslations("HubManagement.general");
   const locale = useLocale();
+
+  // Per-field language validation
+  const nameEn   = useInputValidation("en");
+  const nameAr   = useInputValidation("ar");
+  const descEn   = useInputValidation("en");
+  const descAr   = useInputValidation("ar");
+  const addrEn   = useInputValidation("en");
+  const addrAr   = useInputValidation("ar");
 
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -292,8 +301,10 @@ function GeneralTab({ hub, onUpdate }: { hub: any; onUpdate: () => void }) {
                   className="w-full px-4 py-2.5 border border-input rounded-xl bg-background text-sm focus:ring-2 focus:ring-primary/20 transition-all" 
                   value={hubNameEn}
                   onChange={(e) => setHubNameEn(e.target.value)}
+                  onBlur={nameEn.onBlur}
                   placeholder="e.g. Al-Bahr Connection"
                 />
+                {nameEn.error && <p className="mt-1 text-xs text-red-500">{nameEn.error}</p>}
               </div>
               <div className="relative">
                 <label className="block text-[10px] font-bold mb-1 uppercase tracking-widest text-muted-foreground flex items-center justify-between">
@@ -305,8 +316,10 @@ function GeneralTab({ hub, onUpdate }: { hub: any; onUpdate: () => void }) {
                   className="w-full px-4 py-2.5 border border-input rounded-xl bg-background text-sm text-right focus:ring-2 focus:ring-primary/20 transition-all font-arabic" 
                   value={hubNameAr}
                   onChange={(e) => setHubNameAr(e.target.value)}
+                  onBlur={nameAr.onBlur}
                   placeholder="مثال: مركز البحر"
                 />
+                {nameAr.error && <p className="mt-1 text-xs text-red-500 text-right">{nameAr.error}</p>}
               </div>
             </div>
           </div>
@@ -325,8 +338,10 @@ function GeneralTab({ hub, onUpdate }: { hub: any; onUpdate: () => void }) {
                   className="w-full px-4 py-2.5 border border-input rounded-xl bg-background text-sm min-h-[100px] resize-none focus:ring-2 focus:ring-primary/20 transition-all" 
                   value={hubDescEn}
                   onChange={(e) => setHubDescEn(e.target.value)}
+                  onBlur={descEn.onBlur}
                   placeholder="Describe your hub in English..."
                 />
+                {descEn.error && <p className="mt-1 text-xs text-red-500">{descEn.error}</p>}
               </div>
               <div>
                 <label className="block text-[10px] font-bold mb-1 uppercase tracking-widest text-muted-foreground flex items-center justify-between">
@@ -337,8 +352,10 @@ function GeneralTab({ hub, onUpdate }: { hub: any; onUpdate: () => void }) {
                   className="w-full px-4 py-2.5 border border-input rounded-xl bg-background text-sm text-right min-h-[100px] resize-none focus:ring-2 focus:ring-primary/20 transition-all font-arabic" 
                   value={hubDescAr}
                   onChange={(e) => setHubDescAr(e.target.value)}
+                  onBlur={descAr.onBlur}
                   placeholder="صف المركز باللغة العربية..."
                 />
+                {descAr.error && <p className="mt-1 text-xs text-red-500 text-right">{descAr.error}</p>}
               </div>
             </div>
           </div>
@@ -357,8 +374,10 @@ function GeneralTab({ hub, onUpdate }: { hub: any; onUpdate: () => void }) {
                   className="w-full px-4 py-2.5 border border-input rounded-xl bg-background text-sm min-h-[80px] resize-none focus:ring-2 focus:ring-primary/20 transition-all" 
                   value={hubAddrEn}
                   onChange={(e) => setHubAddrEn(e.target.value)}
+                  onBlur={addrEn.onBlur}
                   placeholder="Full English address details..."
                 />
+                {addrEn.error && <p className="mt-1 text-xs text-red-500">{addrEn.error}</p>}
               </div>
               <div>
                 <label className="block text-[10px] font-bold mb-1 uppercase tracking-widest text-muted-foreground flex items-center justify-between">
@@ -369,8 +388,10 @@ function GeneralTab({ hub, onUpdate }: { hub: any; onUpdate: () => void }) {
                   className="w-full px-4 py-2.5 border border-input rounded-xl bg-background text-sm text-right min-h-[80px] resize-none focus:ring-2 focus:ring-primary/20 transition-all font-arabic" 
                   value={hubAddrAr}
                   onChange={(e) => setHubAddrAr(e.target.value)}
+                  onBlur={addrAr.onBlur}
                   placeholder="تفاصيل العنوان بالعربية..."
                 />
+                {addrAr.error && <p className="mt-1 text-xs text-red-500 text-right">{addrAr.error}</p>}
               </div>
             </div>
 
@@ -502,6 +523,12 @@ function ServicesTab({ hub, onUpdate }: { hub: any; onUpdate: () => void }) {
   const [customDescAR, setCustomDescAR] = useState("");
   const t = useTranslations("HubManagement.services");
   const locale = useLocale();
+
+  // Per-field language validation for custom service form
+  const svcNameEn = useInputValidation("en");
+  const svcNameAr = useInputValidation("ar");
+  const svcDescEn = useInputValidation("en");
+  const svcDescAr = useInputValidation("ar");
 
   const loadData = async () => {
     setLoading(true);
@@ -684,38 +711,46 @@ function ServicesTab({ hub, onUpdate }: { hub: any; onUpdate: () => void }) {
                   required
                   value={customNameEN}
                   onChange={(e) => setCustomNameEN(e.target.value)}
+                  onBlur={svcNameEn.onBlur}
                   className="w-full px-3 py-2 border border-border rounded-xl bg-background text-sm" 
                   placeholder="e.g. Dedicated Desk"
                 />
+                {svcNameEn.error && <p className="mt-1 text-xs text-red-500">{svcNameEn.error}</p>}
               </div>
               <div>
                 <label className="block text-xs font-medium mb-1 uppercase tracking-wider text-muted-foreground text-end">{t("serviceNameAr")}</label>
                 <input 
                   value={customNameAR}
                   onChange={(e) => setCustomNameAR(e.target.value)}
+                  onBlur={svcNameAr.onBlur}
                   dir="rtl" 
                   className="w-full px-3 py-2 border border-border rounded-xl bg-background text-sm text-right" 
                   placeholder="مثال: مكتب خاص"
                 />
+                {svcNameAr.error && <p className="mt-1 text-xs text-red-500 text-right">{svcNameAr.error}</p>}
               </div>
               <div>
                 <label className="block text-xs font-medium mb-1 uppercase tracking-wider text-muted-foreground">{t("descEn")}</label>
                 <textarea
                   value={customDescEN}
                   onChange={(e) => setCustomDescEN(e.target.value)}
+                  onBlur={svcDescEn.onBlur}
                   className="w-full px-3 py-2 border border-border rounded-xl bg-background text-sm resize-none"
                   rows={2}
                 />
+                {svcDescEn.error && <p className="mt-1 text-xs text-red-500">{svcDescEn.error}</p>}
               </div>
               <div>
                 <label className="block text-xs font-medium mb-1 uppercase tracking-wider text-muted-foreground text-end">{t("descAr")}</label>
                 <textarea
                   value={customDescAR}
                   onChange={(e) => setCustomDescAR(e.target.value)}
+                  onBlur={svcDescAr.onBlur}
                   dir="rtl"
                   className="w-full px-3 py-2 border border-border rounded-xl bg-background text-sm resize-none text-right"
                   rows={2}
                 />
+                {svcDescAr.error && <p className="mt-1 text-xs text-red-500 text-right">{svcDescAr.error}</p>}
               </div>
             </div>
             <button 
@@ -979,6 +1014,11 @@ function OffersTab({ hubSlug }: { hubSlug: string }) {
   const locale = useLocale();
   const t = useTranslations("HubManagement.offers");
 
+  const titleEn = useInputValidation("en");
+  const titleAr = useInputValidation("ar");
+  const descEn = useInputValidation("en");
+  const descAr = useInputValidation("ar");
+
   const [state, formAction] = useActionState(async (prevState: any, formData: FormData) => {
     if (editingOffer) {
       setIsUpdating(true);
@@ -1062,22 +1102,26 @@ function OffersTab({ hubSlug }: { hubSlug: string }) {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium mb-1">{t("titleEn")}</label>
-                <input name="title_en" defaultValue={editingOffer?.title?.en || (typeof editingOffer?.title === 'string' ? '' : '')} required className="w-full px-4 py-2 border rounded-lg bg-background text-sm" />
+                <input name="title_en" onBlur={titleEn.onBlur} defaultValue={editingOffer?.title?.en || (typeof editingOffer?.title === 'string' ? '' : '')} required className="w-full px-4 py-2 border rounded-lg bg-background text-sm" />
+                {titleEn.error && <p className="mt-1 text-xs text-red-500">{titleEn.error}</p>}
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1 text-end">{t("titleAr")}</label>
-                <input name="title_ar" defaultValue={editingOffer?.title?.ar || (typeof editingOffer?.title === 'string' ? editingOffer.title : '')} required dir="rtl" className="w-full px-4 py-2 border rounded-lg bg-background text-right text-sm" />
+                <input name="title_ar" onBlur={titleAr.onBlur} defaultValue={editingOffer?.title?.ar || (typeof editingOffer?.title === 'string' ? editingOffer.title : '')} required dir="rtl" className="w-full px-4 py-2 border rounded-lg bg-background text-right text-sm" />
+                {titleAr.error && <p className="mt-1 text-xs text-red-500 text-right">{titleAr.error}</p>}
               </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium mb-1">{t("descEn")}</label>
-                <textarea name="description_en" defaultValue={editingOffer?.description?.en || ''} required className="w-full px-4 py-2 border rounded-lg bg-background resize-none text-sm" rows={2}></textarea>
+                <textarea name="description_en" onBlur={descEn.onBlur} defaultValue={editingOffer?.description?.en || ''} required className="w-full px-4 py-2 border rounded-lg bg-background resize-none text-sm" rows={2}></textarea>
+                {descEn.error && <p className="mt-1 text-xs text-red-500">{descEn.error}</p>}
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1 text-end">{t("descAr")}</label>
-                <textarea name="description_ar" defaultValue={editingOffer?.description?.ar || (typeof editingOffer?.description === 'string' ? editingOffer.description : '')} required dir="rtl" className="w-full px-4 py-2 border rounded-lg bg-background resize-none text-right text-sm" rows={2}></textarea>
+                <textarea name="description_ar" onBlur={descAr.onBlur} defaultValue={editingOffer?.description?.ar || (typeof editingOffer?.description === 'string' ? editingOffer.description : '')} required dir="rtl" className="w-full px-4 py-2 border rounded-lg bg-background resize-none text-right text-sm" rows={2}></textarea>
+                {descAr.error && <p className="mt-1 text-xs text-red-500 text-right">{descAr.error}</p>}
               </div>
             </div>
 

@@ -4,9 +4,18 @@ import React from "react";
 import { LocationSelect } from "../location/LocationSelect";
 import { useTranslations } from "next-intl";
 import { TimePicker } from "../ui/time-picker";
+import { useInputValidation } from "@/src/hooks/useInputValidation";
 
 const BasicInfo = () => {
   const t = useTranslations("NewHub");
+
+  // Per-field validation hooks — each has its own independent error state
+  const nameEn = useInputValidation("en");
+  const nameAr = useInputValidation("ar");
+  const addressEn = useInputValidation("en");
+  const addressAr = useInputValidation("ar");
+  const descEn = useInputValidation("en");
+  const descAr = useInputValidation("ar");
 
   return (
     <section className="space-y-6">
@@ -19,9 +28,13 @@ const BasicInfo = () => {
             name="name_en"
             type="text"
             required
+            onBlur={nameEn.onBlur}
             className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
             placeholder={t("hubNamePlaceholderEn")}
           />
+          {nameEn.error && (
+            <p className="mt-1 text-xs text-red-500">{nameEn.error}</p>
+          )}
         </div>
         <div>
           <label className="block text-sm font-medium text-foreground mb-1 text-right">{t("hubNameAr")}</label>
@@ -30,9 +43,13 @@ const BasicInfo = () => {
             type="text"
             required
             dir="rtl"
+            onBlur={nameAr.onBlur}
             className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
             placeholder={t("hubNamePlaceholderAr")}
           />
+          {nameAr.error && (
+            <p className="mt-1 text-xs text-red-500 text-right">{nameAr.error}</p>
+          )}
         </div>
       </div>
 
@@ -48,9 +65,13 @@ const BasicInfo = () => {
             name="address_en"
             type="text"
             required
+            onBlur={addressEn.onBlur}
             className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
             placeholder={t("addressPlaceholderEn")}
           />
+          {addressEn.error && (
+            <p className="mt-1 text-xs text-red-500">{addressEn.error}</p>
+          )}
         </div>
         <div>
           <label className="block text-sm font-medium text-foreground mb-1 text-right">{t("detailedAddressAr")}</label>
@@ -59,9 +80,13 @@ const BasicInfo = () => {
             type="text"
             required
             dir="rtl"
+            onBlur={addressAr.onBlur}
             className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
             placeholder={t("addressPlaceholderAr")}
           />
+          {addressAr.error && (
+            <p className="mt-1 text-xs text-red-500 text-right">{addressAr.error}</p>
+          )}
         </div>
       </div>
 
@@ -72,9 +97,13 @@ const BasicInfo = () => {
             name="description_en"
             rows={3}
             required
+            onBlur={descEn.onBlur}
             className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary resize-none"
             placeholder={t("descriptionPlaceholderEn")}
           />
+          {descEn.error && (
+            <p className="mt-1 text-xs text-red-500">{descEn.error}</p>
+          )}
         </div>
         <div>
           <label className="block text-sm font-medium text-foreground mb-1 text-right">{t("descriptionAr")}</label>
@@ -83,9 +112,13 @@ const BasicInfo = () => {
             rows={3}
             required
             dir="rtl"
+            onBlur={descAr.onBlur}
             className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary resize-none"
             placeholder={t("descriptionPlaceholderAr")}
           />
+          {descAr.error && (
+            <p className="mt-1 text-xs text-red-500 text-right">{descAr.error}</p>
+          )}
         </div>
       </div>
 

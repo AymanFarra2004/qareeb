@@ -822,5 +822,9 @@
      "contactForHours": "Contact for hours",
      "unknownHub": "Unknown Hub",
      "gaza": "Gaza"
-   }
+   },
+  "Errors": {
+    "onlyArabic": "Only Arabic characters are allowed",
+    "onlyEnglish": "Only English characters are allowed"
+  }
 }
