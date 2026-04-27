@@ -285,7 +285,7 @@ function GeneralTab({ hub, onUpdate }: { hub: any; onUpdate: () => void }) {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="relative">
                 <label className="block text-[10px] font-bold mb-1 uppercase tracking-widest text-muted-foreground flex items-center justify-between">
-                  {t("lang_en")} <span className="text-[14px]">🇺🇸</span>
+                  {t("hub_name_en")}
                 </label>
                 <input 
                   type="text" 
@@ -297,7 +297,7 @@ function GeneralTab({ hub, onUpdate }: { hub: any; onUpdate: () => void }) {
               </div>
               <div className="relative">
                 <label className="block text-[10px] font-bold mb-1 uppercase tracking-widest text-muted-foreground flex items-center justify-between">
-                  <span className="text-[14px]">🇸🇦</span> {t("lang_ar")}
+                  {t("hub_name_ar")}
                 </label>
                 <input 
                   type="text" 
@@ -319,7 +319,7 @@ function GeneralTab({ hub, onUpdate }: { hub: any; onUpdate: () => void }) {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-[10px] font-bold mb-1 uppercase tracking-widest text-muted-foreground flex items-center justify-between">
-                  {t("description_en")} <span>🇺🇸</span>
+                  {t("description_en")}
                 </label>
                 <textarea 
                   className="w-full px-4 py-2.5 border border-input rounded-xl bg-background text-sm min-h-[100px] resize-none focus:ring-2 focus:ring-primary/20 transition-all" 
@@ -330,7 +330,7 @@ function GeneralTab({ hub, onUpdate }: { hub: any; onUpdate: () => void }) {
               </div>
               <div>
                 <label className="block text-[10px] font-bold mb-1 uppercase tracking-widest text-muted-foreground flex items-center justify-between">
-                  <span>🇸🇦</span> {t("description_ar")}
+                  {t("description_ar")}
                 </label>
                 <textarea 
                   dir="rtl"
@@ -351,7 +351,7 @@ function GeneralTab({ hub, onUpdate }: { hub: any; onUpdate: () => void }) {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-[10px] font-bold mb-1 uppercase tracking-widest text-muted-foreground flex items-center justify-between">
-                  {t("address_en")} <span>🇺🇸</span>
+                  {t("address_en")}
                 </label>
                 <textarea 
                   className="w-full px-4 py-2.5 border border-input rounded-xl bg-background text-sm min-h-[80px] resize-none focus:ring-2 focus:ring-primary/20 transition-all" 
@@ -362,7 +362,7 @@ function GeneralTab({ hub, onUpdate }: { hub: any; onUpdate: () => void }) {
               </div>
               <div>
                 <label className="block text-[10px] font-bold mb-1 uppercase tracking-widest text-muted-foreground flex items-center justify-between">
-                  <span>🇸🇦</span> {t("address_ar")}
+                  {t("address_ar")}
                 </label>
                 <textarea 
                   dir="rtl"
