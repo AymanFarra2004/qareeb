@@ -1,11 +1,11 @@
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
 
-/** Matches strings containing only Arabic letters and spaces */
-export const ARABIC_REGEX = /^[\u0600-\u06FF\s]+$/;
+/** Matches strings containing Arabic letters, spaces, numbers, and special characters (!@#$-) */
+export const ARABIC_REGEX = /^[\u0600-\u06FF\s0-9!@#$)(-\[\]{}]+$/;
 
-/** Matches strings containing only English letters and spaces */
-export const ENGLISH_REGEX = /^[a-zA-Z\s]+$/;
+/** Matches strings containing English letters, spaces, numbers, and special characters (!@#$-) */
+export const ENGLISH_REGEX = /^[a-zA-Z\s0-9!@#$)(-\[\]{}]+$/;
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
