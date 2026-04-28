@@ -161,7 +161,8 @@
     "accountType": "Account Type",
     "regularUser": "Regular User",
     "hubOwner": "Hub Owner",
-    "redirecting": "Redirecting..."
+    "redirecting": "Redirecting...",
+    "searchPlaceholder": "Search..."
   },
   "Admin": {
     "platformOverview": "Platform Overview",
@@ -515,7 +516,8 @@
     "pm": "PM",
     "selectHour": "Select Hour",
     "uploading": "Uploading...",
-    "pleaseWait": "Please wait..."
+    "pleaseWait": "Please wait...",
+    "searchPlaceholder": "Search..."
   },
   "AdminNotifications": {
     "title": "Platform Notifications",

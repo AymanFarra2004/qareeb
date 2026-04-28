@@ -161,7 +161,8 @@
     "accountType": "نوع الحساب",
     "regularUser": "مستخدم عادي",
     "hubOwner": "مالك المركز",
-    "redirecting": "جارٍ التحويل..."
+    "redirecting": "جارٍ التحويل...",
+    "searchPlaceholder": "بحث..."
   },
   "Admin": {
     "platformOverview": "نظرة عامة على المنصة",
@@ -515,7 +516,8 @@
     "pm": "مساءً",
     "selectHour": "اختر الساعة",
     "uploading": "جارٍ الرفع...",
-    "pleaseWait": "الرجاء الانتظار..."
+    "pleaseWait": "الرجاء الانتظار...",
+    "searchPlaceholder": "بحث..."
   },
   "AdminNotifications": {
     "title": "إشعارات المنصة",

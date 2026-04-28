@@ -191,7 +191,7 @@ export default function SignUpView() {
                 </div>
               </div>
 
-              <LocationSelect />
+              <LocationSelect initialValue={state?.fields?.location_id} />
 
               <div className="space-y-2">
                 <label className="block text-sm font-medium text-foreground">

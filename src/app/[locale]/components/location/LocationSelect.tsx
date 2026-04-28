@@ -1,8 +1,9 @@
 'use client'
 
-import { useState, useEffect } from 'react';
-import { MapPin, Loader2 } from "lucide-react";
+import { useState, useEffect, useRef } from 'react';
+import { MapPin, Loader2, Search, Check, ChevronDown, X } from "lucide-react";
 import { useTranslations, useLocale } from 'next-intl';
+import { motion, AnimatePresence } from 'framer-motion';
 
 type Location = {
   id: number;
@@ -13,7 +14,135 @@ type Location = {
   children?: Location[];
 }
 
-export function LocationSelect() {
+interface SearchableSelectProps {
+  label: string;
+  options: { id: string | number; name: string }[];
+  value: string;
+  onChange: (value: string) => void;
+  placeholder: string;
+  searchPlaceholder: string;
+  required?: boolean;
+  disabled?: boolean;
+}
+
+function SearchableSelect({
+  label,
+  options,
+  value,
+  onChange,
+  placeholder,
+  searchPlaceholder,
+  required = false,
+  disabled = false
+}: SearchableSelectProps) {
+  const [isOpen, setIsOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const selectedOption = options.find(opt => String(opt.id) === String(value));
+  const filteredOptions = options.filter(opt =>
+    opt.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  return (
+    <div className="relative" ref={dropdownRef}>
+      <label className="block text-sm font-medium text-foreground mb-1">
+        {label} {required && <span className="text-destructive">*</span>}
+      </label>
+      
+      <div
+        onClick={() => !disabled && setIsOpen(!isOpen)}
+        className={`
+          flex items-center gap-3 w-full px-4 py-3 border rounded-xl bg-background text-sm transition-all cursor-pointer
+          ${disabled ? 'opacity-50 cursor-not-allowed bg-muted/50' : 'hover:border-primary/50 focus:ring-2 focus:ring-primary/20'}
+          ${isOpen ? 'border-primary ring-2 ring-primary/20 shadow-sm' : 'border-input'}
+        `}
+      >
+        <MapPin className={`h-5 w-5 shrink-0 ${isOpen ? 'text-primary' : 'text-muted-foreground'}`} />
+        <span className={`flex-1 truncate ${!selectedOption ? 'text-muted-foreground' : 'text-foreground font-medium'}`}>
+          {selectedOption ? selectedOption.name : placeholder}
+        </span>
+        <ChevronDown className={`h-4 w-4 shrink-0 text-muted-foreground transition-transform duration-200 ${isOpen ? 'rotate-180 text-primary' : ''}`} />
+      </div>
+
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -10, scale: 0.95 }}
+            animate={{ opacity: 1, y: 4, scale: 1 }}
+            exit={{ opacity: 0, y: -10, scale: 0.95 }}
+            transition={{ duration: 0.15, ease: "easeOut" }}
+            className="absolute z-50 w-full bg-background border border-border rounded-xl shadow-xl overflow-hidden mt-1"
+          >
+            <div className="p-2 border-b border-border bg-muted/20">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <input
+                  type="text"
+                  className="w-full pl-9 pr-8 py-2 text-sm bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
+                  placeholder={searchPlaceholder}
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  autoFocus
+                />
+                {searchQuery && (
+                  <button
+                    onClick={() => setSearchQuery("")}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 p-1 hover:bg-muted rounded-full transition-colors"
+                  >
+                    <X className="h-3 w-3 text-muted-foreground" />
+                  </button>
+                )}
+              </div>
+            </div>
+
+            <div className="max-h-60 overflow-y-auto p-1 scrollbar-thin">
+              {filteredOptions.length > 0 ? (
+                filteredOptions.map((option) => (
+                  <div
+                    key={option.id}
+                    onClick={() => {
+                      onChange(String(option.id));
+                      setIsOpen(false);
+                      setSearchQuery("");
+                    }}
+                    className={`
+                      flex items-center justify-between px-3 py-2.5 rounded-lg text-sm cursor-pointer transition-colors
+                      ${String(value) === String(option.id) 
+                        ? 'bg-primary/10 text-primary font-semibold' 
+                        : 'text-foreground hover:bg-muted'}
+                    `}
+                  >
+                    <span className="truncate">{option.name}</span>
+                    {String(value) === String(option.id) && (
+                      <Check className="h-4 w-4 shrink-0" />
+                    )}
+                  </div>
+                ))
+              ) : (
+                <div className="py-6 px-4 text-center text-sm text-muted-foreground">
+                  No results found for "{searchQuery}"
+                </div>
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
+export function LocationSelect({ initialValue }: { initialValue?: string | number }) {
   const [locations, setLocations] = useState<Location[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const t = useTranslations("NewHub");
@@ -22,11 +151,6 @@ export function LocationSelect() {
   const [governorateId, setGovernorateId] = useState<string>("");
   const [cityId, setCityId] = useState<string>("");
   const [areaId, setAreaId] = useState<string>("");
-
-  const langParams: Record<string, string> = {
-    ar: 'lang=ar',
-    en: 'lang=en',
-  };
 
   useEffect(() => {
     setIsLoading(true);
@@ -41,6 +165,28 @@ export function LocationSelect() {
       .finally(() => setIsLoading(false));
   }, [locale]);
 
+  // Handle initial value pre-population
+  useEffect(() => {
+    if (!isLoading && locations.length > 0 && initialValue) {
+      const targetId = Number(initialValue);
+      const target = locations.find(l => l.id === targetId);
+      
+      if (target) {
+        if (target.type === 'area') {
+          setAreaId(String(target.id));
+          setCityId(String(target.parent_id));
+          const city = locations.find(l => l.id === target.parent_id);
+          if (city) setGovernorateId(String(city.parent_id));
+        } else if (target.type === 'city') {
+          setCityId(String(target.id));
+          setGovernorateId(String(target.parent_id));
+        } else if (target.type === 'governorate') {
+          setGovernorateId(String(target.id));
+        }
+      }
+    }
+  }, [isLoading, locations, initialValue]);
+
   const governorates = locations.filter(l => l.parent_id === null && l.type === 'governorate');
   const cities = governorateId ? locations.filter(l => l.parent_id === Number(governorateId) && l.type === 'city') : [];
   const areas = cityId ? locations.filter(l => l.parent_id === Number(cityId) && l.type === 'area') : [];
@@ -51,9 +197,9 @@ export function LocationSelect() {
   if (isLoading) {
     return (
       <div>
-        <label className="block text-sm font-medium text-foreground">{t("locationSelection")}</label>
-        <div className="mt-1 flex items-center gap-2 text-muted-foreground p-3 border border-input rounded-xl bg-muted/50">
-          <Loader2 className="h-5 w-5 animate-spin" />
+        <label className="block text-sm font-medium text-foreground mb-1">{t("locationSelection")}</label>
+        <div className="flex items-center gap-2 text-muted-foreground p-3 border border-input rounded-xl bg-muted/50">
+          <Loader2 className="h-5 w-5 animate-spin text-primary" />
           <span className="text-sm">{t("loadingLocations")}</span>
         </div>
       </div>
@@ -61,82 +207,62 @@ export function LocationSelect() {
   }
 
   return (
-    <div className="space-y-4 rounded-xl p-4 border border-input bg-muted/10 relative">
+    <div className="space-y-6 rounded-2xl p-6 border border-border bg-muted/5 relative shadow-sm">
       <input type="hidden" name="location_id" value={finalLocationId} />
       
-      <div>
-        <label htmlFor="governorate" className="block text-sm font-medium text-foreground">{t("governorate")}</label>
-        <div className="mt-1 relative rounded-md shadow-sm">
-          <div className="absolute inset-y-0 left-0 ps-3 flex items-center pointer-events-none">
-            <MapPin className="h-5 w-5 text-muted-foreground" />
-          </div>
-          <select
-            id="governorate"
-            value={governorateId}
-            onChange={(e) => {
-              setGovernorateId(e.target.value);
-              setCityId(""); // reset city
-              setAreaId(""); // reset area
-            }}
-            required
-            className="appearance-none block w-full ps-10 pe-8 py-3 border border-input rounded-xl bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary sm:text-sm transition-colors"
-          >
-            <option value="">{t("selectGovernorate")}</option>
-            {governorates.map(gov => (
-              <option key={gov.id} value={gov.id}>{gov.name}</option>
-            ))}
-          </select>
-        </div>
-      </div>
+      <SearchableSelect
+        label={t("governorate")}
+        options={governorates}
+        value={governorateId}
+        onChange={(val) => {
+          setGovernorateId(val);
+          setCityId("");
+          setAreaId("");
+        }}
+        placeholder={t("selectGovernorate")}
+        searchPlaceholder={t("searchPlaceholder") || "Search governorate..."}
+        required
+      />
 
       {cities.length > 0 && (
-        <div className="animate-in fade-in slide-in-from-top-2 duration-300">
-          <label htmlFor="city" className="block text-sm font-medium text-foreground">{t("city")}</label>
-          <div className="mt-1 relative rounded-md shadow-sm">
-            <div className="absolute inset-y-0 left-0 ps-3 flex items-center pointer-events-none">
-              <MapPin className="h-5 w-5 text-muted-foreground" />
-            </div>
-            <select
-              id="city"
-              value={cityId}
-              onChange={(e) => {
-                setCityId(e.target.value);
-                setAreaId(""); // reset area
-              }}
-              required
-              className="appearance-none block w-full ps-10 pe-8 py-3 border border-input rounded-xl bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary sm:text-sm transition-colors"
-            >
-              <option value="">{t("selectCity")}</option>
-              {cities.map(city => (
-                <option key={city.id} value={city.id}>{city.name}</option>
-              ))}
-            </select>
-          </div>
-        </div>
+        <motion.div 
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="animate-in fade-in slide-in-from-top-2 duration-300"
+        >
+          <SearchableSelect
+            label={t("city")}
+            options={cities}
+            value={cityId}
+            onChange={(val) => {
+              setCityId(val);
+              setAreaId("");
+            }}
+            placeholder={t("selectCity")}
+            searchPlaceholder={t("searchPlaceholder") || "Search city..."}
+            required
+          />
+        </motion.div>
       )}
 
       {areas.length > 0 && (
-        <div className="animate-in fade-in slide-in-from-top-2 duration-300">
-          <label htmlFor="area" className="block text-sm font-medium text-foreground">{t("area")}</label>
-          <div className="mt-1 relative rounded-md shadow-sm">
-            <div className="absolute inset-y-0 left-0 ps-3 flex items-center pointer-events-none">
-              <MapPin className="h-5 w-5 text-muted-foreground" />
-            </div>
-            <select
-              id="area"
-              value={areaId}
-              onChange={(e) => setAreaId(e.target.value)}
-              required
-              className="appearance-none block w-full ps-10 pe-8 py-3 border border-input rounded-xl bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary sm:text-sm transition-colors"
-            >
-              <option value="">{t("selectArea")}</option>
-              {areas.map(area => (
-                <option key={area.id} value={area.id}>{area.name}</option>
-              ))}
-            </select>
-          </div>
-        </div>
+        <motion.div 
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="animate-in fade-in slide-in-from-top-2 duration-300"
+        >
+          <SearchableSelect
+            label={t("area")}
+            options={areas}
+            value={areaId}
+            onChange={(val) => setAreaId(val)}
+            placeholder={t("selectArea")}
+            searchPlaceholder={t("searchPlaceholder") || "Search area..."}
+            required
+          />
+        </motion.div>
       )}
     </div>
   );
 }
+
