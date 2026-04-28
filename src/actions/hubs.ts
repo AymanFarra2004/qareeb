@@ -684,6 +684,8 @@ export async function addHubOffer(hubSlug: string, prevState: any, formData: For
   const token = cookieStore.get("token")?.value;
   if (!token) return { error: "Unauthenticated" };
 
+  const formValues = Object.fromEntries(formData.entries());
+
   try {
     const payload = {
       title: {
@@ -697,8 +699,8 @@ export async function addHubOffer(hubSlug: string, prevState: any, formData: For
       type: formData.get("type") as string || "daily",
       price: Number(formData.get("price")),
       duration: Number(formData.get("duration")),
-      starts_at: (formData.get("starts_at") as string) + " 00:00:00",
-      ends_at: (formData.get("ends_at") as string) + " 00:00:00",
+      starts_at: formData.get("starts_at") ? (formData.get("starts_at") as string) + " 00:00:00" : null,
+      ends_at: formData.get("ends_at") ? (formData.get("ends_at") as string) + " 00:00:00" : null,
       is_global: false,
       status: formData.get("status") as string || "active",
     };
@@ -714,9 +716,9 @@ export async function addHubOffer(hubSlug: string, prevState: any, formData: For
       revalidatePath(`/dashboard/hubs/${hubSlug}`);
       return { success: true, message: "Added" };
     }
-    return { error: result.message || "Failed" };
+    return { error: result.message || "Failed", data: formValues };
   } catch (e) {
-    return { error: "Network Error" };
+    return { error: "Network Error", data: formValues };
   }
 }
 
@@ -724,6 +726,8 @@ export async function updateHubOffer(hubSlug: string, offerId: number, prevState
   const cookieStore = await cookies();
   const token = cookieStore.get("token")?.value;
   if (!token) return { error: "Unauthenticated" };
+
+  const formValues = Object.fromEntries(formData.entries());
 
   try {
     const payload = {
@@ -738,8 +742,8 @@ export async function updateHubOffer(hubSlug: string, offerId: number, prevState
       type: formData.get("type") as string || "daily",
       price: Number(formData.get("price")),
       duration: Number(formData.get("duration")),
-      starts_at: (formData.get("starts_at") as string) + " 00:00:00",
-      ends_at: (formData.get("ends_at") as string) + " 00:00:00",
+      starts_at: formData.get("starts_at") ? (formData.get("starts_at") as string) + " 00:00:00" : null,
+      ends_at: formData.get("ends_at") ? (formData.get("ends_at") as string) + " 00:00:00" : null,
       status: formData.get("status") as string || "active",
     };
 
@@ -754,9 +758,9 @@ export async function updateHubOffer(hubSlug: string, offerId: number, prevState
       revalidatePath(`/dashboard/hubs/${hubSlug}`);
       return { success: true, message: "Updated" };
     }
-    return { error: result.message || "Failed" };
+    return { error: result.message || "Failed", data: formValues };
   } catch (e) {
-    return { error: "Network Error" };
+    return { error: "Network Error", data: formValues };
   }
 }
 
