@@ -6,6 +6,7 @@ import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import { useDropzone } from 'react-dropzone'
 import { useTranslations } from 'next-intl'
+import imageCompression from 'browser-image-compression'
 
 interface FileWithPreview extends File {
   preview: string;
@@ -50,17 +51,38 @@ const UploadPhoto = () => {
     }
   }, [files, mainIndex]);
 
-  const processFiles = useCallback((newFiles: File[]) => {
-    const maxSize = 5 * 1024 * 1024;
+  const processFiles = useCallback(async (newFiles: File[]) => {
     const acceptedBatch: FileWithPreview[] = [];
     const rejectedBatch: string[] = [];
 
-    newFiles.forEach((file) => {
-      if (file.size <= maxSize) {
-        Object.assign(file, { preview: URL.createObjectURL(file) });
-        acceptedBatch.push(file as FileWithPreview);
-      } else {
-        rejectedBatch.push(file.name);
+    const options = {
+      maxSizeMB: 1,
+      maxWidthOrHeight: 1920,
+      useWebWorker: true,
+    };
+
+    const compressedResults = await Promise.all(
+      newFiles.map(async (file) => {
+        try {
+          const compressedBlob = await imageCompression(file, options);
+          const compressedFile = new File([compressedBlob], file.name, {
+            type: compressedBlob.type,
+            lastModified: Date.now(),
+          });
+          Object.assign(compressedFile, { preview: URL.createObjectURL(compressedFile) });
+          return { success: true, file: compressedFile as FileWithPreview };
+        } catch (error) {
+          console.error("Error compressing file:", error);
+          return { success: false, name: file.name };
+        }
+      })
+    );
+
+    compressedResults.forEach((result) => {
+      if (result.success && result.file) {
+        acceptedBatch.push(result.file);
+      } else if (!result.success && result.name) {
+        rejectedBatch.push(result.name);
       }
     });
 
@@ -76,7 +98,7 @@ const UploadPhoto = () => {
       }
       return [...prev, ...acceptedBatch];
     });
-  }, [files.length]);
+  }, []);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop: processFiles,

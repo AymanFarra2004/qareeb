@@ -10,6 +10,7 @@ import { useTranslations } from "next-intl";
 import { uploadWithProgress } from "@/src/lib/uploadHelper";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
+import imageCompression from "browser-image-compression";
 
 interface FileWithPreview extends File {
   preview: string;
@@ -83,16 +84,37 @@ export default function HubGalleryManager({ hub, isOpen, onClose, onUpdate }: { 
     return () => newFiles.forEach(f => URL.revokeObjectURL(f.preview));
   }, [newFiles]);
 
-  const processFiles = useCallback((acceptedFiles: File[]) => {
-    const maxSize = 5 * 1024 * 1024;
+  const processFiles = useCallback(async (acceptedFiles: File[]) => {
     const batch: FileWithPreview[] = [];
     
-    acceptedFiles.forEach(file => {
-      if (file.size <= maxSize) {
-        Object.assign(file, { preview: URL.createObjectURL(file) });
-        batch.push(file as FileWithPreview);
-      } else {
-        toast.error(`${file.name} is larger than 5MB`);
+    const options = {
+      maxSizeMB: 1,
+      maxWidthOrHeight: 1920,
+      useWebWorker: true,
+    };
+
+    const compressedResults = await Promise.all(
+      acceptedFiles.map(async (file) => {
+        try {
+          const compressedBlob = await imageCompression(file, options);
+          const compressedFile = new File([compressedBlob], file.name, {
+            type: compressedBlob.type,
+            lastModified: Date.now(),
+          });
+          Object.assign(compressedFile, { preview: URL.createObjectURL(compressedFile) });
+          return { success: true, file: compressedFile as FileWithPreview };
+        } catch (error) {
+          console.error("Error compressing file:", error);
+          return { success: false, name: file.name };
+        }
+      })
+    );
+
+    compressedResults.forEach((result) => {
+      if (result.success && result.file) {
+        batch.push(result.file);
+      } else if (!result.success && result.name) {
+        toast.error(`Failed to process ${result.name}`);
       }
     });
 
