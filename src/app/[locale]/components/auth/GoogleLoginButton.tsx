@@ -1,6 +1,8 @@
 "use client";
 
 import { useTranslations } from "next-intl";
+import { CONFIG } from "@/src/config";
+
 
 interface GoogleLoginButtonProps {
   section: "SignIn" | "SignUp";
@@ -10,7 +12,7 @@ export function GoogleLoginButton({ section }: GoogleLoginButtonProps) {
   const t = useTranslations(section);
   
   const handleGoogleLogin = () => {
-    window.location.href = "https://karam.idreis.net/api/v1/auth/google/redirect";
+    window.location.href = `${CONFIG.API_URL}/api/v1/auth/google/redirect`;
   };
 
   return (

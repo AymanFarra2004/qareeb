@@ -3,6 +3,8 @@
 import { useState, useEffect } from "react";
 import { X, Loader2, User, Mail, Phone, MapPin, Shield, Lock } from "lucide-react";
 import { updateUserProfile } from "@/src/actions/auth";
+import { CONFIG } from "@/src/config";
+
 import toast from "react-hot-toast";
 import { useTranslations, useLocale } from "next-intl";
 import { useRouter } from "@/src/i18n/routing";
@@ -53,7 +55,7 @@ export function EditProfileModal({
 
   useEffect(() => {
     setIsLoadingLocations(true);
-    fetch(`https://karam.idreis.net/api/v1/locations?lang=${locale}`)
+    fetch(`${CONFIG.API_URL}/api/v1/locations?lang=${locale}`)
       .then(res => res.json())
       .then(data => {
         if(data.status === 'success') {

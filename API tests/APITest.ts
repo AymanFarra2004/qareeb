@@ -1,8 +1,10 @@
  import { cookies } from "next/headers";
+import { CONFIG } from "@/src/config";
+
  async function getAdminReviews(){
     const cookieStore = await cookies();
       const token = cookieStore.get("token")?.value;
- const res = await fetch(`https://karam.idreis.net/api/v1/admin/reviews`, {
+ const res = await fetch(`${CONFIG.API_URL}/api/v1/admin/reviews`, {
       method: "GET",
       headers: {
         "Accept": "application/json",

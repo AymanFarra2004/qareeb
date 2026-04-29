@@ -8,6 +8,8 @@ import AuthHydrator from "@/src/providers/AuthHydrator";
 import { ThemeProvider } from "@/src/providers/ThemeProvider";
 import { Toaster } from "react-hot-toast";
 import { cookies } from "next/headers";
+import { CONFIG } from "@/src/config";
+
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -29,7 +31,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: 'Index' });
 
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://qareeb.cc';
+  const baseUrl = CONFIG.APP_URL;
 
   return {
     metadataBase: new URL(baseUrl),

@@ -1,6 +1,8 @@
 "use server";
 
 import { cookies } from "next/headers";
+import { CONFIG } from "@/src/config";
+
 
 // Map next-intl locale codes to API lang query params
 function getLangParam(locale: string = "ar"): string {
@@ -16,7 +18,7 @@ export async function loginUser(prevState: any, formData: FormData) {
   }
 
   try {
-    const res = await fetch("https://karam.idreis.net/api/v1/login", {
+    const res = await fetch(`${CONFIG.API_URL}/api/v1/login`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -54,7 +56,7 @@ export async function loginUser(prevState: any, formData: FormData) {
 
       // Sync user_location_id — fetch profile to get the stored location
       try {
-        const profileRes = await fetch("https://karam.idreis.net/api/v1/profile?lang=ar", {
+        const profileRes = await fetch(`${CONFIG.API_URL}/api/v1/profile?lang=ar`, {
           headers: {
             "Accept": "application/json",
             "Authorization": `Bearer ${body.data.token}`,
@@ -107,7 +109,7 @@ export async function handleGoogleCallback(token: string, userStr: string | null
 
     // Sync user_location_id from profile
     try {
-      const profileRes = await fetch("https://karam.idreis.net/api/v1/profile?lang=ar", {
+      const profileRes = await fetch(`${CONFIG.API_URL}/api/v1/profile?lang=ar`, {
         headers: {
           "Accept": "application/json",
           "Authorization": `Bearer ${token}`,
@@ -155,7 +157,7 @@ export async function registerUser(prevState: any, formData: FormData) {
   // const specialization = formData.get("specialization") as string;
 
   try{
-    const response = await fetch("https://karam.idreis.net/api/v1/register", {
+    const response = await fetch(`${CONFIG.API_URL}/api/v1/register`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -208,7 +210,7 @@ export async function getUserProfile(locale: string = "ar") {
 
   try {
     const langParam = getLangParam(locale);
-    const res = await fetch(`https://karam.idreis.net/api/v1/profile?${langParam}`, {
+    const res = await fetch(`${CONFIG.API_URL}/api/v1/profile?${langParam}`, {
       method: "GET",
       headers: {
         "Accept": "application/json",
@@ -236,7 +238,7 @@ export async function updateUserProfile(data: any) {
   }
 
   try {
-    const res = await fetch("https://karam.idreis.net/api/v1/profile", {
+    const res = await fetch(`${CONFIG.API_URL}/api/v1/profile`, {
       method: "PUT",
       headers: {
         "Accept": "application/json",
@@ -305,7 +307,7 @@ export async function changePassword(data: { current_password: string; password:
   }
 
   try {
-    const res = await fetch("https://karam.idreis.net/api/v1/profile", {
+    const res = await fetch(`${CONFIG.API_URL}/api/v1/profile`, {
       method: "PUT",
       headers: {
         "Accept": "application/json",
@@ -330,7 +332,7 @@ export async function changePassword(data: { current_password: string; password:
 
 export async function getProfileByToken(token: string, locale: string = "ar") {
   try {
-    const res = await fetch(`https://karam.idreis.net/api/v1/profile?${getLangParam(locale)}`, {
+    const res = await fetch(`${CONFIG.API_URL}/api/v1/profile?${getLangParam(locale)}`, {
       method: "GET",
       headers: {
         "Accept": "application/json",

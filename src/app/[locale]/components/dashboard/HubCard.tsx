@@ -1,6 +1,8 @@
 import { Link } from "@/src/i18n/routing";
 import { Settings, MapPin, ExternalLink } from "lucide-react";
 import { useTranslations, useLocale } from "next-intl";
+import { CONFIG } from "@/src/config";
+
 
 type HubCardProps = {
   hub: any;
@@ -14,7 +16,7 @@ export function HubCard({ hub }: HubCardProps) {
   const hubName = hub.name?.[locale] || hub.name?.en || hub.name?.ar || hub.name || "Unnamed Hub";
   const desc = hub.description?.[locale] || hub.description?.en || hub.description?.ar || hub.description || "No description provided.";
   const mainImage = hub.images?.main || hub.main_image;
-  const imageUrl = mainImage ? (mainImage.startsWith('http') ? mainImage : `https://karam.idreis.net${mainImage.startsWith('/') ? '' : '/'}${mainImage}`) : null;
+  const imageUrl = mainImage ? (mainImage.startsWith('http') ? mainImage : `${CONFIG.API_URL}${mainImage.startsWith('/') ? '' : '/'}${mainImage}`) : null;
 
   return (
     <div className="bg-background rounded-2xl border border-border shadow-sm overflow-hidden flex flex-col transition-all hover:shadow-md group">

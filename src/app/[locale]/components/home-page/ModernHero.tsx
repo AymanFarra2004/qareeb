@@ -2,6 +2,8 @@
 
 import { useTranslations, useLocale } from "next-intl";
 import { motion } from "framer-motion";
+import { CONFIG } from "@/src/config";
+
 import { useEffect, useState } from "react";
 import { useRouter, Link } from "@/src/i18n/routing";
 import { Search } from "lucide-react";
@@ -26,7 +28,7 @@ export default function ModernHero({ hubs = [] }: { hubs?: any[] }) {
       const selectedHubs = shuffled.slice(0, 4);
 
       const mappedHubs = selectedHubs.map(hub => ({
-        imageUrl: hub.images.main.startsWith('http') ? hub.images.main : `https://karam.idreis.net${hub.images.main.startsWith('/') ? '' : '/'}${hub.images.main}`,
+        imageUrl: hub.images.main.startsWith('http') ? hub.images.main : `${CONFIG.API_URL}${hub.images.main.startsWith('/') ? '' : '/'}${hub.images.main}`,
         name: typeof hub.name === 'string' ? hub.name : (hub.name?.[locale] || hub.name?.en || hub.name?.ar || "Unknown Hub"),
         slug: hub.slug
       }));

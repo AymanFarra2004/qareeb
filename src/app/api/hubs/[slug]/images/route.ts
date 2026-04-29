@@ -2,7 +2,10 @@ import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import axios from 'axios';
 
-const API_BASE_URL = "https://karam.idreis.net/api/v1";
+import { CONFIG } from "@/src/config";
+
+const API_BASE_URL = `${CONFIG.API_URL}/api/v1`;
+
 
 export const maxDuration = 60; // Prevent 30-second Next.js default timeout during large uploads
 

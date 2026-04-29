@@ -1,5 +1,7 @@
 import { getPrivateHubBySlug } from "@/src/actions/hubs";
 import { getTranslations, getLocale } from "next-intl/server";
+import { CONFIG } from "@/src/config";
+
 import Link from "next/link";
 import {
   ArrowLeft,
@@ -32,7 +34,7 @@ interface PageProps {
 function resolveImg(path: string | null | undefined): string | null {
   if (!path) return null;
   if (path.startsWith("http")) return path;
-  return `https://karam.idreis.net${path.startsWith("/") ? "" : "/"}${path}`;
+  return `${CONFIG.API_URL}${path.startsWith("/") ? "" : "/"}${path}`;
 }
 
 /** Build a full readable address by joining all breadcrumb segment names */

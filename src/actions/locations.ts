@@ -1,4 +1,7 @@
-const API_BASE_URL = "https://karam.idreis.net/api/v1";
+import { CONFIG } from "@/src/config";
+
+const API_BASE_URL = `${CONFIG.API_URL}/api/v1`;
+
 
 
 export async function getLocationDataBySlugForManagement(slug: string) {

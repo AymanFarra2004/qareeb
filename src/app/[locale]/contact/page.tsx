@@ -3,11 +3,13 @@ import { Footer } from "@/components/footer/Footer";
 import ContactView from "@/components/contact/ContactView";
 import { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
+import { CONFIG } from "@/src/config";
+
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations("ContactUs");
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://qareeb.cc';
+  const baseUrl = CONFIG.APP_URL;
 
   return {
     title: `${t("meta.title")} | Qareeb`,

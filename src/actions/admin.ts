@@ -3,7 +3,10 @@
 import { cookies } from "next/headers";
 import { revalidatePath, revalidateTag } from "next/cache";
 
-const API_BASE_URL = "https://karam.idreis.net/api/v1";
+import { CONFIG } from "@/src/config";
+
+const API_BASE_URL = `${CONFIG.API_URL}/api/v1`;
+
 
 // Map next-intl locale codes to API lang query params
 function getLangParam(locale: string = "ar"): string {
@@ -198,7 +201,7 @@ export async function getAdminReviews() {
   }
 
   try {
-    const res = await fetch(`https://karam.idreis.net/api/v1/admin/reviews`, {
+    const res = await fetch(`${CONFIG.API_URL}/api/v1/admin/reviews`, {
       method: "GET",
       headers: {
         "Accept": "application/json",

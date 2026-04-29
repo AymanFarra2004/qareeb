@@ -3,8 +3,10 @@
 import { cookies } from "next/headers";
 import { revalidatePath, revalidateTag } from "next/cache";
 import { format12to24 } from "../lib/utils";
+import { CONFIG } from "@/src/config";
 
-const API_BASE_URL = "https://karam.idreis.net/api/v1";
+const API_BASE_URL = `${CONFIG.API_URL}/api/v1`;
+
 
 // Map next-intl locale codes to API lang query params
 function getLangParam(locale: string = "ar"): string {
@@ -1240,7 +1242,8 @@ export async function downloadImageServer(url: string) {
     try {
       const parsedUrl = new URL(url);
       // Ensure the hostname is related to the API to prevent SSRF
-      const isAllowed = parsedUrl.hostname.includes("karam.idreis.net") || 
+      const apiHostname = new URL(CONFIG.API_URL).hostname;
+      const isAllowed = parsedUrl.hostname.includes(apiHostname) || 
                         parsedUrl.hostname.includes("pub-a1221038980d454e849a65bacb03f448.r2.dev");
       
       if (!isAllowed) {

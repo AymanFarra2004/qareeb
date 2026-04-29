@@ -12,13 +12,15 @@ import HubReviews from "@/components/hubs/hub/HubReviews"
 import { getLocale, getTranslations } from "next-intl/server"
 import { format24to12 } from "@/src/lib/utils"
 import { Metadata } from "next"
+import { CONFIG } from "@/src/config"
 // import { useTranslations } from "next-intl"
+
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string, locale: string }> }): Promise<Metadata> {
   const { id, locale } = await params;
   const hubRes = await getHubBySlug(id, locale);
   const rawHub = hubRes.success ? hubRes.data : null;
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://qareeb.cc';
+  const baseUrl = CONFIG.APP_URL;
 
   if (!rawHub) {
     return {
@@ -32,7 +34,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
 
   const mainImageRaw: string | null = typeof rawHub.images?.main === 'string' ? rawHub.images.main : null;
   const imageUrl = mainImageRaw
-    ? (mainImageRaw.startsWith('http') ? mainImageRaw : `https://karam.idreis.net${mainImageRaw.startsWith('/') ? '' : '/'}${mainImageRaw}`)
+    ? (mainImageRaw.startsWith('http') ? mainImageRaw : `${CONFIG.API_URL}${mainImageRaw.startsWith('/') ? '' : '/'}${mainImageRaw}`)
     : null;
 
   return {
@@ -100,13 +102,13 @@ function mapApiHub(apiHub: any, locale: string = "ar", t: any) {
     imageUrl: mainImage
       ? mainImage.startsWith("http")
         ? mainImage
-        : `https://karam.idreis.net${mainImage.startsWith("/") ? "" : "/"}${mainImage}`
+        : `${CONFIG.API_URL}${mainImage.startsWith("/") ? "" : "/"}${mainImage}`
       : "https://placehold.co/600x400?text=No+Image",
     galleryUrls: Array.isArray(apiHub.images?.gallery)
       ? apiHub.images.gallery.map((g: any) => {
           const url = typeof g === 'string' ? g : g?.url;
           if (typeof url !== 'string') return null;
-          return url.startsWith("http") ? url : `https://karam.idreis.net${url.startsWith("/") ? "" : "/"}${url}`;
+          return url.startsWith("http") ? url : `${CONFIG.API_URL}${url.startsWith("/") ? "" : "/"}${url}`;
         }).filter(Boolean)
       : [],
     verificationStatus: (apiHub.status === "approved" ? t("verified") : t("pending")) as "Verified" | "Pending",

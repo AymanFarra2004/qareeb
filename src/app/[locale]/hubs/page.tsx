@@ -6,10 +6,12 @@ import HubsClient from "@/components/hubs/HubsClient"
 import { getAllHubs } from "@/src/actions/hubs"
 import { getLocale, getTranslations } from "next-intl/server"
 import { format24to12 } from "@/src/lib/utils"
+import { CONFIG } from "@/src/config"
+
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations("HubsPage");
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://qareeb.cc';
+  const baseUrl = CONFIG.APP_URL;
 
   return {
     title: t("meta.title"),
@@ -59,7 +61,7 @@ export default async function HubsDirectory() {
       : apiHub.operating_hours || "Contact for hours",
     services: Array.isArray(apiHub.all_services || apiHub.services) ? (apiHub.all_services || apiHub.services).map((s:any) => typeof s.name === 'string' ? s.name : (s.name?.[locale] || s.name?.en || s.name)) : [],
     imageUrl: apiHub.images?.main ? 
-      (apiHub.images.main.startsWith('http') ? apiHub.images.main : `https://karam.idreis.net${apiHub.images.main.startsWith('/') ? '' : '/'}${apiHub.images.main}`) 
+      (apiHub.images.main.startsWith('http') ? apiHub.images.main : `${CONFIG.API_URL}${apiHub.images.main.startsWith('/') ? '' : '/'}${apiHub.images.main}`) 
       : "https://placehold.co/600x400?text=No+Image",
     verificationStatus: apiHub.status === "approved" ? "Verified" : "Pending",
     contact: { contactNumber: apiHub.contact || "" },

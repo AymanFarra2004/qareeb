@@ -4,6 +4,8 @@ import { motion } from "framer-motion";
 import { Coins, Star } from "lucide-react";
 import { format24to12 } from "@/src/lib/utils";
 import { getServiceIcon } from "@/src/data/hubs";
+import { CONFIG } from "@/src/config";
+
 
 export default function HubsBentoGrid({ hubs = [] }: { hubs?: any[] }) {
   const t = useTranslations("HubsGrid");
@@ -44,7 +46,7 @@ export default function HubsBentoGrid({ hubs = [] }: { hubs?: any[] }) {
     imageUrl: apiHub.images?.main
       ? (apiHub.images.main.startsWith('http')
           ? apiHub.images.main
-          : `https://karam.idreis.net${apiHub.images.main.startsWith('/') ? '' : '/'}${apiHub.images.main}`)
+          : `${CONFIG.API_URL}${apiHub.images.main.startsWith('/') ? '' : '/'}${apiHub.images.main}`)
       : "https://placehold.co/600x400?text=No+Image",
     review: apiHub.reviews?.average_rating || 0,
   }));

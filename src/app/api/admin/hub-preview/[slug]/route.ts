@@ -1,4 +1,6 @@
 import { cookies } from "next/headers";
+import { CONFIG } from "@/src/config";
+
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(
@@ -13,7 +15,7 @@ export async function GET(
     return NextResponse.json({ error: "Unauthenticated" }, { status: 401 });
   }
 
-  const apiUrl = `https://karam.idreis.net/api/v1/hubs/${slug}`;
+  const apiUrl = `${CONFIG.API_URL}/api/v1/hubs/${slug}`;
 
   const res = await fetch(apiUrl, {
     headers: {

@@ -2,7 +2,9 @@ import { Header } from "@/components/header/Header";
 import ModernHomeView from "./components/home-page/ModernHomeView";
 import { Footer } from "@/components/footer/Footer";
 import { getAllHubs } from "@/src/actions/hubs";
-import { getLocale, getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server"
+import { CONFIG } from "@/src/config"
+;
 import { Metadata } from "next";
 import { getUserLocationContext } from "@/src/lib/getUserLocationContext";
 import { filterBentoHubs } from "@/src/lib/filterBentoHubs";
@@ -10,7 +12,7 @@ import { filterBentoHubs } from "@/src/lib/filterBentoHubs";
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: 'Index' });
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://qareeb.cc';
+  const baseUrl = CONFIG.APP_URL;
 
   return {
     title: t('meta.title'),

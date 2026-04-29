@@ -1,7 +1,8 @@
-import { MetadataRoute } from 'next';
+import { MetadataRoute } from 'next'
+import { CONFIG } from '@/src/config';
 import { getAllHubs } from '@/src/actions/hubs';
 
-const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://qareeb.cc';
+const baseUrl = CONFIG.APP_URL || 'https://www.qareeb.cc';
 // Arabic listed first to signal higher importance to Arabic search engines
 const locales = ['ar', 'en'];
 

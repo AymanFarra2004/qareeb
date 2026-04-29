@@ -4,6 +4,8 @@ import { useState, useMemo, useEffect } from "react";
 import { Filter, Search, MapPin, X, ChevronRight, Loader2 } from "lucide-react";
 import { HubCard } from "../general/HubCard";
 import { useTranslations, useLocale } from "next-intl";
+import { CONFIG } from "@/src/config";
+
 
 type HubsClientProps = {
   hubs: any[];
@@ -37,7 +39,7 @@ export default function HubsClient({ hubs }: HubsClientProps) {
   // ── Fetch locations from API ─────────────────────────────────────────────
   useEffect(() => {
     setLocationsLoading(true);
-    fetch(`https://karam.idreis.net/api/v1/locations?lang=${locale}`)
+    fetch(`${CONFIG.API_URL}/api/v1/locations?lang=${locale}`)
       .then((res) => res.json())
       .then((data) => {
         if (data.status === "success") {

@@ -13,7 +13,9 @@ import HubGalleryManager from "@/src/app/[locale]/components/dashboard/HubGaller
 import { useTranslations, useLocale } from "next-intl";
 import { TimePicker } from "@/src/app/[locale]/components/ui/time-picker";
 import { useInputValidation } from "@/src/hooks/useInputValidation";
+import { CONFIG } from "@/src/config";
 // import { cookies } from "next/headers";
+
 
 // General Tab - shows real hub data
 function GeneralTab({ hub, onUpdate }: { hub: any; onUpdate: () => void }) {
@@ -124,7 +126,7 @@ function GeneralTab({ hub, onUpdate }: { hub: any; onUpdate: () => void }) {
   };
 
   const mainImage = hub.images?.main || hub.main_image;
-  const imageUrl = mainImage ? (mainImage.startsWith('http') ? mainImage : `https://karam.idreis.net${mainImage.startsWith('/') ? '' : '/'}${mainImage}`) : null;
+  const imageUrl = mainImage ? (mainImage.startsWith('http') ? mainImage : `${CONFIG.API_URL}${mainImage.startsWith('/') ? '' : '/'}${mainImage}`) : null;
 
   return (
     <div className="space-y-6 animate-in fade-in duration-500">

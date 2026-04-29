@@ -1,5 +1,8 @@
 "use server";
 
+import { CONFIG } from "@/src/config";
+
+
 export interface ContactPayload {
   name: string;
   email: string;
@@ -16,7 +19,7 @@ export async function submitContactForm(
   payload: ContactPayload
 ): Promise<ContactResult> {
   try {
-    const res = await fetch("https://karam.idreis.net/api/v1/contact", {
+    const res = await fetch(`${CONFIG.API_URL}/api/v1/contact`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

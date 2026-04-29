@@ -4,6 +4,8 @@ import { useState, useEffect, useRef } from 'react';
 import { MapPin, Loader2, Search, Check, ChevronDown, X } from "lucide-react";
 import { useTranslations, useLocale } from 'next-intl';
 import { motion, AnimatePresence } from 'framer-motion';
+import { CONFIG } from '@/src/config';
+
 
 type Location = {
   id: number;
@@ -154,7 +156,7 @@ export function LocationSelect({ initialValue }: { initialValue?: string | numbe
 
   useEffect(() => {
     setIsLoading(true);
-    fetch(`https://karam.idreis.net/api/v1/locations?lang=${locale}`)
+    fetch(`${CONFIG.API_URL}/api/v1/locations?lang=${locale}`)
       .then(res => res.json())
       .then(data => {
         if(data.status === 'success') {

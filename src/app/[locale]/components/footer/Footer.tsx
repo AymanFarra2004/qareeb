@@ -3,9 +3,11 @@
 import { Link } from "@/src/i18n/routing";
 import { Mail } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { CONFIG } from "@/src/config";
 
 export function Footer() {
   const t = useTranslations("Footer");
+  const email = CONFIG.SUPPORT_EMAIL;
 
   return (
     <footer className="relative bg-background border-t border-border mt-auto overflow-hidden">
@@ -56,7 +58,7 @@ export function Footer() {
 
             <div className="flex space-x-4 rtl:space-x-reverse text-muted-foreground">
               <span className="flex items-center gap-2 text-sm">
-                <Mail className="h-4 w-4" /> support@qareeb.gaza.com
+                <Mail className="h-4 w-4" /> {email}
               </span>
             </div>
           </div>

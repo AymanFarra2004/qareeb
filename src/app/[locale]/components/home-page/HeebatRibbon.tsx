@@ -2,6 +2,8 @@
 
 import { motion } from "framer-motion";
 import { MapPin } from "lucide-react";
+import { CONFIG } from "@/src/config";
+
 import { Link } from "@/src/i18n/routing";
 import { useLocale } from "next-intl";
 import { useEffect, useState } from "react";
@@ -41,7 +43,7 @@ export default function HeebatRibbon({ hubs = [] }: { hubs?: any[] }) {
       >
         {duplicatedHubs.map((hub, index) => {
           const hubName = typeof hub.name === 'string' ? hub.name : (hub.name?.[locale] || hub.name?.en || hub.name?.ar || "Unknown Hub");
-          const imageUrl = hub.images?.main ? (hub.images.main.startsWith('http') ? hub.images.main : `https://karam.idreis.net${hub.images.main.startsWith('/') ? '' : '/'}${hub.images.main}`) : "https://placehold.co/100x100?text=Hub";
+          const imageUrl = hub.images?.main ? (hub.images.main.startsWith('http') ? hub.images.main : `${CONFIG.API_URL}${hub.images.main.startsWith('/') ? '' : '/'}${hub.images.main}`) : "https://placehold.co/100x100?text=Hub";
           return (
             <Link
               href={`/hubs/${hub.slug}`}
