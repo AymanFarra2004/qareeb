@@ -56,11 +56,11 @@ export function Footer() {
               {t("tagline")}
             </p>
 
-            <div className="flex space-x-4 rtl:space-x-reverse text-muted-foreground">
+            <Link href={`mailto:${email}`} className="flex space-x-4 rtl:space-x-reverse text-muted-foreground">
               <span className="flex items-center gap-2 text-sm">
                 <Mail className="h-4 w-4" /> {email}
               </span>
-            </div>
+            </Link>
           </div>
 
           <div>

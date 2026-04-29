@@ -103,7 +103,6 @@ const BasicInfo = () => {
           <textarea
             name="description_ar"
             rows={3}
-            required
             dir="rtl"
             onBlur={descAr.onBlur}
             className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary resize-none"

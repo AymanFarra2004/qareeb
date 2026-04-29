@@ -94,11 +94,11 @@ export default function HubsBentoGrid({ hubs = [] }: { hubs?: any[] }) {
                   <span className="bg-background/70 backdrop-blur-md text-foreground text-xs font-semibold px-3 py-1 rounded-full flex items-center gap-1 shadow-sm border border-border/50">
                     <span className="w-2 h-2 rounded-full bg-green-500"></span> {t("verified")}
                   </span>
-                  {hub.hourlyPrice && (
+                  {Number(hub.hourlyPrice) && Number(hub.hourlyPrice) > 0 ? (
                     <span className="bg-background/70 backdrop-blur-md text-foreground text-xs font-semibold px-3 py-1 rounded-full flex items-center gap-1 shadow-sm border border-border/50">
                       <Coins className="w-3 h-3 text-amber-500" /> ₪{hub.hourlyPrice}/{t("hour")}
                     </span>
-                  )}
+                  ) : null}
                 </div>
               </div>
 
