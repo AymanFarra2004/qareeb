@@ -102,15 +102,16 @@ export function Header() {
               <Moon className="h-4 w-4 block dark:hidden" />
             </button>
 
-            {/* Language Switcher */}
-            <button
-              onClick={handleLocaleSwitch}
-              className="cursor-pointer p-2.5 rounded-full bg-foreground/5 text-foreground hover:bg-foreground/10 transition-colors flex items-center gap-1.5 text-sm font-semibold ml-3"
-              aria-label={t('aria.switchLanguage')}
-            >
-              <Languages className="h-4 w-4" />
-              {locale === "en" ? "عربي" : "EN"}
-            </button>
+            {/* Language Switcher 
+             <button
+               onClick={handleLocaleSwitch}
+               className="cursor-pointer p-2.5 rounded-full bg-foreground/5 text-foreground hover:bg-foreground/10 transition-colors flex items-center gap-1.5 text-sm font-semibold ml-3"
+               aria-label={t('aria.switchLanguage')}
+             >
+               <Languages className="h-4 w-4" />
+               {locale === "en" ? "عربي" : "EN"}
+             </button>
+             */}
 
             {/* Auth or User Burger Menu */}
             {!isLoggedIn ? (
@@ -193,13 +194,14 @@ export function Header() {
 
           {/* Mobile menu button */}
           <div className="flex md:hidden items-center space-x-1 rtl:space-x-reverse">
-            {/* Language Switcher Mobile */}
+            {/* Language Switcher Mobile 
             <button
               onClick={handleLocaleSwitch}
               className="cursor-pointer p-2 rounded-full bg-foreground/5 text-foreground hover:bg-foreground/10 transition-colors text-xs font-bold"
             >
               {locale === "en" ? "عربي" : "EN"}
             </button>
+            */}
             <button
               onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
               className="cursor-pointer p-2 rounded-full bg-foreground/5 text-foreground hover:bg-foreground/10 transition-colors"
