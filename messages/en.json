@@ -850,5 +850,11 @@
   "Errors": {
     "onlyArabic": "Only Arabic characters are allowed",
     "onlyEnglish": "Only English characters are allowed"
+  },
+  "Loading": {
+    "title": "Connecting you...",
+    "description": "Fetching the best workspaces for you.",
+    "slowConnection": "Your connection seems slow. Hang tight, we're almost there!",
+    "pleaseWait": "Please wait..."
   }
 }

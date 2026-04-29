@@ -20,6 +20,7 @@ const navLinks = [
 export function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = React.useState(false);
+  const [mounted, setMounted] = React.useState(false);
   const { setTheme, theme } = useTheme();
 
   const pathname = usePathname();
@@ -51,6 +52,7 @@ export function Header() {
   };
 
   React.useEffect(() => {
+    setMounted(true);
     const handleScroll = () => { setIsUserMenuOpen(false); };
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
@@ -114,7 +116,11 @@ export function Header() {
              */}
 
             {/* Auth or User Burger Menu */}
-            {!isLoggedIn ? (
+            {!mounted ? (
+              <div className="flex items-center space-x-2 rtl:space-x-reverse border-s border-border/50 ps-3">
+                <div className="w-20 h-9 bg-foreground/5 animate-pulse rounded-full" />
+              </div>
+            ) : !isLoggedIn ? (
               <div className="flex items-center space-x-2 rtl:space-x-reverse border-s border-border/50 ps-3">
                 <Link href="/sign-in" className="cursor-pointer px-4 py-2 text-sm font-medium text-foreground hover:text-primary transition-colors">
                   {t('auth.signIn')}
@@ -246,7 +252,9 @@ export function Header() {
               })}
 
               <div className="pt-4 mt-4 border-t border-border">
-                {!isLoggedIn ? (
+                {!mounted ? (
+                  <div className="px-4 py-3 h-12 bg-muted/50 animate-pulse rounded-xl" />
+                ) : !isLoggedIn ? (
                   <div className="flex flex-col gap-3">
                     <Link onClick={() => setIsMobileMenuOpen(false)} href="/sign-in" className="cursor-pointer w-full px-4 py-3 text-center text-sm font-medium rounded-xl border border-border hover:bg-muted transition-colors">
                       {t('auth.signIn')}
