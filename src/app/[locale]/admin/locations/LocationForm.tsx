@@ -194,7 +194,7 @@ export default function LocationForm({
             </div>
           )}
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
             <div className="space-y-2">
               <label className="text-sm font-semibold text-foreground px-1">{t("nameAr")}</label>
               <input
@@ -207,18 +207,17 @@ export default function LocationForm({
                 className="w-full px-4 py-3 bg-muted/50 border border-border rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
               />
             </div>
-            <div className="space-y-2">
+            {/* <div className="space-y-2">
               <label className="text-sm font-semibold text-foreground px-1">{t("nameEn")}</label>
               <input
                 type="text"
-                required
                 dir="ltr"
                 defaultValue={nameEn}
                 onChange={(e) => setNameEn(e.target.value)}
                 placeholder="e.g. North Gaza"
                 className="w-full px-4 py-3 bg-muted/50 border border-border rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
               />
-            </div>
+            </div> */}
           </div>
 
           <div className="space-y-2">

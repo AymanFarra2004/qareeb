@@ -21,12 +21,12 @@ const BasicInfo = () => {
     <section className="space-y-6">
       <h2 className="text-xl font-semibold border-b border-border pb-2">{t("basicInfo")}</h2>
 
-      <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 flex gap-3 text-sm text-blue-700">
+      {/* <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 flex gap-3 text-sm text-blue-700">
         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="flex-shrink-0"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
         <p>{t("englishOptionalNotice")}</p>
-      </div>
+      </div> */}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
         <div>
           <label className="block text-sm font-medium text-foreground mb-1 text-right">{t("hubNameAr")}</label>
           <input
@@ -42,7 +42,7 @@ const BasicInfo = () => {
             <p className="mt-1 text-xs text-red-500 text-right">{nameAr.error}</p>
           )}
         </div>
-        <div>
+        {/* <div>
           <label className="block text-sm font-medium text-foreground mb-1">{t("hubNameEn")}</label>
           <input
             name="name_en"
@@ -56,7 +56,7 @@ const BasicInfo = () => {
           ) : (
             <p className="mt-1 text-[10px] text-muted-foreground opacity-70 italic">{t("englishOptionalWarning")}</p>
           )}
-        </div>
+        </div> */}
       </div>
 
       <div className="space-y-4">
@@ -64,7 +64,7 @@ const BasicInfo = () => {
         <LocationSelect />
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+      <div className="grid grid-cols-1 md:grid-cols-1 gap-4 mt-4">
         <div>
           <label className="block text-sm font-medium text-foreground mb-1 text-right">{t("detailedAddressAr")}</label>
           <input
@@ -80,7 +80,7 @@ const BasicInfo = () => {
             <p className="mt-1 text-xs text-red-500 text-right">{addressAr.error}</p>
           )}
         </div>
-        <div>
+        {/* <div>
           <label className="block text-sm font-medium text-foreground mb-1">{t("detailedAddressEn")}</label>
           <input
             name="address_en"
@@ -94,10 +94,10 @@ const BasicInfo = () => {
           ) : (
             <p className="mt-1 text-[10px] text-muted-foreground opacity-70 italic">{t("englishOptionalWarning")}</p>
           )}
-        </div>
+        </div> */}
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
         <div>
           <label className="block text-sm font-medium text-foreground mb-1 text-right">{t("descriptionAr")}</label>
           <textarea
@@ -113,7 +113,7 @@ const BasicInfo = () => {
             <p className="mt-1 text-xs text-red-500 text-right">{descAr.error}</p>
           )}
         </div>
-        <div>
+        {/* <div>
           <label className="block text-sm font-medium text-foreground mb-1">{t("descriptionEn")}</label>
           <textarea
             name="description_en"
@@ -127,7 +127,7 @@ const BasicInfo = () => {
           ) : (
             <p className="mt-1 text-[10px] text-muted-foreground opacity-70 italic">{t("englishOptionalWarning")}</p>
           )}
-        </div>
+        </div> */}
       </div>
 
       <div className="space-y-4">

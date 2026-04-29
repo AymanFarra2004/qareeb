@@ -131,10 +131,10 @@ function GeneralTab({ hub, onUpdate }: { hub: any; onUpdate: () => void }) {
       <div className="bg-background rounded-2xl border border-border p-6 shadow-sm">
         <h3 className="text-lg font-bold mb-4">{t("title")}</h3>
         
-        <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 flex gap-3 text-sm text-blue-700 mb-6">
+        {/* <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 flex gap-3 text-sm text-blue-700 mb-6">
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="flex-shrink-0"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
           <p>{t("englishOptionalNotice")}</p>
-        </div>
+        </div> */}
         
         <div className="space-y-4 max-w-xl">
           <div>
@@ -195,11 +195,11 @@ function GeneralTab({ hub, onUpdate }: { hub: any; onUpdate: () => void }) {
       {/* View Mode Content */}
       <div className="space-y-6">
          {/* Name Card */}
-         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-           <div className="p-4 border border-border rounded-2xl bg-muted/5">
+         <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
+           {/* <div className="p-4 border border-border rounded-2xl bg-muted/5">
               <label className="block text-[10px] font-bold mb-1.5 uppercase tracking-widest text-muted-foreground">{t("hub_name_en")}</label>
               <p className="text-sm font-semibold">{hubNameEn || "---"}</p>
-           </div>
+           </div> */}
            <div className="p-4 border border-border rounded-2xl bg-muted/5 text-right">
               <label className="block text-[10px] font-bold mb-1.5 uppercase tracking-widest text-muted-foreground">{t("hub_name_ar")}</label>
               <p className="text-sm font-semibold font-arabic" dir="rtl">{hubNameAr || "---"}</p>
@@ -208,11 +208,11 @@ function GeneralTab({ hub, onUpdate }: { hub: any; onUpdate: () => void }) {
 
          {/* Description Card */}
          <div className="p-5 border border-border rounded-2xl bg-muted/5 space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
+            <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
+              {/* <div>
                 <label className="block text-[10px] font-bold mb-2 uppercase tracking-widest text-muted-foreground">{t("description_en")}</label>
                 <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-wrap">{hubDescEn || "No English description provided."}</p>
-              </div>
+              </div> */}
               <div className="text-right">
                 <label className="block text-[10px] font-bold mb-2 uppercase tracking-widest text-muted-foreground">{t("description_ar")}</label>
                 <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-wrap font-arabic" dir="rtl">{hubDescAr || "لا يوجد وصف عربي."}</p>
@@ -222,11 +222,11 @@ function GeneralTab({ hub, onUpdate }: { hub: any; onUpdate: () => void }) {
 
          {/* Address Card */}
          <div className="p-5 border border-border rounded-2xl bg-muted/5 space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
+            <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
+              {/* <div>
                 <label className="block text-[10px] font-bold mb-2 uppercase tracking-widest text-muted-foreground">{t("address_en")}</label>
                 <p className="text-sm text-muted-foreground font-medium">{hubAddrEn || "No address details."}</p>
-              </div>
+              </div> */}
               <div className="text-right">
                 <label className="block text-[10px] font-bold mb-2 uppercase tracking-widest text-muted-foreground">{t("address_ar")}</label>
                 <p className="text-sm text-muted-foreground font-medium font-arabic" dir="rtl">{hubAddrAr || "لا توجد بيانات عنوان."}</p>
@@ -297,7 +297,7 @@ function GeneralTab({ hub, onUpdate }: { hub: any; onUpdate: () => void }) {
             <h4 className="text-sm font-bold flex items-center gap-2 text-primary uppercase tracking-tight">
               <Edit className="h-4 w-4" /> {t("hubName")}
             </h4>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
               <div className="relative">
                 <label className="block text-[10px] font-bold mb-1 uppercase tracking-widest text-muted-foreground flex items-center justify-between">
                   {t("hub_name_ar")}
@@ -313,7 +313,7 @@ function GeneralTab({ hub, onUpdate }: { hub: any; onUpdate: () => void }) {
                 />
                 {nameAr.error && <p className="mt-1 text-xs text-red-500 text-right">{nameAr.error}</p>}
               </div>
-              <div className="relative">
+              {/* <div className="relative">
                 <label className="block text-[10px] font-bold mb-1 uppercase tracking-widest text-muted-foreground flex items-center justify-between">
                   {t("hub_name_en")}
                 </label>
@@ -330,7 +330,7 @@ function GeneralTab({ hub, onUpdate }: { hub: any; onUpdate: () => void }) {
                 ) : (
                   <p className="mt-1 text-[10px] text-muted-foreground opacity-70 italic">{tNH("englishOptionalWarning")}</p>
                 )}
-              </div>
+              </div> */}
             </div>
           </div>
 
@@ -339,7 +339,7 @@ function GeneralTab({ hub, onUpdate }: { hub: any; onUpdate: () => void }) {
             <h4 className="text-sm font-bold flex items-center gap-2 text-primary uppercase tracking-tight">
               <Settings className="h-4 w-4" /> {t("description")}
             </h4>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
               <div>
                 <label className="block text-[10px] font-bold mb-1 uppercase tracking-widest text-muted-foreground flex items-center justify-between">
                   {t("description_ar")}
@@ -354,7 +354,7 @@ function GeneralTab({ hub, onUpdate }: { hub: any; onUpdate: () => void }) {
                 />
                 {descAr.error && <p className="mt-1 text-xs text-red-500 text-right">{descAr.error}</p>}
               </div>
-              <div>
+              {/* <div>
                 <label className="block text-[10px] font-bold mb-1 uppercase tracking-widest text-muted-foreground flex items-center justify-between">
                   {t("description_en")}
                 </label>
@@ -370,7 +370,7 @@ function GeneralTab({ hub, onUpdate }: { hub: any; onUpdate: () => void }) {
                 ) : (
                   <p className="mt-1 text-[10px] text-muted-foreground opacity-70 italic">{tNH("englishOptionalWarning")}</p>
                 )}
-              </div>
+              </div> */}
             </div>
           </div>
 
@@ -379,7 +379,7 @@ function GeneralTab({ hub, onUpdate }: { hub: any; onUpdate: () => void }) {
             <h4 className="text-sm font-bold flex items-center gap-2 text-primary uppercase tracking-tight">
               <MapPin className="h-4 w-4" /> {t("address_en")?.split(' ')[0]}
             </h4>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
               <div>
                 <label className="block text-[10px] font-bold mb-1 uppercase tracking-widest text-muted-foreground flex items-center justify-between">
                   {t("address_ar")}
@@ -394,7 +394,7 @@ function GeneralTab({ hub, onUpdate }: { hub: any; onUpdate: () => void }) {
                 />
                 {addrAr.error && <p className="mt-1 text-xs text-red-500 text-right">{addrAr.error}</p>}
               </div>
-              <div>
+              {/* <div>
                 <label className="block text-[10px] font-bold mb-1 uppercase tracking-widest text-muted-foreground flex items-center justify-between">
                   {t("address_en")}
                 </label>
@@ -410,7 +410,7 @@ function GeneralTab({ hub, onUpdate }: { hub: any; onUpdate: () => void }) {
                 ) : (
                   <p className="mt-1 text-[10px] text-muted-foreground opacity-70 italic">{tNH("englishOptionalWarning")}</p>
                 )}
-              </div>
+              </div> */}
             </div>
 
             <div className="flex justify-end pt-4">
@@ -723,10 +723,10 @@ function ServicesTab({ hub, onUpdate }: { hub: any; onUpdate: () => void }) {
         <div className="bg-background rounded-2xl border border-border p-6 shadow-sm">
           <h3 className="text-lg font-bold mb-4">{t("addCustom")}</h3>
           
-          <div className="bg-blue-50 border border-blue-200 rounded-xl p-3 flex gap-3 text-xs text-blue-700 mb-6">
+          {/* <div className="bg-blue-50 border border-blue-200 rounded-xl p-3 flex gap-3 text-xs text-blue-700 mb-6">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="flex-shrink-0"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
             <p>{t("englishOptionalNotice")}</p>
-          </div>
+          </div> */}
 
           <form onSubmit={handleAddCustom} className="space-y-4">
             <div className="grid grid-cols-1 gap-4">
@@ -743,7 +743,7 @@ function ServicesTab({ hub, onUpdate }: { hub: any; onUpdate: () => void }) {
                 />
                 {svcNameAr.error && <p className="mt-1 text-xs text-red-500 text-right">{svcNameAr.error}</p>}
               </div>
-              <div>
+              {/* <div>
                 <label className="block text-xs font-medium mb-1 uppercase tracking-wider text-muted-foreground">{t("serviceNameEn")}</label>
                 <input 
                   value={customNameEN}
@@ -757,7 +757,7 @@ function ServicesTab({ hub, onUpdate }: { hub: any; onUpdate: () => void }) {
                 ) : (
                   <p className="mt-1 text-[10px] text-muted-foreground opacity-70 italic">{tNH("englishOptionalWarning")}</p>
                 )}
-              </div>
+              </div> */}
               <div>
                 <label className="block text-xs font-medium mb-1 uppercase tracking-wider text-muted-foreground text-end">{t("descAr")}</label>
                 <textarea
@@ -770,7 +770,7 @@ function ServicesTab({ hub, onUpdate }: { hub: any; onUpdate: () => void }) {
                 />
                 {svcDescAr.error && <p className="mt-1 text-xs text-red-500 text-right">{svcDescAr.error}</p>}
               </div>
-              <div>
+              {/* <div>
                 <label className="block text-xs font-medium mb-1 uppercase tracking-wider text-muted-foreground">{t("descEn")}</label>
                 <textarea
                   value={customDescEN}
@@ -784,7 +784,7 @@ function ServicesTab({ hub, onUpdate }: { hub: any; onUpdate: () => void }) {
                 ) : (
                   <p className="mt-1 text-[10px] text-muted-foreground opacity-70 italic">{tNH("englishOptionalWarning")}</p>
                 )}
-              </div>
+              </div> */}
             </div>
             <button 
               type="submit" 
@@ -1156,18 +1156,18 @@ function OffersTab({ hubSlug }: { hubSlug: string }) {
             {state?.error && <div className="text-red-500 text-sm bg-red-50 p-2 rounded">{state.error}</div>}
             {state?.success && <div className="text-green-600 text-sm bg-green-50 p-2 rounded">{t("offerAdded")}</div>}
             
-            <div className="bg-blue-50 border border-blue-200 rounded-xl p-3 flex gap-3 text-xs text-blue-700 mb-4">
+            {/* <div className="bg-blue-50 border border-blue-200 rounded-xl p-3 flex gap-3 text-xs text-blue-700 mb-4">
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="flex-shrink-0"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
               <p>{t("englishOptionalNotice")}</p>
-            </div>
+            </div> */}
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
               <div className="relative">
                 <label className="block text-[10px] font-bold mb-1.5 uppercase tracking-widest text-muted-foreground text-right">{t("titleAr")}</label>
                 <input name="title_ar" onBlur={titleAr.onBlur} defaultValue={state?.data?.title_ar ?? (editingOffer?.title?.ar || (typeof editingOffer?.title === 'string' ? editingOffer.title : ''))} required dir="rtl" className="w-full px-4 py-2.5 border border-input rounded-xl bg-background text-right text-sm focus:ring-2 focus:ring-primary/20 transition-all font-arabic" />
                 {titleAr.error && <p className="mt-1 text-xs text-red-500 text-right">{titleAr.error}</p>}
               </div>
-              <div className="relative">
+              {/* <div className="relative">
                 <label className="block text-[10px] font-bold mb-1.5 uppercase tracking-widest text-muted-foreground">{t("titleEn")}</label>
                 <input name="title_en" onBlur={titleEn.onBlur} defaultValue={state?.data?.title_en ?? (editingOffer?.title?.en || (typeof editingOffer?.title === 'string' ? '' : ''))} className="w-full px-4 py-2.5 border border-input rounded-xl bg-background text-sm focus:ring-2 focus:ring-primary/20 transition-all" />
                 {titleEn.error ? (
@@ -1175,16 +1175,16 @@ function OffersTab({ hubSlug }: { hubSlug: string }) {
                 ) : (
                   <p className="mt-1 text-[10px] text-muted-foreground opacity-70 italic">{tNH("englishOptionalWarning")}</p>
                 )}
-              </div>
+              </div> */}
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
               <div className="relative">
                 <label className="block text-[10px] font-bold mb-1.5 uppercase tracking-widest text-muted-foreground text-right">{t("descAr")}</label>
                 <textarea name="description_ar" onBlur={descAr.onBlur} defaultValue={state?.data?.description_ar ?? (editingOffer?.description?.ar || (typeof editingOffer?.description === 'string' ? editingOffer.description : ''))} required dir="rtl" className="w-full px-4 py-2.5 border border-input rounded-xl bg-background resize-none text-right text-sm focus:ring-2 focus:ring-primary/20 transition-all font-arabic" rows={2}></textarea>
                 {descAr.error && <p className="mt-1 text-xs text-red-500 text-right">{descAr.error}</p>}
               </div>
-              <div className="relative">
+              {/* <div className="relative">
                 <label className="block text-[10px] font-bold mb-1.5 uppercase tracking-widest text-muted-foreground">{t("descEn")}</label>
                 <textarea name="description_en" onBlur={descEn.onBlur} defaultValue={state?.data?.description_en ?? (editingOffer?.description?.en || '')} className="w-full px-4 py-2.5 border border-input rounded-xl bg-background resize-none text-sm focus:ring-2 focus:ring-primary/20 transition-all" rows={2}></textarea>
                 {descEn.error ? (
@@ -1192,7 +1192,7 @@ function OffersTab({ hubSlug }: { hubSlug: string }) {
                 ) : (
                   <p className="mt-1 text-[10px] text-muted-foreground opacity-70 italic">{tNH("englishOptionalWarning")}</p>
                 )}
-              </div>
+              </div> */}
             </div>
 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">

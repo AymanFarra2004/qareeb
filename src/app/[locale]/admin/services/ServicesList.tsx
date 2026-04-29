@@ -70,25 +70,25 @@ export default function ServicesList({ initialServices }: { initialServices: any
           <Plus className="h-5 w-5 text-primary" /> {t("addNewService")}
         </h3>
         <form onSubmit={handleAdd} className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
+          <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
+            {/* <div>
               <label className="block text-sm font-medium mb-1">{t("nameEn")} <span className="text-red-500">*</span></label>
               <input required value={formData.name_en} onChange={(e) => setFormData({...formData, name_en: e.target.value})} className="w-full px-3 py-2 border rounded-xl bg-background" placeholder="e.g. 5G Setup" />
-            </div>
+            </div> */}
             <div>
-              <label className="block text-sm font-medium mb-1 text-end md:text-start" dir="rtl">{t("nameAr")}</label>
-              <input value={formData.name_ar} onChange={(e) => setFormData({...formData, name_ar: e.target.value})} className="w-full px-3 py-2 border rounded-xl bg-background" placeholder="مثال: إعداد الجيل الخامس" dir="rtl" />
+              <label className="block text-sm font-medium mb-1 text-end md:text-start" dir="rtl">{t("nameAr")} <span className="text-red-500">*</span></label>
+              <input required value={formData.name_ar} onChange={(e) => setFormData({...formData, name_ar: e.target.value})} className="w-full px-3 py-2 border rounded-xl bg-background" placeholder="مثال: إعداد الجيل الخامس" dir="rtl" />
             </div>
-            <div>
+            {/* <div>
               <label className="block text-sm font-medium mb-1">{t("descEn")}</label>
               <textarea value={formData.description_en} onChange={(e) => setFormData({...formData, description_en: e.target.value})} className="w-full px-3 py-2 border rounded-xl bg-background" rows={2} />
-            </div>
+            </div> */}
             <div>
               <label className="block text-sm font-medium mb-1 text-end md:text-start" dir="rtl">{t("descAr")}</label>
               <textarea value={formData.description_ar} onChange={(e) => setFormData({...formData, description_ar: e.target.value})} className="w-full px-3 py-2 border rounded-xl bg-background" rows={2} dir="rtl" />
             </div>
           </div>
-          <button disabled={isAdding || !formData.name_en} className="cursor-pointer bg-primary text-primary-foreground px-4 py-2 rounded-xl font-medium hover:bg-primary/90 flex items-center gap-2">
+          <button disabled={isAdding || !formData.name_ar} className="cursor-pointer bg-primary text-primary-foreground px-4 py-2 rounded-xl font-medium hover:bg-primary/90 flex items-center gap-2">
             {isAdding && <Loader2 className="h-4 w-4 animate-spin" />}
             {t("createService")}
           </button>
