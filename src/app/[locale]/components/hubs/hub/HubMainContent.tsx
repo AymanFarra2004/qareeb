@@ -44,12 +44,21 @@ export default function HubMainContent({hub, offers = []}: {hub: IHub, offers?: 
                 </>
               )}
 
-              {hub.galleryUrls && hub.galleryUrls.length > 0 && (
-                <>
-                  <hr className="border-border" />
-                  <HubGallery hubName={hub.name} galleryUrls={hub.galleryUrls} />
-                </>
-              )}
+              {(() => {
+                const allGalleryUrls = [
+                  hub.imageUrl && !hub.imageUrl.includes('placehold.co') ? hub.imageUrl : null,
+                  ...(hub.galleryUrls || [])
+                ].filter((url, index, self) => url && self.indexOf(url) === index) as string[];
+
+                if (allGalleryUrls.length === 0) return null;
+
+                return (
+                  <>
+                    <hr className="border-border" />
+                    <HubGallery hubName={hub.name} galleryUrls={allGalleryUrls} />
+                  </>
+                );
+              })()}
 
               {/* Social Accounts */}
               {hub.socialAccounts && hub.socialAccounts.length > 0 && (

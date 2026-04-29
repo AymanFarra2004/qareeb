@@ -35,13 +35,13 @@ export default function HubHeroImage({ hub }: { hub: IHub }) {
   };
 
   const handleNext = () => {
-    setDirection(1);
-    setCurrentIndex((prevIndex) => (prevIndex + 1 === allImages.length ? 0 : prevIndex + 1));
+    setDirection(-1);
+    setCurrentIndex((prevIndex) => (prevIndex - 1 === -1 ? allImages.length - 1 : prevIndex - 1));
   };
 
   const handlePrev = () => {
-    setDirection(-1);
-    setCurrentIndex((prevIndex) => (prevIndex - 1 < 0 ? allImages.length - 1 : prevIndex - 1));
+    setDirection(1);
+    setCurrentIndex((prevIndex) => (prevIndex + 1 === allImages.length ? 0 : prevIndex + 1));
   };
 
   if (allImages.length === 0) {
@@ -83,18 +83,18 @@ export default function HubHeroImage({ hub }: { hub: IHub }) {
         <>
           <button
             onClick={handlePrev}
-            className="absolute left-4 top-1/2 -translate-y-1/2 z-10 p-3 rounded-full bg-black/30 hover:bg-black/60 text-white transition-colors backdrop-blur-sm"
+            className="absolute left-4 top-1/2 -translate-y-1/2 z-1000 p-3 rounded-full bg-black/30 hover:bg-black/60 text-white transition-colors backdrop-blur-sm"
           >
             <ChevronLeft className="h-6 w-6 md:h-8 md:w-8" />
           </button>
           <button
             onClick={handleNext}
-            className="absolute right-4 top-1/2 -translate-y-1/2 z-10 p-3 rounded-full bg-black/30 hover:bg-black/60 text-white transition-colors backdrop-blur-sm"
+            className="absolute right-4 top-1/2 -translate-y-1/2 z-1000 p-3 rounded-full bg-black/30 hover:bg-black/60 text-white transition-colors backdrop-blur-sm"
           >
             <ChevronRight className="h-6 w-6 md:h-8 md:w-8" />
           </button>
           
-          <div className="absolute bottom-6 right-6 md:bottom-10 md:right-10 z-10 flex gap-2">
+          <div className="absolute bottom-6 right-6 md:bottom-10 md:right-10 z-1000 flex gap-2">
              {allImages.map((_, idx) => (
                 <button
                   key={idx}
@@ -137,7 +137,7 @@ export default function HubHeroImage({ hub }: { hub: IHub }) {
           )}
 
           {hub.description && (
-            <div className="text-white/80 text-sm md:text-base leading-relaxed max-w-2xl mt-2 drop-shadow-md border-l-2 border-primary/50 pl-4">
+            <div className="text-white/80 text-sm md:text-base leading-relaxed max-w-2xl mt-2 mb-4 drop-shadow-md border-l-2 border-primary/50 pl-4">
               {hub.description}
             </div>
           )}
