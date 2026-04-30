@@ -281,6 +281,7 @@ export async function updateUserProfile(data: any) {
       name:  updatedUser.name  ?? data.name  ?? existingUser.name,
       email: updatedUser.email ?? data.email ?? existingUser.email,
       role:  updatedUser.role  ?? data.role  ?? existingUser.role,
+      phone: updatedUser.phone ?? data.phone ?? existingUser.phone,
     };
 
     cookieStore.set({

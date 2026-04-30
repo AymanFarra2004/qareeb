@@ -43,9 +43,14 @@ function CallbackHandler() {
         // We check userData to avoid passing "null" string to cookies
         await handleGoogleCallback(token, userData ? JSON.stringify(userData) : null);
 
-        // 4. Redirect to localized home page
-        // Using window.location.href to ensure a full reload so that cookies are recognized by the server
-        window.location.href = `/${locale}`;
+        // 4. Redirect to appropriate page
+        // If user is missing role or location, send them to complete-profile
+        if (!userData?.role || !userData?.location_id) {
+          window.location.href = `/${locale}/complete-profile`;
+        } else {
+          // Using window.location.href to ensure a full reload so that cookies are recognized by the server
+          window.location.href = `/${locale}`;
+        }
       } catch (e) {
         console.error("Failed to process auth callback", e);
         router.push("/sign-in?error=process_failed");

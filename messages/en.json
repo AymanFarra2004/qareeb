@@ -856,5 +856,20 @@
     "description": "Fetching the best workspaces for you.",
     "slowConnection": "Your connection seems slow. Hang tight, we're almost there!",
     "pleaseWait": "Please wait..."
+  },
+  "CompleteProfile": {
+    "title": "Complete Your Profile",
+    "subtitle": "Please provide some additional information to help us give you the best experience.",
+    "meta": {
+      "title": "Complete Your Profile | Qareeb",
+      "description": "Complete your profile to finish the registration process."
+    },
+    "roleLabel": "What is your role?",
+    "locationLabel": "Your Preferred Location",
+    "phoneLabel": "Phone Number (Optional)",
+    "phonePlaceholder": "e.g. +970591234567",
+    "submit": "Save and Continue",
+    "success": "Profile updated successfully!",
+    "error": "An error occurred while updating your profile."
   }
 }
