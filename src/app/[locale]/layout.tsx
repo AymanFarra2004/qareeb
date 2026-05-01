@@ -9,6 +9,7 @@ import { ThemeProvider } from "@/src/providers/ThemeProvider";
 import { Toaster } from "react-hot-toast";
 import { cookies } from "next/headers";
 import { CONFIG } from "@/src/config";
+import { Analytics } from '@vercel/analytics/react';
 
 
 const geistSans = Geist({
@@ -107,6 +108,7 @@ export default async function RootLayout({
             <StoreProvider> 
               {token && <AuthHydrator user={user} />}
               {children}
+              <Analytics />
               <Toaster position="top-center" toastOptions={{ className: 'dark:bg-slate-800 dark:text-white rounded-xl' }} />
             </StoreProvider>
           </ThemeProvider>
