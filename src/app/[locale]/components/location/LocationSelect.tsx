@@ -155,12 +155,17 @@ export function LocationSelect({ initialValue, onChange }: { initialValue?: stri
   const [areaId, setAreaId] = useState<string>("");
 
   // Track changes and notify parent
+  const onChangeRef = useRef(onChange);
+  useEffect(() => {
+    onChangeRef.current = onChange;
+  }, [onChange]);
+
   useEffect(() => {
     const finalId = areaId || cityId || governorateId || "";
-    if (onChange) {
-      onChange(finalId);
+    if (onChangeRef.current) {
+      onChangeRef.current(finalId);
     }
-  }, [areaId, cityId, governorateId, onChange]);
+  }, [areaId, cityId, governorateId]);
 
   useEffect(() => {
     setIsLoading(true);

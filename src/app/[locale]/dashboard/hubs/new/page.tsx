@@ -11,6 +11,27 @@ import { toast } from "react-hot-toast";
 import { useTranslations } from "next-intl";
 import { uploadWithProgress } from "@/src/lib/uploadHelper";
 import { motion } from "framer-motion";
+import { useFormPersistence } from "@/src/hooks/useFormPersistence";
+import LoadingScreen from "@/components/LoadingScreen";
+
+const STORAGE_KEY = "qareeb_new_hub_form";
+
+const INITIAL_DATA = {
+  name_ar: "",
+  location_id: "",
+  address_ar: "",
+  description_ar: "",
+  start_time: "",
+  end_time: "",
+  contact: "",
+  hourly_price: "",
+  facebook_url: "",
+  twitter_url: "",
+  service_ids: [] as string[],
+  showOther: false,
+  custom_service_ar: "",
+  custom_service_description_ar: "",
+};
 
 export default function SubmitHub() {
   const [error, setError] = useState<string | null>(null);
@@ -19,6 +40,13 @@ export default function SubmitHub() {
   const [uploadProgress, setUploadProgress] = useState(0);
   const router = useRouter();
   const t = useTranslations("NewHub");
+
+  const { formData, updateField, clearPersistence, isLoaded } = useFormPersistence(
+    STORAGE_KEY,
+    INITIAL_DATA
+  );
+
+  if (!isLoaded) return <LoadingScreen />;
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -78,6 +106,7 @@ export default function SubmitHub() {
       }
 
       toast.success(t("successMessage"));
+      clearPersistence();
       setTimeout(() => {
         router.push('/dashboard');
       }, 1500);
@@ -115,10 +144,10 @@ export default function SubmitHub() {
           )}
 
           {/* Basic Info */}
-          <BasicInfo />
+          <BasicInfo formData={formData} updateField={updateField} />
 
           {/* Services & Pricing & Contact */}
-          <ServicesPricing />
+          <ServicesPricing formData={formData} updateField={updateField} />
 
           {/* Photos */}
           <UploadPhoto />

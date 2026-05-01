@@ -6,12 +6,28 @@ import { getAllServices } from "@/src/actions/hubs";
 import { useTranslations, useLocale } from "next-intl";
 import { useInputValidation } from "@/src/hooks/useInputValidation";
 
-const ServicesPricing = () => {
+interface ServicesPricingProps {
+  formData: any;
+  updateField: (name: string, value: any) => void;
+}
+
+const ServicesPricing = ({ formData, updateField }: ServicesPricingProps) => {
   const [globalServices, setGlobalServices] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [showOther, setShowOther] = useState(false);
   const t = useTranslations("NewHub");
   const locale = useLocale();
+
+  const handleInputChange = React.useCallback((e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    updateField(e.target.name, e.target.value);
+  }, [updateField]);
+
+  const handleCheckboxChange = React.useCallback((id: string) => {
+    const currentIds = formData.service_ids || [];
+    const newIds = currentIds.includes(id)
+      ? currentIds.filter((i: string) => i !== id)
+      : [...currentIds, id];
+    updateField("service_ids", newIds);
+  }, [formData.service_ids, updateField]);
 
   // Per-field validation for custom service inputs
   const customNameEn = useInputValidation("en");
@@ -44,6 +60,8 @@ const ServicesPricing = () => {
             type="tel"
             dir="ltr"
             required
+            value={formData.contact}
+            onChange={handleInputChange}
             className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary text-left"
             placeholder={t("contactPlaceholder")}
           />
@@ -60,6 +78,8 @@ const ServicesPricing = () => {
             min="0"
             step="0.5"
             required
+            value={formData.hourly_price}
+            onChange={handleInputChange}
             className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
             placeholder={t("hourlyPricePlaceholder")}
           />
@@ -73,6 +93,8 @@ const ServicesPricing = () => {
           <input
             name="facebook_url"
             type="url"
+            value={formData.facebook_url}
+            onChange={handleInputChange}
             className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary text-left"
             placeholder={t("urlPlaceholder")}
           />
@@ -82,6 +104,8 @@ const ServicesPricing = () => {
           <input
             name="twitter_url"
             type="url"
+            value={formData.twitter_url}
+            onChange={handleInputChange}
             className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary text-left"
             placeholder={t("urlPlaceholder")}
           />
@@ -101,7 +125,14 @@ const ServicesPricing = () => {
                 key={service.id}
                 className="flex items-center space-x-2 rtl:space-x-reverse border border-border p-3 rounded-lg cursor-pointer hover:bg-muted transition-colors has-[:checked]:border-primary has-[:checked]:bg-primary/5"
               >
-                <input name="service_ids" value={service.id} type="checkbox" className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary" />
+                <input 
+                  name="service_ids" 
+                  value={service.id} 
+                  type="checkbox" 
+                  checked={formData.service_ids?.includes(String(service.id))}
+                  onChange={() => handleCheckboxChange(String(service.id))}
+                  className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary" 
+                />
                 <span className="text-sm font-medium">{typeof service.name === 'string' ? service.name : (service.name?.[locale] || service.name?.en || service.name)}</span>
               </label>
             ))}
@@ -109,8 +140,8 @@ const ServicesPricing = () => {
             <label className="flex items-center space-x-2 rtl:space-x-reverse border border-border p-3 rounded-lg cursor-pointer hover:bg-muted transition-colors has-[:checked]:border-primary has-[:checked]:bg-primary/5">
               <input 
                 type="checkbox" 
-                checked={showOther}
-                onChange={(e) => setShowOther(e.target.checked)}
+                checked={formData.showOther}
+                onChange={(e) => updateField("showOther", e.target.checked)}
                 className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary" 
               />
               <span className="text-sm font-medium">{t("other")}</span>
@@ -118,7 +149,7 @@ const ServicesPricing = () => {
           </div>
         )}
 
-        {showOther && (
+        {formData.showOther && (
           <div className="mt-4 p-4 border border-input rounded-xl bg-muted/20 space-y-4 animate-in fade-in slide-in-from-top-2">
             <h4 className="text-sm font-semibold mb-2">{t("createCustomService")}</h4>
             
@@ -132,8 +163,10 @@ const ServicesPricing = () => {
                 <label className="block text-sm font-medium mb-1 text-right">{t("customServiceNameAr")}</label>
                 <input 
                   name="custom_service_ar"
-                  required={showOther}
+                  required={formData.showOther}
                   dir="rtl"
+                  value={formData.custom_service_ar}
+                  onChange={handleInputChange}
                   onBlur={customNameAr.onBlur}
                   className="w-full px-4 py-2 border rounded-lg bg-background" 
                   placeholder={t("customNamePlaceholderAr")}
@@ -161,6 +194,8 @@ const ServicesPricing = () => {
                 <textarea 
                   name="custom_service_description_ar"
                   dir="rtl"
+                  value={formData.custom_service_description_ar}
+                  onChange={handleInputChange}
                   onBlur={customDescAr.onBlur}
                   className="w-full px-4 py-2 border rounded-lg bg-background resize-none" 
                   placeholder="..." 

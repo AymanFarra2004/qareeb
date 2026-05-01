@@ -6,7 +6,12 @@ import { useTranslations } from "next-intl";
 import { TimePicker } from "../ui/time-picker";
 import { useInputValidation } from "@/src/hooks/useInputValidation";
 
-const BasicInfo = () => {
+interface BasicInfoProps {
+  formData: any;
+  updateField: (name: string, value: any) => void;
+}
+
+const BasicInfo = ({ formData, updateField }: BasicInfoProps) => {
   const t = useTranslations("NewHub");
 
   // Per-field validation hooks — each has its own independent error state
@@ -16,6 +21,14 @@ const BasicInfo = () => {
   const addressAr = useInputValidation("ar");
   const descEn = useInputValidation("en");
   const descAr = useInputValidation("ar");
+
+  const handleInputChange = React.useCallback((e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    updateField(e.target.name, e.target.value);
+  }, [updateField]);
+
+  const handleLocationChange = React.useCallback((val: string) => {
+    updateField("location_id", val);
+  }, [updateField]);
 
   return (
     <section className="space-y-6">
@@ -34,6 +47,8 @@ const BasicInfo = () => {
             type="text"
             required
             dir="rtl"
+            value={formData.name_ar}
+            onChange={handleInputChange}
             onBlur={nameAr.onBlur}
             className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
             placeholder={t("hubNamePlaceholderAr")}
@@ -61,7 +76,7 @@ const BasicInfo = () => {
 
       <div className="space-y-4">
         <label className="block text-sm font-medium text-foreground mb-1">{t("locationSelection")}</label>
-        <LocationSelect />
+        <LocationSelect initialValue={formData.location_id} onChange={handleLocationChange} />
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-1 gap-4 mt-4">
@@ -72,6 +87,8 @@ const BasicInfo = () => {
             type="text"
             required
             dir="rtl"
+            value={formData.address_ar}
+            onChange={handleInputChange}
             onBlur={addressAr.onBlur}
             className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
             placeholder={t("addressPlaceholderAr")}
@@ -104,6 +121,8 @@ const BasicInfo = () => {
             name="description_ar"
             rows={3}
             dir="rtl"
+            value={formData.description_ar}
+            onChange={handleInputChange}
             onBlur={descAr.onBlur}
             className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary resize-none"
             placeholder={t("descriptionPlaceholderAr")}
@@ -136,6 +155,8 @@ const BasicInfo = () => {
             <TimePicker
               name="start_time"
               label={t("openingTime")}
+              value={formData.start_time}
+              onChange={(val) => updateField("start_time", val)}
               defaultPeriod="AM"
               minuteStep={5}
               placeholder={t("selectHour")}
@@ -145,6 +166,8 @@ const BasicInfo = () => {
             <TimePicker
               name="end_time"
               label={t("closingTime")}
+              value={formData.end_time}
+              onChange={(val) => updateField("end_time", val)}
               defaultPeriod="PM"
               minuteStep={5}
               placeholder={t("selectHour")}
