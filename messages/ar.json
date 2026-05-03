@@ -322,6 +322,7 @@
     "general": {
       "title": "معلومات المركز",
       "services": "خدماتنا المميزة",
+      "hubOwner": "مالك المركز",
       "backToHubs": "العودة لصفحة مساحات العمل",
       "coverImage": "الصورة الرئيسية والمعرض",
       "manageGallery": "إدارة معرض الصور",
@@ -489,7 +490,7 @@
     "hourlyPriceNote": "(بالساعة، بالشيكل ₪)",
     "hourlyPricePlaceholder": "مثال: 5",
     "facebookUrl": "رابط فيسبوك",
-    "twitterUrl": "رابط تويتر (X)",
+    "instagramUrl": "رابط انستجرام",
     "urlPlaceholder": "https://...",
     "availableServices": "نظرة عامة على الخدمات المتاحة",
     "other": "أخرى",

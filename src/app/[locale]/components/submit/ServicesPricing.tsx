@@ -100,11 +100,11 @@ const ServicesPricing = ({ formData, updateField }: ServicesPricingProps) => {
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-foreground mb-1">{t("twitterUrl")}</label>
+          <label className="block text-sm font-medium text-foreground mb-1">{t("instagramUrl")}</label>
           <input
-            name="twitter_url"
+            name="instagram_url"
             type="url"
-            value={formData.twitter_url}
+            value={formData.instagram_url}
             onChange={handleInputChange}
             className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary text-left"
             placeholder={t("urlPlaceholder")}

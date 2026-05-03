@@ -26,7 +26,7 @@ const INITIAL_DATA = {
   contact: "",
   hourly_price: "",
   facebook_url: "",
-  twitter_url: "",
+  instagram_url: "",
   service_ids: [] as string[],
   showOther: false,
   custom_service_ar: "",
