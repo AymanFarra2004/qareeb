@@ -500,7 +500,16 @@
     "customServiceDescAr": "Service Description Arabic (بالعربية) * 🇵🇸",
     "customNamePlaceholderEn": "e.g. Free Coffee",
     "customNamePlaceholderAr": "e.g. Free Coffee",
-    "photos": "3. Photos",
+    "photos": "4. Photos",
+    "initialOffer": {
+      "title": "3. Initial Offer (Optional)",
+      "description": "Add a special offer for your hub to attract users. This will be automatically set as a subscription (no expiry).",
+      "offerTitleEn": "Offer Title English 🇬🇧",
+      "offerDescEn": "Offer Description English 🇬🇧",
+      "offerPrice": "Price (₪)",
+      "offerDuration": "Duration (Hours)",
+      "offerType": "Offer Type"
+    },
     "mainImageNote": "Main image shows on the hub card · others go to gallery",
     "dropzoneActive": "Drop images here...",
     "dropzoneInactive": "Click to upload or drag and drop",

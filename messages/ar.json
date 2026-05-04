@@ -501,7 +501,16 @@
     "customServiceDescAr": "وصف الخدمة بالعربية * 🇵🇸",
     "customNamePlaceholderEn": "مثال: قهوة مجانية",
     "customNamePlaceholderAr": "مثال: قهوة مجانية",
-    "photos": "3. الصور",
+    "photos": "4. الصور",
+    "initialOffer": {
+      "title": "3. العرض الأول (اختياري)",
+      "description": "أضف عرضاً خاصاً لمركزك لجذب المستخدمين. سيتم اعتباره كاشتراك تلقائياً (بدون تاريخ انتهاء).",
+      "offerTitleAr": "عنوان العرض بالعربية * 🇵🇸",
+      "offerDescAr": "وصف العرض بالعربية 🇵🇸",
+      "offerPrice": "السعر (₪)",
+      "offerDuration": "المدة (بالساعات)",
+      "offerType": "نوع العرض"
+    },
     "mainImageNote": "تظهر الصورة الرئيسية على بطاقة المركز · تذهب البقية إلى المعرض",
     "dropzoneActive": "أسقط الصور هنا...",
     "dropzoneInactive": "انقر للتحميل أو اسحب وأفلت",

@@ -3,6 +3,7 @@
 import { MapPin, Info, Loader2 } from "lucide-react";
 import BasicInfo from "@/components/submit/BasicInfo";
 import ServicesPricing from "@/components/submit/ServicesPricing";
+import OfferInfo from "@/components/submit/OfferInfo";
 import UploadPhoto from "@/components/submit/UploadPhoto";
 import { useState } from "react";
 import { useRouter } from "@/src/i18n/routing";
@@ -31,6 +32,12 @@ const INITIAL_DATA = {
   showOther: false,
   custom_service_ar: "",
   custom_service_description_ar: "",
+  // Initial Offer
+  offer_title_ar: "",
+  offer_description_ar: "",
+  offer_type: "monthly",
+  offer_price: "",
+  offer_duration: "",
 };
 
 export default function SubmitHub() {
@@ -148,6 +155,9 @@ export default function SubmitHub() {
 
           {/* Services & Pricing & Contact */}
           <ServicesPricing formData={formData} updateField={updateField} />
+
+          {/* Initial Offer */}
+          <OfferInfo formData={formData} updateField={updateField} />
 
           {/* Photos */}
           <UploadPhoto />
