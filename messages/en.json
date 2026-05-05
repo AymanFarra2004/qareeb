@@ -859,7 +859,8 @@
    },
   "Errors": {
     "onlyArabic": "Prefer using Arabic characters",
-    "onlyEnglish": "Prefer using English characters"
+    "onlyEnglish": "Prefer using English characters",
+    "fieldRequired": "This field is required"
   },
   "Loading": {
     "title": "Connecting you...",

@@ -3,15 +3,18 @@
 import React from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { Plus, Trash2 } from "lucide-react";
+import { cn } from "@/src/lib/utils";
 
 interface OfferInfoProps {
   formData: any;
   updateField: (name: string, value: any) => void;
+  wasSubmitted?: boolean;
 }
 
-const OfferInfo = ({ formData, updateField }: OfferInfoProps) => {
+const OfferInfo = ({ formData, updateField, wasSubmitted }: OfferInfoProps) => {
   const t = useTranslations("NewHub.initialOffer");
   const locale = useLocale();
+  const errT = useTranslations("Errors");
 
   const offers = formData.offers || [
     { title_ar: "", description_ar: "", type: "monthly", price: "", duration: "" }
@@ -79,9 +82,15 @@ const OfferInfo = ({ formData, updateField }: OfferInfoProps) => {
                   value={offer.title_ar}
                   onChange={(e) => handleOfferChange(index, "title_ar", e.target.value)}
                   required={index === 0}
-                  className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary text-right"
+                  className={cn(
+                    "w-full rounded-md border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary text-right transition-all",
+                    (wasSubmitted && index === 0 && !offer.title_ar) ? "border-destructive ring-1 ring-destructive/20" : "border-input"
+                  )}
                   placeholder={t("offerTitleAr")}
                 />
+                {wasSubmitted && index === 0 && !offer.title_ar && (
+                  <p className="mt-1 text-xs text-red-500 text-right">{errT("fieldRequired")}</p>
+                )}
               </div>
 
               {/* Arabic Description */}
@@ -126,9 +135,15 @@ const OfferInfo = ({ formData, updateField }: OfferInfoProps) => {
                   value={offer.price}
                   onChange={(e) => handleOfferChange(index, "price", e.target.value)}
                   required={index === 0}
-                  className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                  className={cn(
+                    "w-full rounded-md border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary transition-all",
+                    (wasSubmitted && index === 0 && !offer.price) ? "border-destructive ring-1 ring-destructive/20" : "border-input"
+                  )}
                   placeholder="0"
                 />
+                {wasSubmitted && index === 0 && !offer.price && (
+                  <p className="mt-1 text-xs text-red-500">{errT("fieldRequired")}</p>
+                )}
               </div>
 
               {/* Duration */}
@@ -141,9 +156,15 @@ const OfferInfo = ({ formData, updateField }: OfferInfoProps) => {
                   value={offer.duration}
                   onChange={(e) => handleOfferChange(index, "duration", e.target.value)}
                   required={index === 0}
-                  className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                  className={cn(
+                    "w-full rounded-md border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary transition-all",
+                    (wasSubmitted && index === 0 && !offer.duration) ? "border-destructive ring-1 ring-destructive/20" : "border-input"
+                  )}
                   placeholder="0"
                 />
+                {wasSubmitted && index === 0 && !offer.duration && (
+                  <p className="mt-1 text-xs text-red-500">{errT("fieldRequired")}</p>
+                )}
               </div>
             </div>
           </div>

@@ -5,17 +5,20 @@ import { Loader2 } from "lucide-react";
 import { getAllServices } from "@/src/actions/hubs";
 import { useTranslations, useLocale } from "next-intl";
 import { useInputValidation } from "@/src/hooks/useInputValidation";
+import { cn } from "@/src/lib/utils";
 
 interface ServicesPricingProps {
   formData: any;
   updateField: (name: string, value: any) => void;
+  wasSubmitted?: boolean;
 }
 
-const ServicesPricing = ({ formData, updateField }: ServicesPricingProps) => {
+const ServicesPricing = ({ formData, updateField, wasSubmitted }: ServicesPricingProps) => {
   const [globalServices, setGlobalServices] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const t = useTranslations("NewHub");
   const locale = useLocale();
+  const errT = useTranslations("Errors");
 
   const handleInputChange = React.useCallback((e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     updateField(e.target.name, e.target.value);
@@ -62,9 +65,15 @@ const ServicesPricing = ({ formData, updateField }: ServicesPricingProps) => {
             required
             value={formData.contact}
             onChange={handleInputChange}
-            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary text-left"
+            className={cn(
+              "w-full rounded-md border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary text-left transition-all",
+              (wasSubmitted && !formData.contact) ? "border-destructive ring-1 ring-destructive/20" : "border-input"
+            )}
             placeholder={t("contactPlaceholder")}
           />
+          {wasSubmitted && !formData.contact && (
+            <p className="mt-1 text-xs text-red-500">{errT("fieldRequired")}</p>
+          )}
         </div>
 
         {/* pricing */}
@@ -80,9 +89,15 @@ const ServicesPricing = ({ formData, updateField }: ServicesPricingProps) => {
             required
             value={formData.hourly_price}
             onChange={handleInputChange}
-            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+            className={cn(
+              "w-full rounded-md border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary transition-all",
+              (wasSubmitted && !formData.hourly_price) ? "border-destructive ring-1 ring-destructive/20" : "border-input"
+            )}
             placeholder={t("hourlyPricePlaceholder")}
           />
+          {wasSubmitted && !formData.hourly_price && (
+            <p className="mt-1 text-xs text-red-500">{errT("fieldRequired")}</p>
+          )}
         </div>
       </div>
 
@@ -168,11 +183,17 @@ const ServicesPricing = ({ formData, updateField }: ServicesPricingProps) => {
                   value={formData.custom_service_ar}
                   onChange={handleInputChange}
                   onBlur={customNameAr.onBlur}
-                  className="w-full px-4 py-2 border rounded-lg bg-background" 
+                  className={cn(
+                    "w-full px-4 py-2 border rounded-lg bg-background transition-all",
+                    (customNameAr.error || (wasSubmitted && formData.showOther && !formData.custom_service_ar)) ? "border-destructive ring-1 ring-destructive/20" : "border-input"
+                  )} 
                   placeholder={t("customNamePlaceholderAr")}
                 />
                 {customNameAr.error && (
                   <p className="mt-1 text-xs text-red-500 text-right">{customNameAr.error}</p>
+                )}
+                {!customNameAr.error && wasSubmitted && formData.showOther && !formData.custom_service_ar && (
+                  <p className="mt-1 text-xs text-red-500 text-right">{errT("fieldRequired")}</p>
                 )}
               </div>
               {/* <div>

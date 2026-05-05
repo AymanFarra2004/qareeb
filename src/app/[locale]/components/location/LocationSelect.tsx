@@ -25,6 +25,7 @@ interface SearchableSelectProps {
   searchPlaceholder: string;
   required?: boolean;
   disabled?: boolean;
+  error?: boolean;
 }
 
 function SearchableSelect({
@@ -35,7 +36,8 @@ function SearchableSelect({
   placeholder,
   searchPlaceholder,
   required = false,
-  disabled = false
+  disabled = false,
+  error = false
 }: SearchableSelectProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -67,7 +69,7 @@ function SearchableSelect({
         className={`
           flex items-center gap-3 w-full px-4 py-3 border rounded-xl bg-background text-sm transition-all cursor-pointer
           ${disabled ? 'opacity-50 cursor-not-allowed bg-muted/50' : 'hover:border-primary/50 focus:ring-2 focus:ring-primary/20'}
-          ${isOpen ? 'border-primary ring-2 ring-primary/20 shadow-sm' : 'border-input'}
+          ${isOpen ? 'border-primary ring-2 ring-primary/20 shadow-sm' : error ? 'border-destructive ring-1 ring-destructive/20' : 'border-input'}
         `}
       >
         <MapPin className={`h-5 w-5 shrink-0 ${isOpen ? 'text-primary' : 'text-muted-foreground'}`} />
@@ -144,7 +146,7 @@ function SearchableSelect({
   );
 }
 
-export function LocationSelect({ initialValue, onChange }: { initialValue?: string | number, onChange?: (val: string) => void }) {
+export function LocationSelect({ initialValue, onChange, error }: { initialValue?: string | number, onChange?: (val: string) => void, error?: boolean }) {
   const [locations, setLocations] = useState<Location[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const t = useTranslations("NewHub");
@@ -237,6 +239,7 @@ export function LocationSelect({ initialValue, onChange }: { initialValue?: stri
         placeholder={t("selectGovernorate")}
         searchPlaceholder={t("searchPlaceholder") || "Search governorate..."}
         required
+        error={error}
       />
 
       {cities.length > 0 && (
@@ -256,6 +259,7 @@ export function LocationSelect({ initialValue, onChange }: { initialValue?: stri
             placeholder={t("selectCity")}
             searchPlaceholder={t("searchPlaceholder") || "Search city..."}
             required
+            error={error}
           />
         </motion.div>
       )}
@@ -274,6 +278,7 @@ export function LocationSelect({ initialValue, onChange }: { initialValue?: stri
             placeholder={t("selectArea")}
             searchPlaceholder={t("searchPlaceholder") || "Search area..."}
             required
+            error={error}
           />
         </motion.div>
       )}

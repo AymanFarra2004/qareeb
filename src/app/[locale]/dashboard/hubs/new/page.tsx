@@ -49,6 +49,7 @@ export default function SubmitHub() {
   const [isLoading, setIsLoading] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
+  const [wasSubmitted, setWasSubmitted] = useState(false);
   const router = useRouter();
   const t = useTranslations("NewHub");
 
@@ -61,6 +62,7 @@ export default function SubmitHub() {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setWasSubmitted(true);
     setError(null);
     setIsLoading(true);
 
@@ -155,13 +157,13 @@ export default function SubmitHub() {
           )}
 
           {/* Basic Info */}
-          <BasicInfo formData={formData} updateField={updateField} />
+          <BasicInfo formData={formData} updateField={updateField} wasSubmitted={wasSubmitted} />
 
           {/* Services & Pricing & Contact */}
-          <ServicesPricing formData={formData} updateField={updateField} />
+          <ServicesPricing formData={formData} updateField={updateField} wasSubmitted={wasSubmitted} />
 
           {/* Initial Offer */}
-          <OfferInfo formData={formData} updateField={updateField} />
+          <OfferInfo formData={formData} updateField={updateField} wasSubmitted={wasSubmitted} />
 
           {/* Photos */}
           <UploadPhoto />

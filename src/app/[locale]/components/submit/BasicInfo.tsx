@@ -5,13 +5,15 @@ import { LocationSelect } from "../location/LocationSelect";
 import { useTranslations } from "next-intl";
 import { TimePicker } from "../ui/time-picker";
 import { useInputValidation } from "@/src/hooks/useInputValidation";
+import { cn } from "@/src/lib/utils";
 
 interface BasicInfoProps {
   formData: any;
   updateField: (name: string, value: any) => void;
+  wasSubmitted?: boolean;
 }
 
-const BasicInfo = ({ formData, updateField }: BasicInfoProps) => {
+const BasicInfo = ({ formData, updateField, wasSubmitted }: BasicInfoProps) => {
   const t = useTranslations("NewHub");
 
   // Per-field validation hooks — each has its own independent error state
@@ -21,6 +23,7 @@ const BasicInfo = ({ formData, updateField }: BasicInfoProps) => {
   const addressAr = useInputValidation("ar");
   const descEn = useInputValidation("en");
   const descAr = useInputValidation("ar");
+  const errT = useTranslations("Errors");
 
   const handleInputChange = React.useCallback((e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     updateField(e.target.name, e.target.value);
@@ -50,11 +53,17 @@ const BasicInfo = ({ formData, updateField }: BasicInfoProps) => {
             value={formData.name_ar}
             onChange={handleInputChange}
             onBlur={nameAr.onBlur}
-            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+            className={cn(
+              "w-full rounded-md border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary transition-all",
+              (nameAr.error || (wasSubmitted && !formData.name_ar)) ? "border-destructive ring-1 ring-destructive/20" : "border-input"
+            )}
             placeholder={t("hubNamePlaceholderAr")}
           />
           {nameAr.error && (
             <p className="mt-1 text-xs text-red-500 text-right">{nameAr.error}</p>
+          )}
+          {!nameAr.error && wasSubmitted && !formData.name_ar && (
+            <p className="mt-1 text-xs text-red-500 text-right">{errT("fieldRequired")}</p>
           )}
         </div>
         {/* <div>
@@ -76,7 +85,14 @@ const BasicInfo = ({ formData, updateField }: BasicInfoProps) => {
 
       <div className="space-y-4">
         <label className="block text-sm font-medium text-foreground mb-1">{t("locationSelection")}</label>
-        <LocationSelect initialValue={formData.location_id} onChange={handleLocationChange} />
+        <LocationSelect 
+          initialValue={formData.location_id} 
+          onChange={handleLocationChange} 
+          error={wasSubmitted && !formData.location_id}
+        />
+        {wasSubmitted && !formData.location_id && (
+          <p className="mt-1 text-xs text-red-500">{errT("fieldRequired")}</p>
+        )}
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-1 gap-4 mt-4">
@@ -90,11 +106,17 @@ const BasicInfo = ({ formData, updateField }: BasicInfoProps) => {
             value={formData.address_ar}
             onChange={handleInputChange}
             onBlur={addressAr.onBlur}
-            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+            className={cn(
+              "w-full rounded-md border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary transition-all",
+              (addressAr.error || (wasSubmitted && !formData.address_ar)) ? "border-destructive ring-1 ring-destructive/20" : "border-input"
+            )}
             placeholder={t("addressPlaceholderAr")}
           />
           {addressAr.error && (
             <p className="mt-1 text-xs text-red-500 text-right">{addressAr.error}</p>
+          )}
+          {!addressAr.error && wasSubmitted && !formData.address_ar && (
+            <p className="mt-1 text-xs text-red-500 text-right">{errT("fieldRequired")}</p>
           )}
         </div>
         {/* <div>
@@ -160,7 +182,11 @@ const BasicInfo = ({ formData, updateField }: BasicInfoProps) => {
               defaultPeriod="AM"
               minuteStep={5}
               placeholder={t("selectHour")}
+              error={wasSubmitted && !formData.start_time}
             />
+            {wasSubmitted && !formData.start_time && (
+              <p className="mt-2 text-xs text-red-500 font-medium">{errT("fieldRequired")}</p>
+            )}
           </div>
           <div className="p-4 border border-input rounded-xl bg-muted/5">
             <TimePicker
@@ -171,7 +197,11 @@ const BasicInfo = ({ formData, updateField }: BasicInfoProps) => {
               defaultPeriod="PM"
               minuteStep={5}
               placeholder={t("selectHour")}
+              error={wasSubmitted && !formData.end_time}
             />
+            {wasSubmitted && !formData.end_time && (
+              <p className="mt-2 text-xs text-red-500 font-medium">{errT("fieldRequired")}</p>
+            )}
           </div>
         </div>
       </div>

@@ -21,6 +21,7 @@ export interface TimePickerProps {
   name?: string;
   label?: string;
   placeholder?: string;
+  error?: boolean;
 }
 
 export function TimePicker({
@@ -32,6 +33,7 @@ export function TimePicker({
   name,
   label,
   placeholder,
+  error = false,
 }: TimePickerProps) {
   const t = useTranslations("TimePicker");
   const [internalValue, setInternalValue] = React.useState<string>(
@@ -99,7 +101,8 @@ export function TimePicker({
             variant="outline"
             className={cn(
               "w-full justify-start text-left font-normal h-10 px-3 py-2 rounded-xl border-input bg-background/50 backdrop-blur-sm transition-all hover:bg-accent/10 focus:ring-2 focus:ring-primary/20",
-              !selectedHour && "text-muted-foreground"
+              !selectedHour && "text-muted-foreground",
+              error && "border-destructive ring-1 ring-destructive/20"
             )}
           >
             <Clock className="mr-2 h-4 w-4 opacity-70" />
