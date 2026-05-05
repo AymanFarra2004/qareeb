@@ -4,6 +4,8 @@
 
 # Qareeb (قريب) - Connecting Gaza to Essential Services
 
+**[🌐 Visit Live Website](https://qareeb.cc)**
+
 **Qareeb** is a mission-driven platform designed to empower communities in Gaza by connecting people to essential service hubs. In an environment where reliable internet and electricity are scarce, Qareeb provides a verified directory of workspaces, cafes, and hubs equipped with the resources needed for remote work, study, and staying connected.
 
 ---
