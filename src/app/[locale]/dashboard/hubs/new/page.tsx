@@ -32,12 +32,16 @@ const INITIAL_DATA = {
   showOther: false,
   custom_service_ar: "",
   custom_service_description_ar: "",
-  // Initial Offer
-  offer_title_ar: "",
-  offer_description_ar: "",
-  offer_type: "monthly",
-  offer_price: "",
-  offer_duration: "",
+  // Initial Offers
+  offers: [
+    {
+      title_ar: "",
+      description_ar: "",
+      type: "monthly",
+      price: "",
+      duration: "",
+    }
+  ],
 };
 
 export default function SubmitHub() {

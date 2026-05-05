@@ -508,7 +508,8 @@
       "offerDescEn": "Offer Description English 🇬🇧",
       "offerPrice": "Price (₪)",
       "offerDuration": "Duration (Hours)",
-      "offerType": "Offer Type"
+      "offerType": "Offer Type",
+      "addOffer": "Add New Offer"
     },
     "mainImageNote": "Main image shows on the hub card · others go to gallery",
     "dropzoneActive": "Drop images here...",
@@ -857,8 +858,8 @@
      "gaza": "Gaza"
    },
   "Errors": {
-    "onlyArabic": "Only Arabic characters are allowed",
-    "onlyEnglish": "Only English characters are allowed"
+    "onlyArabic": "Prefer using Arabic characters",
+    "onlyEnglish": "Prefer using English characters"
   },
   "Loading": {
     "title": "Connecting you...",

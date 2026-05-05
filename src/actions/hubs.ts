@@ -480,39 +480,49 @@ export async function createHub(prevState: any, formData: FormData) {
       }
     }
 
-    // ─── Step 4: Create initial offer if provided (Subscription by default) ───
-    const offerTitleAr = formData.get("offer_title_ar") as string;
-    if (hubSlug && offerTitleAr?.trim()) {
-      try {
-        const offerPayload = {
-          title: {
-            en: formData.get("offer_title_en") as string || "",
-            ar: offerTitleAr.trim(),
-          },
-          description: {
-            en: formData.get("offer_description_en") as string || "",
-            ar: (formData.get("offer_description_ar") as string || "").trim(),
-          },
-          type: (formData.get("offer_type") as string) || "monthly",
-          price: Number(formData.get("offer_price") || 0),
-          duration: Number(formData.get("offer_duration") || 0),
-          starts_at: null, // Subscription = unlimited
-          ends_at: null,   // Subscription = unlimited
-          is_global: false,
-          status: "active",
-        };
+    // ─── Step 4: Create initial offers if provided (Subscriptions by default) ───
+    const offerTitlesAr = formData.getAll("offer_title_ar[]") as string[];
+    const offerDescriptionsAr = formData.getAll("offer_description_ar[]") as string[];
+    const offerTypes = formData.getAll("offer_type[]") as string[];
+    const offerPrices = formData.getAll("offer_price[]") as string[];
+    const offerDurations = formData.getAll("offer_duration[]") as string[];
 
-        await fetch(`${API_BASE_URL}/hubs/${hubSlug}/offers`, {
-          method: "POST",
-          headers: { 
-            "Content-Type": "application/json", 
-            "Accept": "application/json", 
-            "Authorization": `Bearer ${token}` 
-          },
-          body: JSON.stringify(offerPayload),
-        });
-      } catch (offerError) {
-        console.error("Initial offer creation failed:", offerError);
+    if (hubSlug && offerTitlesAr.length > 0) {
+      for (let i = 0; i < offerTitlesAr.length; i++) {
+        const titleAr = offerTitlesAr[i];
+        if (!titleAr?.trim()) continue;
+
+        try {
+          const offerPayload = {
+            title: {
+              en: "", 
+              ar: titleAr.trim(),
+            },
+            description: {
+              en: "",
+              ar: (offerDescriptionsAr[i] || "").trim(),
+            },
+            type: offerTypes[i] || "monthly",
+            price: Number(offerPrices[i] || 0),
+            duration: Number(offerDurations[i] || 0),
+            starts_at: null, // Subscription = unlimited
+            ends_at: null,   // Subscription = unlimited
+            is_global: false,
+            status: "active",
+          };
+
+          await fetch(`${API_BASE_URL}/hubs/${hubSlug}/offers`, {
+            method: "POST",
+            headers: { 
+              "Content-Type": "application/json", 
+              "Accept": "application/json", 
+              "Authorization": `Bearer ${token}` 
+            },
+            body: JSON.stringify(offerPayload),
+          });
+        } catch (offerError) {
+          console.error(`Initial offer ${i} creation failed:`, offerError);
+        }
       }
     }
 
