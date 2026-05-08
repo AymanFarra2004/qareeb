@@ -63,7 +63,7 @@ function SearchableSelect({
       <label className="block text-sm font-medium text-foreground mb-1">
         {label} {required && <span className="text-destructive">*</span>}
       </label>
-      
+
       <div
         onClick={() => !disabled && setIsOpen(!isOpen)}
         className={`
@@ -122,8 +122,8 @@ function SearchableSelect({
                     }}
                     className={`
                       flex items-center justify-between px-3 py-2.5 rounded-lg text-sm cursor-pointer transition-colors
-                      ${String(value) === String(option.id) 
-                        ? 'bg-primary/10 text-primary font-semibold' 
+                      ${String(value) === String(option.id)
+                        ? 'bg-primary/10 text-primary font-semibold'
                         : 'text-foreground hover:bg-muted'}
                     `}
                   >
@@ -151,7 +151,7 @@ export function LocationSelect({ initialValue, onChange, error }: { initialValue
   const [isLoading, setIsLoading] = useState(true);
   const t = useTranslations("NewHub");
   const locale = useLocale();
-  
+
   const [governorateId, setGovernorateId] = useState<string>("");
   const [cityId, setCityId] = useState<string>("");
   const [areaId, setAreaId] = useState<string>("");
@@ -174,7 +174,7 @@ export function LocationSelect({ initialValue, onChange, error }: { initialValue
     fetch(`${CONFIG.API_URL}/api/v1/locations?lang=${locale}`)
       .then(res => res.json())
       .then(data => {
-        if(data.status === 'success') {
+        if (data.status === 'success') {
           setLocations(data.data);
         }
       })
@@ -187,7 +187,7 @@ export function LocationSelect({ initialValue, onChange, error }: { initialValue
     if (!isLoading && locations.length > 0 && initialValue) {
       const targetId = Number(initialValue);
       const target = locations.find(l => l.id === targetId);
-      
+
       if (target) {
         if (target.type === 'area') {
           setAreaId(String(target.id));
@@ -226,7 +226,7 @@ export function LocationSelect({ initialValue, onChange, error }: { initialValue
   return (
     <div className="space-y-6 rounded-2xl p-6 border border-border bg-muted/5 relative shadow-sm">
       <input type="hidden" name="location_id" value={finalLocationId} />
-      
+
       <SearchableSelect
         label={t("governorate")}
         options={governorates}
@@ -243,7 +243,7 @@ export function LocationSelect({ initialValue, onChange, error }: { initialValue
       />
 
       {cities.length > 0 && (
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           className="animate-in fade-in slide-in-from-top-2 duration-300"
@@ -265,7 +265,7 @@ export function LocationSelect({ initialValue, onChange, error }: { initialValue
       )}
 
       {areas.length > 0 && (
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           className="animate-in fade-in slide-in-from-top-2 duration-300"

@@ -50,6 +50,7 @@ function GeneralTab({ hub, onUpdate }: { hub: any; onUpdate: () => void }) {
   const [hubAddrEn, setHubAddrEn] = useState("");
   const [hubContact, setHubContact] = useState("");
   const [hubLocationId, setHubLocationId] = useState<string | number>("");
+  const [hubHourlyPrice, setHubHourlyPrice] = useState("");
 
   
 
@@ -68,6 +69,7 @@ function GeneralTab({ hub, onUpdate }: { hub: any; onUpdate: () => void }) {
         setHubAddrEn(res.data.address_details.en || "");
         setHubContact(res.data.contact || "");
         setHubLocationId(res.data.location_id || "");
+        setHubHourlyPrice(res.data.hourly_price || "");
       }
       setIsLoadingData(false);
     }
@@ -108,6 +110,9 @@ function GeneralTab({ hub, onUpdate }: { hub: any; onUpdate: () => void }) {
     formData.append("address_details[en]", hubAddrEn.trim());
     formData.append("contact", hubContact.trim());
     formData.append("location_id", String(hubLocationId));
+    if (hubHourlyPrice) {
+      formData.append("hourly_price", String(hubHourlyPrice));
+    }
 
     const res = await updateHub(hub.slug, null, formData);
     if (res.success) {
@@ -130,12 +135,14 @@ function GeneralTab({ hub, onUpdate }: { hub: any; onUpdate: () => void }) {
       setHubAddrEn(originalDataRef.current.address_details.en || "");
       setHubContact(originalDataRef.current.contact || "");
       setHubLocationId(originalDataRef.current.location_id || "");
+      setHubHourlyPrice(originalDataRef.current.hourly_price || "");
     }
     setIsEditing(false);
   };
 
   const mainImage = hub.images?.main || hub.main_image;
   const imageUrl = mainImage ? (mainImage.startsWith('http') ? mainImage : `${CONFIG.API_URL}${mainImage.startsWith('/') ? '' : '/'}${mainImage}`) : null;
+
 
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
@@ -243,6 +250,33 @@ function GeneralTab({ hub, onUpdate }: { hub: any; onUpdate: () => void }) {
                 <p className="text-sm text-muted-foreground font-medium font-arabic" dir="rtl">{hubAddrAr || "لا توجد بيانات عنوان."}</p>
               </div>
             </div>
+         </div>
+
+         {/* Contact, Location & Pricing Cards */}
+         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+           <div className="p-5 border border-border rounded-2xl bg-muted/5 flex flex-col gap-1.5">
+             <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-1.5">
+               <MapPin className="h-3 w-3" /> {tNH("locationSelection") || "Location"}
+             </span>
+             <p className="text-sm font-semibold truncate mt-1">
+               {hub.location ? hub.location.breadcrumb[1].name + " - " + hub.location.breadcrumb[2].name : t("noAddress")}
+             </p>
+             {hub.location && <span className="text-[10px] text-muted-foreground">{hub.location.name} - {hub.location.type}</span>}
+           </div>
+           
+           <div className="p-5 border border-border rounded-2xl bg-muted/5 flex flex-col gap-1.5">
+             <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-1.5">
+               <Phone className="h-3 w-3" /> {tNH("contactNumber") || "Contact"}
+             </span>
+             <p className="text-sm font-semibold mt-1" dir="ltr">{hub.contact || t("noContact")}</p>
+           </div>
+           
+           <div className="p-5 border border-border rounded-2xl bg-muted/5 flex flex-col gap-1.5">
+             <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-1.5">
+               <Clock className="h-3 w-3" /> {tNH("hourlyPrice") || "Hourly Price"}
+             </span>
+             <p className="text-sm font-semibold text-primary mt-1" dir="ltr">₪{hub.hourly_price || "0"}</p>
+           </div>
          </div>
 
          {/* Status & Slug Row */}
@@ -424,7 +458,7 @@ function GeneralTab({ hub, onUpdate }: { hub: any; onUpdate: () => void }) {
               </div> */}
             </div>
 
-            {/* Contact & Location Section */}
+            {/* Contact & Hourly Price Section */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="relative">
                 <label className="block text-[10px] font-bold mb-1 uppercase tracking-widest text-muted-foreground flex items-center justify-between">
@@ -443,14 +477,34 @@ function GeneralTab({ hub, onUpdate }: { hub: any; onUpdate: () => void }) {
                 </div>
               </div>
               <div className="relative">
-                 <label className="block text-[10px] font-bold mb-1 uppercase tracking-widest text-muted-foreground">
-                  {tNH("locationSelection") || "Hub Location"}
+                <label className="block text-[10px] font-bold mb-1 uppercase tracking-widest text-muted-foreground flex items-center justify-between">
+                  {tNH("hourlyPrice") || "Hourly Price"}
                 </label>
-                <LocationSelect 
-                  initialValue={hubLocationId} 
-                  onChange={(val) => setHubLocationId(val)} 
-                />
+                <div className="relative">
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">₪</span>
+                  <input 
+                    type="number" 
+                    dir="ltr"
+                    className="w-full pl-8 pr-4 py-2.5 border border-input rounded-xl bg-background text-sm focus:ring-2 focus:ring-primary/20 transition-all" 
+                    value={hubHourlyPrice}
+                    onChange={(e) => setHubHourlyPrice(e.target.value)}
+                    placeholder="e.g. 5"
+                    min="0"
+                    step="0.01"
+                  />
+                </div>
               </div>
+            </div>
+
+            {/* Location Section */}
+            <div className="relative">
+               <label className="block text-[10px] font-bold mb-1 uppercase tracking-widest text-muted-foreground">
+                {tNH("locationSelection") || "Hub Location"}
+              </label>
+              <LocationSelect 
+                initialValue={originalDataRef.current?.location_id} 
+                onChange={(val) => setHubLocationId(val)} 
+              />
             </div>
 
             <div className="flex justify-end pt-4">
@@ -477,16 +531,7 @@ function GeneralTab({ hub, onUpdate }: { hub: any; onUpdate: () => void }) {
             </div>
           )}
 
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <MapPin className="h-4 w-4" />
-            <span>{hub.location? hub.location.breadcrumb[1].name + " - " + hub.location.breadcrumb[2].name : t("noAddress")}</span>
-            {hub.location && <span className="text-xs bg-muted px-2 py-0.5 rounded">({hub.location.name} - {hub.location.type})</span>}
-          </div>
 
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <Phone className="h-4 w-4" />
-            <span dir="ltr">{hub.contact || t("noContact")}</span>
-          </div>
 
           <div className="pt-6 mt-6 border-t border-border">
             <h4 className="text-sm font-bold mb-3 uppercase tracking-wider">{t("workingHours")}</h4>

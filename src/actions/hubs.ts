@@ -184,11 +184,13 @@ export async function getHubDataBySlugForManagement(slugOrId: string) {
           en: dataEn.address_details || ""
         },
         contact: dataAr.contact || "",
-        location_id: dataAr.location_id || null,
+        location_id: dataAr.location.id || null,
         offers: {
           ar: dataAr.offers || [],
           en: dataEn.offers || []
-        }
+        },
+        hourly_price: dataAr.hourly_price || 0,
+        
       }
     };
   } catch (error) {
