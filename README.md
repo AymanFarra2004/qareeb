@@ -4,6 +4,8 @@
 
 # Qareeb (قريب) - Connecting Gaza to Essential Services
 
+**[🌐 Visit Live Website](https://qareeb.cc)**
+
 **Qareeb** is a mission-driven platform designed to empower communities in Gaza by connecting people to essential service hubs. In an environment where reliable internet and electricity are scarce, Qareeb provides a verified directory of workspaces, cafes, and hubs equipped with the resources needed for remote work, study, and staying connected.
 
 ---
@@ -115,11 +117,18 @@ Distributed under the MIT License. See `LICENSE` for more information.
 
 ---
 
-## 📞 Contact
+## 📞 Contact & Team
 
-**Qareeb Team**  
-Email: [support@qareeb.cc](mailto:support@qareeb.cc)  
-WhatsApp: [+970592135146](https://wa.me/970592135146)  
-Instagram: [@qareeb_gaza](https://instagram.com/qareeb_gaza)
+**Qareeb Official Channels**  
+Email: [support@qareeb.cc](mailto:support@qareeb.cc) | Instagram: [@qareeb_gaza](https://instagram.com/qareeb_gaza)
+
+**The Creators**
+* **Ayman AlFarra** - Lead Front-End Developer
+  * GitHub: [@AymanFarra2004](https://github.com/AymanFarra2004)
+  * Portfolio: [Portfolio](https://ayman-alfarra.vercel.app/)
+
+* **[Karam Musleh]** - Lead Back-End Developer
+  * GitHub: [@karam-musleh](https://github.com/karam-musle)
+  * LinkedIn: [LinkedIn](https://www.linkedin.com/in/karam-musleh)
 
 Built with ❤️ for Gaza.
