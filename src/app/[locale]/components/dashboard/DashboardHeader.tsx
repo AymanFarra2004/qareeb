@@ -9,7 +9,11 @@ import { useRouter, Link, usePathname } from "@/src/i18n/routing";
 import { useTranslations, useLocale } from "next-intl";
 import { useTheme } from "next-themes";
 
-export function DashboardHeader() {
+interface DashboardHeaderProps {
+  onMenuClick?: () => void;
+}
+
+export function DashboardHeader({ onMenuClick }: DashboardHeaderProps) {
   const [showMenu, setShowMenu] = useState(false);
   const [userName, setUserName] = useState("User");
   const dispatch = useDispatch();
@@ -44,7 +48,10 @@ export function DashboardHeader() {
   return (
     <header className="h-16 border-b border-border bg-background/80 backdrop-blur-md sticky top-0 z-30 flex items-center justify-between px-4 sm:px-6">
       <div className="flex items-center gap-2 sm:gap-4">
-        <button className="md:hidden p-2 text-muted-foreground hover:bg-muted rounded-lg transition-colors">
+        <button 
+          onClick={onMenuClick}
+          className="lg:hidden p-2 text-muted-foreground hover:bg-muted rounded-lg transition-colors cursor-pointer"
+        >
           <Menu className="h-5 w-5" />
         </button>
         <div className="flex items-center gap-1 sm:gap-2">

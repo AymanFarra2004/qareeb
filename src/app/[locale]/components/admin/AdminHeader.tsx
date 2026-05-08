@@ -42,7 +42,7 @@ export function AdminHeader({ onMenuClick }: AdminHeaderProps) {
       <div className="flex items-center gap-2 sm:gap-4">
         <button 
           onClick={onMenuClick}
-          className="md:hidden p-2 text-muted-foreground hover:bg-muted rounded-lg transition-colors"
+          className="lg:hidden p-2 text-muted-foreground hover:bg-muted rounded-lg transition-colors"
         >
           <Menu className="h-5 w-5" />
         </button>
@@ -100,7 +100,7 @@ export function AdminHeader({ onMenuClick }: AdminHeaderProps) {
             <div className="h-8 w-8 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center text-primary shrink-0">
               <User className="h-4 w-4" />
             </div>
-            <span className="text-sm font-medium text-foreground hidden md:block max-w-[80px] truncate">{userName}</span>
+            <span className="text-sm font-medium text-foreground hidden lg:block max-w-[80px] truncate">{userName}</span>
             <ChevronDown className="h-3.5 w-3.5 text-muted-foreground hidden sm:block" />
           </button>
 

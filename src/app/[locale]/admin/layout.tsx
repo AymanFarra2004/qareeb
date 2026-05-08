@@ -41,15 +41,15 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setIsSidebarOpen(false)}
-            className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40 md:hidden"
+            className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40 lg:hidden"
           />
         )}
       </AnimatePresence>
 
       {/* Admin Sidebar */}
       <aside className={`
-        fixed inset-y-0 start-0 z-50 w-64 bg-background border-e border-border transition-transform duration-300 md:relative md:translate-x-0
-        ${isSidebarOpen ? "translate-x-0" : "-translate-x-full rtl:translate-x-full md:ltr:translate-x-0 md:rtl:translate-x-0"}
+        fixed inset-y-0 start-0 z-50 w-64 bg-background border-e border-border transition-transform duration-300 lg:relative lg:translate-x-0
+        ${isSidebarOpen ? "translate-x-0" : "-translate-x-full rtl:translate-x-full lg:ltr:translate-x-0 lg:rtl:translate-x-0"}
         flex flex-col
       `}>
         <div className="h-16 flex items-center justify-between px-6 border-b border-border">
@@ -59,7 +59,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </div>
           <button 
             onClick={() => setIsSidebarOpen(false)}
-            className="cursor-pointer md:hidden p-2 text-muted-foreground hover:bg-muted rounded-lg"
+            className="cursor-pointer lg:hidden p-2 text-muted-foreground hover:bg-muted rounded-lg"
           >
             <X className="h-5 w-5" />
           </button>

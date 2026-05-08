@@ -1,12 +1,12 @@
 "use client"
 import { Link, usePathname, useRouter } from "@/src/i18n/routing";
-import { LayoutDashboard, PlusCircle, Settings, LogOut } from "lucide-react";
+import { LayoutDashboard, PlusCircle, Settings, LogOut, X } from "lucide-react";
 import { useDispatch } from "react-redux";
 import { logout } from "@/src/store/authSlice";
 import { logoutUser } from "@/src/actions/auth";
 import { useTranslations } from "next-intl";
 
-export function DashboardSidebar() {
+export function DashboardSidebar({ isSidebarOpen, onClose }: { isSidebarOpen?: boolean; onClose?: () => void }) {
   const pathname = usePathname();
   const dispatch = useDispatch();
   const router = useRouter();
@@ -22,7 +22,11 @@ export function DashboardSidebar() {
   };
 
   return (
-    <aside className="w-64 bg-background border-r border-border flex-col hidden md:flex sticky top-0 h-screen">
+    <aside className={`
+      fixed inset-y-0 start-0 z-50 w-64 bg-background border-r border-border flex-col transition-transform duration-300 lg:sticky lg:top-0 lg:h-screen lg:translate-x-0
+      ${isSidebarOpen ? "translate-x-0" : "-translate-x-full rtl:translate-x-full lg:ltr:translate-x-0 lg:rtl:translate-x-0"}
+      flex
+    `}>
       <div className="h-16 flex items-center justify-between px-6 border-b border-border">
         <Link href="/">
         <div className="flex items-center gap-2">
@@ -30,11 +34,20 @@ export function DashboardSidebar() {
           <h1 className="text-xl font-bold text-foreground tracking-tight">Qareeb | قريب</h1>
         </div>
         </Link>
+        {onClose && (
+          <button 
+            onClick={onClose}
+            className="cursor-pointer lg:hidden p-2 text-muted-foreground hover:bg-muted rounded-lg transition-colors"
+          >
+            <X className="h-5 w-5" />
+          </button>
+        )}
       </div>
 
       <nav className="flex-1 px-4 space-y-2 mt-4">
         <Link
           href="/dashboard"
+          onClick={onClose}
           className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-colors font-medium text-sm ${
             isActive("/dashboard") && !pathname.includes("/hubs/new") && !pathname.includes("/settings")
               ? "bg-primary/10 text-primary"
@@ -47,6 +60,7 @@ export function DashboardSidebar() {
 
         <Link
           href="/dashboard/hubs/new"
+          onClick={onClose}
           className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-colors font-medium text-sm ${
             isActive("/dashboard/hubs/new")
               ? "bg-primary/10 text-primary"
@@ -59,6 +73,7 @@ export function DashboardSidebar() {
 
         <Link
           href="/dashboard/settings"
+          onClick={onClose}
           className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-colors font-medium text-sm ${
             isActive("/dashboard/settings")
               ? "bg-primary/10 text-primary"

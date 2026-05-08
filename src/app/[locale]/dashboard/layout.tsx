@@ -1,5 +1,4 @@
-import { DashboardSidebar } from "../components/dashboard/DashboardSidebar";
-import { DashboardHeader } from "../components/dashboard/DashboardHeader";
+import { DashboardClientWrapper } from "../components/dashboard/DashboardClientWrapper";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import type { Metadata } from 'next';
@@ -52,16 +51,8 @@ export default async function DashboardLayout({
   }
 
   return (
-    <div className="flex min-h-screen bg-muted/20">
-      <DashboardSidebar />
-      <div className="flex-1 flex flex-col min-w-0">
-        <DashboardHeader />
-        <main className="flex-1 p-4 md:p-6 lg:p-8">
-          <div className="mx-auto max-w-6xl w-full">
-            {children}
-          </div>
-        </main>
-      </div>
-    </div>
+    <DashboardClientWrapper>
+      {children}
+    </DashboardClientWrapper>
   );
 }
