@@ -725,12 +725,14 @@ export async function getProfile(locale: string = "ar") {
 export async function getHubOffers(hubSlug: string, locale: string = "ar") {
   const cookieStore = await cookies();
   const token = cookieStore.get("token")?.value;
-  if (!token) return { error: "Unauthenticated", data: [] };
 
   try {
     const langParam = getLangParam(locale);
+    const headers: Record<string, string> = { "Accept": "application/json" };
+    if (token) headers["Authorization"] = `Bearer ${token}`;
+
     const res = await fetch(`${API_BASE_URL}/hubs/${hubSlug}/offers?${langParam}`, {
-      headers: { Authorization: `Bearer ${token}`, "Accept": "application/json" },
+      headers,
       next: { tags: [`offers-${hubSlug}`], revalidate: 0 }
     });
     const result = await res.json();

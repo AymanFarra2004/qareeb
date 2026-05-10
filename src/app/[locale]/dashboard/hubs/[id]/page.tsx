@@ -143,7 +143,6 @@ function GeneralTab({ hub, onUpdate }: { hub: any; onUpdate: () => void }) {
   const mainImage = hub.images?.main || hub.main_image;
   const imageUrl = mainImage ? (mainImage.startsWith('http') ? mainImage : `${CONFIG.API_URL}${mainImage.startsWith('/') ? '' : '/'}${mainImage}`) : null;
 
-
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
       <div className="bg-background rounded-2xl border border-border p-6 shadow-sm">
