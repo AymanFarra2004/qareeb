@@ -41,6 +41,28 @@ const OfferInfo = ({ formData, updateField, wasSubmitted }: OfferInfoProps) => {
     updateField("offers", newOffers);
   };
 
+  if (offers.length === 0) {
+    return (
+      <div className="border border-dashed border-border bg-card rounded-2xl p-8 flex flex-col items-center justify-center text-center space-y-4">
+        <div className="h-12 w-12 rounded-full bg-primary/10 text-primary flex items-center justify-center">
+          <Plus className="h-6 w-6" />
+        </div>
+        <div>
+          <h3 className="text-lg font-semibold text-foreground">{t("title")}</h3>
+          <p className="text-sm text-muted-foreground mt-1 max-w-md mx-auto">{t("description")}</p>
+        </div>
+        <button
+          type="button"
+          onClick={addOffer}
+          className="cursor-pointer px-6 py-2 bg-primary text-primary-foreground hover:bg-primary/90 rounded-xl transition-all text-sm font-bold shadow-sm flex items-center gap-2"
+        >
+          <Plus className="h-4 w-4" />
+          {t("addOffer")}
+        </button>
+      </div>
+    );
+  }
+
   return (
     <section className="space-y-6">
       <div className="border-b border-border pb-4 flex justify-between items-end">
@@ -48,14 +70,23 @@ const OfferInfo = ({ formData, updateField, wasSubmitted }: OfferInfoProps) => {
           <h2 className="text-xl font-semibold">{t("title")}</h2>
           <p className="text-sm text-muted-foreground mt-1">{t("description")}</p>
         </div>
-        <button
-          type="button"
-          onClick={addOffer}
-          className="cursor-pointer flex items-center gap-2 px-4 py-2 bg-primary/10 text-primary hover:bg-primary/20 rounded-xl transition-all text-sm font-bold"
-        >
-          <Plus className="h-4 w-4" />
-          {t("addOffer")}
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => updateField("offers", [])}
+            className="cursor-pointer flex items-center gap-2 px-4 py-2 bg-red-50 text-red-600 hover:bg-red-100 rounded-xl transition-all text-sm font-bold"
+          >
+            {locale === 'ar' ? 'إلغاء' : 'Cancel'}
+          </button>
+          <button
+            type="button"
+            onClick={addOffer}
+            className="cursor-pointer flex items-center gap-2 px-4 py-2 bg-primary/10 text-primary hover:bg-primary/20 rounded-xl transition-all text-sm font-bold"
+          >
+            <Plus className="h-4 w-4" />
+            {t("addOffer")}
+          </button>
+        </div>
       </div>
 
       <div className="space-y-8">

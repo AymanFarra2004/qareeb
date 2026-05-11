@@ -16,7 +16,14 @@ import { useFormPersistence } from "@/src/hooks/useFormPersistence";
 import LoadingScreen from "@/components/LoadingScreen";
 
 const STORAGE_KEY = "qareeb_new_hub_form";
-
+interface Offers {
+  name_ar: string;
+  description_ar?: string;
+  price: string;
+  hours: string;
+  is_active?: boolean;
+  created_at: string;
+}
 const INITIAL_DATA = {
   name_ar: "",
   location_id: "",
@@ -33,15 +40,7 @@ const INITIAL_DATA = {
   custom_service_ar: "",
   custom_service_description_ar: "",
   // Initial Offers
-  offers: [
-    {
-      title_ar: "",
-      description_ar: "",
-      type: "monthly",
-      price: "",
-      duration: "",
-    }
-  ],
+  offers: [] as Offers[],
 };
 
 export default function SubmitHub() {
