@@ -36,14 +36,7 @@ export async function loginUser(prevState: any, formData: FormData) {
     if (body.data?.token) {
       const cookieStore = await cookies();
       
-      const user = body.data?.user  || { name: body.data?.name || "User", email };
-      cookieStore.set({
-        name: "user",
-        value: JSON.stringify(user),
-        path: "/",
-        secure: process.env.NODE_ENV === "production",
-        maxAge: 60 * 60 * 24 * 7,
-      });
+      // Success, store the token securely in cookies
 
       cookieStore.set({
         name: "token",
@@ -91,7 +84,6 @@ export async function loginUser(prevState: any, formData: FormData) {
 export async function logoutUser() {
   const cookieStore = await cookies();
   cookieStore.delete("token");
-  cookieStore.delete("user");
 }
 
 export async function handleGoogleCallback(token: string, userStr: string | null) {
@@ -130,16 +122,6 @@ export async function handleGoogleCallback(token: string, userStr: string | null
     } catch {
       // Non-fatal
     }
-  }
-
-  if (userStr) {
-    cookieStore.set({
-      name: "user",
-      value: userStr,
-      path: "/",
-      secure: process.env.NODE_ENV === "production",
-      maxAge: 60 * 60 * 24 * 7,
-    });
   }
 
   return { success: true };
@@ -266,33 +248,7 @@ export async function updateUserProfile(data: any) {
       });
     }
 
-    // Sync the "user" cookie with the updated profile so that the dashboard
-    // layout's server-side role check reflects the new role immediately
-    // (without requiring the user to log out and back in).
-    const updatedUser = body.data || {};
-    const existingUserCookie = cookieStore.get("user")?.value;
-    let existingUser: Record<string, any> = {};
-    try {
-      if (existingUserCookie) existingUser = JSON.parse(existingUserCookie);
-    } catch {}
-
-    const mergedUser = {
-      ...existingUser,
-      name:  updatedUser.name  ?? data.name  ?? existingUser.name,
-      email: updatedUser.email ?? data.email ?? existingUser.email,
-      role:  updatedUser.role  ?? data.role  ?? existingUser.role,
-      phone: updatedUser.phone ?? data.phone ?? existingUser.phone,
-    };
-
-    cookieStore.set({
-      name: "user",
-      value: JSON.stringify(mergedUser),
-      path: "/",
-      secure: process.env.NODE_ENV === "production",
-      maxAge: 60 * 60 * 24 * 7, // 1 week
-    });
-
-    return { success: true, data: mergedUser };
+    return { success: true, data: body.data || body };
   } catch (error) {
     console.error("Update Profile Error:", error);
     return { error: "Network Error" };

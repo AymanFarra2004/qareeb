@@ -1,24 +1,19 @@
-import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import { getUserProfile } from "@/src/actions/auth";
 
-export default async function SubmitRedirectPage() {
-  const cookieStore = await cookies();
-  const userCookie = cookieStore.get("user")?.value;
+export default async function SubmitRedirectPage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  const { data: userProfile } = await getUserProfile(locale);
   
-  if (!userCookie) {
+  if (!userProfile) {
     redirect("/sign-in");
   }
 
-  try {
-    const user = JSON.parse(userCookie);
-    if (user.role === "hub_owner") {
-      redirect("/dashboard/hubs/new");
-    } else {
-      // Regular users cannot submit hubs
-      redirect("/");
-    }
-  } catch (e) {
-    redirect("/sign-in");
+  if (userProfile.role === "hub_owner") {
+    redirect("/dashboard/hubs/new");
+  } else {
+    // Regular users cannot submit hubs
+    redirect("/");
   }
 
   return null;

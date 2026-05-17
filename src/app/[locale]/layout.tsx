@@ -7,7 +7,7 @@ import StoreProvider from "@/src/providers/storeProvider";
 import AuthHydrator from "@/src/providers/AuthHydrator";
 import { ThemeProvider } from "@/src/providers/ThemeProvider";
 import { Toaster } from "react-hot-toast";
-import { cookies } from "next/headers";
+import { getUserProfile } from "@/src/actions/auth";
 import { CONFIG } from "@/src/config";
 import { Analytics } from '@vercel/analytics/react';
 
@@ -76,25 +76,8 @@ export default async function RootLayout({
   const { locale } = await params;
   const messages = await getMessages();
 
-  const cookieStore = await cookies();
-  const token = cookieStore.get("token")?.value;
-  const userCookie = cookieStore.get("user")?.value;
-  let user = null;
-  if (userCookie) {
-    try {
-    const decodedUser = decodeURIComponent(userCookie);
-    if (decodedUser.startsWith('eyJ')) {
-      const base64ToString = Buffer.from(decodedUser, 'base64').toString('utf-8');
-      user = JSON.parse(base64ToString);
-    } else {
-      user = JSON.parse(decodedUser);
-    }
-    
-  } catch (e) {
-    console.error("Layout JSON Parse Error:", e);
-    try { user = JSON.parse(userCookie); } catch(e2) {}
-  }
-  }
+  const { data: userProfile } = await getUserProfile(locale);
+  const user = userProfile || null;
 
   const isRtl = locale === "ar";
 
@@ -106,7 +89,7 @@ export default async function RootLayout({
         <NextIntlClientProvider messages={messages} locale={locale}>
           <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false} disableTransitionOnChange>
             <StoreProvider> 
-              {token && <AuthHydrator user={user} />}
+              {user && <AuthHydrator user={user} />}
               {children}
               <Analytics />
               <Toaster position="top-center" toastOptions={{ className: 'dark:bg-slate-800 dark:text-white rounded-xl' }} />
