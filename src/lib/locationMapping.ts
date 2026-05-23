@@ -1,7 +1,7 @@
 /**
  * Location IDs organized by their respective governorates.
  * Extracted from the hierarchical JSON API provided at:
- * https://karam.idreis.net/api/v1/location?lang=en
+ * https://api.qareeb.cc/api/v1/location?lang=en
  * 
  * Note: Gaza City and Rafah are currently missing from the API payload
  * but are defined below to support future inclusion.

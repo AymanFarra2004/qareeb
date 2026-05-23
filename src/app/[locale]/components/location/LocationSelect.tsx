@@ -30,7 +30,7 @@ export function LocationSelect() {
 
   useEffect(() => {
     setIsLoading(true);
-    fetch(`https://karam.idreis.net/api/v1/locations?lang=${locale}`)
+    fetch(`https://api.qareeb.cc/api/v1/locations?lang=${locale}`)
       .then(res => res.json())
       .then(data => {
         if(data.status === 'success') {

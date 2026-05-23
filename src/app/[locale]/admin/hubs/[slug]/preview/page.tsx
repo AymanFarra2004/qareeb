@@ -32,7 +32,7 @@ interface PageProps {
 function resolveImg(path: string | null | undefined): string | null {
   if (!path) return null;
   if (path.startsWith("http")) return path;
-  return `https://karam.idreis.net${path.startsWith("/") ? "" : "/"}${path}`;
+  return `https://api.qareeb.cc${path.startsWith("/") ? "" : "/"}${path}`;
 }
 
 /** Build a full readable address by joining all breadcrumb segment names */

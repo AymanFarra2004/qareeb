@@ -1,4 +1,4 @@
-const API_BASE_URL = "https://karam.idreis.net/api/v1";
+const API_BASE_URL = "https://api.qareeb.cc/api/v1";
 
 
 export async function getLocationDataBySlugForManagement(slug: string) {

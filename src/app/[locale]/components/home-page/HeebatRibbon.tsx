@@ -41,7 +41,7 @@ export default function HeebatRibbon({ hubs = [] }: { hubs?: any[] }) {
       >
         {duplicatedHubs.map((hub, index) => {
           const hubName = typeof hub.name === 'string' ? hub.name : (hub.name?.[locale] || hub.name?.en || hub.name?.ar || "Unknown Hub");
-          const imageUrl = hub.images?.main ? (hub.images.main.startsWith('http') ? hub.images.main : `https://karam.idreis.net${hub.images.main.startsWith('/') ? '' : '/'}${hub.images.main}`) : "https://placehold.co/100x100?text=Hub";
+          const imageUrl = hub.images?.main ? (hub.images.main.startsWith('http') ? hub.images.main : `https://api.qareeb.cc${hub.images.main.startsWith('/') ? '' : '/'}${hub.images.main}`) : "https://placehold.co/100x100?text=Hub";
           return (
             <Link
               href={`/hubs/${hub.slug}`}

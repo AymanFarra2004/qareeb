@@ -31,7 +31,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
 
   const mainImageRaw: string | null = typeof rawHub.images?.main === 'string' ? rawHub.images.main : null;
   const imageUrl = mainImageRaw
-    ? (mainImageRaw.startsWith('http') ? mainImageRaw : `https://karam.idreis.net${mainImageRaw.startsWith('/') ? '' : '/'}${mainImageRaw}`)
+    ? (mainImageRaw.startsWith('http') ? mainImageRaw : `https://api.qareeb.cc${mainImageRaw.startsWith('/') ? '' : '/'}${mainImageRaw}`)
     : null;
 
   return {
@@ -96,13 +96,13 @@ function mapApiHub(apiHub: any, locale: string = "ar", amLabel: string = "AM", p
     imageUrl: mainImage
       ? mainImage.startsWith("http")
         ? mainImage
-        : `https://karam.idreis.net${mainImage.startsWith("/") ? "" : "/"}${mainImage}`
+        : `https://api.qareeb.cc${mainImage.startsWith("/") ? "" : "/"}${mainImage}`
       : "https://placehold.co/600x400?text=No+Image",
     galleryUrls: Array.isArray(apiHub.images?.gallery)
       ? apiHub.images.gallery.map((g: any) => {
           const url = typeof g === 'string' ? g : g?.url;
           if (typeof url !== 'string') return null;
-          return url.startsWith("http") ? url : `https://karam.idreis.net${url.startsWith("/") ? "" : "/"}${url}`;
+          return url.startsWith("http") ? url : `https://api.qareeb.cc${url.startsWith("/") ? "" : "/"}${url}`;
         }).filter(Boolean)
       : [],
     verificationStatus: (apiHub.status === "approved" ? "Verified" : "Pending") as "Verified" | "Pending",

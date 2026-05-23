@@ -13,7 +13,7 @@ export async function GET(
     return NextResponse.json({ error: "Unauthenticated" }, { status: 401 });
   }
 
-  const apiUrl = `https://karam.idreis.net/api/v1/hubs/${slug}`;
+  const apiUrl = `https://api.qareeb.cc/api/v1/hubs/${slug}`;
 
   const res = await fetch(apiUrl, {
     headers: {

@@ -44,7 +44,7 @@ export default function HubGalleryManager({ hub, isOpen, onClose, onUpdate }: { 
       const gallery = hub.images?.gallery || [];
       
       const parsedOld: OldPhoto[] = [];
-      const resolveUrl = (url: string) => url.startsWith('http') ? url : `https://karam.idreis.net${url.startsWith('/') ? '' : '/'}${url}`;
+      const resolveUrl = (url: string) => url.startsWith('http') ? url : `https://api.qareeb.cc${url.startsWith('/') ? '' : '/'}${url}`;
 
       let mainResolvedStr = null;
 

@@ -4,7 +4,7 @@ import { cookies } from "next/headers";
 import { revalidatePath, revalidateTag } from "next/cache";
 import { format12to24 } from "../lib/utils";
 
-const API_BASE_URL = "https://karam.idreis.net/api/v1";
+const API_BASE_URL = "https://api.qareeb.cc/api/v1";
 
 // Map next-intl locale codes to API lang query params
 function getLangParam(locale: string = "ar"): string {
@@ -1157,7 +1157,7 @@ export async function deleteMyHubReview(hubSlug: string) {
 export async function downloadImageServer(url: string) {
   try {
     // Security mechanism: Only allow fetching from our backend
-    if (!url.startsWith(API_BASE_URL.replace('/v1', '')) && !url.startsWith("https://karam.idreis.net")) {
+    if (!url.startsWith(API_BASE_URL.replace('/v1', '')) && !url.startsWith("https://api.qareeb.cc")) {
       return { error: "Unauthorized image domain" };
     }
 

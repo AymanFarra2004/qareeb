@@ -36,7 +36,7 @@ export default function HubsBentoGrid({ hubs = [] }: { hubs?: any[] }) {
       ...Array.isArray(apiHub.custom_services) ? apiHub.custom_services.map((s: any) => typeof s.name === 'string' ? s.name : (s.name?.[locale] || s.name?.en || s.name)) : [],
     ],
     imageUrl: apiHub.images?.main ?
-      (apiHub.images.main.startsWith('http') ? apiHub.images.main : `https://karam.idreis.net${apiHub.images.main.startsWith('/') ? '' : '/'}${apiHub.images.main}`)
+      (apiHub.images.main.startsWith('http') ? apiHub.images.main : `https://api.qareeb.cc${apiHub.images.main.startsWith('/') ? '' : '/'}${apiHub.images.main}`)
       : "https://placehold.co/600x400?text=No+Image",
     verificationStatus: apiHub.status === "approved" ? "Verified" : "Pending",
     review: apiHub.reviews?.average_rating || 0,

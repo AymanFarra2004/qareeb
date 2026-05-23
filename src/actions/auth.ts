@@ -16,7 +16,7 @@ export async function loginUser(prevState: any, formData: FormData) {
   }
 
   try {
-    const res = await fetch("https://karam.idreis.net/api/v1/login", {
+    const res = await fetch("https://api.qareeb.cc/api/v1/login", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -106,7 +106,7 @@ export async function registerUser(prevState: any, formData: FormData) {
   // const specialization = formData.get("specialization") as string;
 
   try{
-    const response = await fetch("https://karam.idreis.net/api/v1/register", {
+    const response = await fetch("https://api.qareeb.cc/api/v1/register", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -159,7 +159,7 @@ export async function getUserProfile(locale: string = "ar") {
 
   try {
     const langParam = getLangParam(locale);
-    const res = await fetch(`https://karam.idreis.net/api/v1/profile?${langParam}`, {
+    const res = await fetch(`https://api.qareeb.cc/api/v1/profile?${langParam}`, {
       method: "GET",
       headers: {
         "Accept": "application/json",
@@ -180,7 +180,7 @@ export async function getUserProfile(locale: string = "ar") {
 
 export async function getProfileByToken(token: string, locale: string = "ar") {
   try {
-    const res = await fetch(`https://karam.idreis.net/api/v1/profile?${getLangParam(locale)}`, {
+    const res = await fetch(`https://api.qareeb.cc/api/v1/profile?${getLangParam(locale)}`, {
       method: "GET",
       headers: {
         "Accept": "application/json",

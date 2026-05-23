@@ -16,7 +16,7 @@ export async function submitContactForm(
   payload: ContactPayload
 ): Promise<ContactResult> {
   try {
-    const res = await fetch("https://karam.idreis.net/api/v1/contact", {
+    const res = await fetch("https://api.qareeb.cc/api/v1/contact", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

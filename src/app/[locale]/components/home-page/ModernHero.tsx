@@ -26,7 +26,7 @@ export default function ModernHero({ hubs = [] }: { hubs?: any[] }) {
       const selectedHubs = shuffled.slice(0, 4);
 
       const mappedHubs = selectedHubs.map(hub => ({
-        imageUrl: hub.images.main.startsWith('http') ? hub.images.main : `https://karam.idreis.net${hub.images.main.startsWith('/') ? '' : '/'}${hub.images.main}`,
+        imageUrl: hub.images.main.startsWith('http') ? hub.images.main : `https://api.qareeb.cc${hub.images.main.startsWith('/') ? '' : '/'}${hub.images.main}`,
         name: typeof hub.name === 'string' ? hub.name : (hub.name?.[locale] || hub.name?.en || hub.name?.ar || "Unknown Hub"),
         slug: hub.slug
       }));

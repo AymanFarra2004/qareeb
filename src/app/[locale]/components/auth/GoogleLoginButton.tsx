@@ -10,7 +10,7 @@ export function GoogleLoginButton({ section }: GoogleLoginButtonProps) {
   const t = useTranslations(section);
   
   const handleGoogleLogin = () => {
-    window.location.href = "https://karam.idreis.net/api/v1/auth/google/redirect";
+    window.location.href = "https://api.qareeb.cc/api/v1/auth/google/redirect";
   };
 
   return (

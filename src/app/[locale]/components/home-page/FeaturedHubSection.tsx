@@ -17,7 +17,7 @@ export default function FeaturedHubSection({filter, hubs = []}: {filter: {govern
         operatingHours: "24/7",
         services: Array.isArray(apiHub.services) ? apiHub.services.map((s:any) => s.name?.en || s.name) : [],
         imageUrl: apiHub.images?.main ? 
-          (apiHub.images.main.startsWith('http') ? apiHub.images.main : `https://karam.idreis.net${apiHub.images.main.startsWith('/') ? '' : '/'}${apiHub.images.main}`) 
+          (apiHub.images.main.startsWith('http') ? apiHub.images.main : `https://api.qareeb.cc${apiHub.images.main.startsWith('/') ? '' : '/'}${apiHub.images.main}`) 
           : "https://placehold.co/600x400?text=No+Image",
         verificationStatus: apiHub.status === "approved" ? "Verified" : "Pending",
         contact: { contactNumber: apiHub.contact || "" },
