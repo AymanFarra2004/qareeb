@@ -36,6 +36,60 @@ export default function HubsClient({ hubs }: HubsClientProps) {
   const [selectedCityId, setSelectedCityId] = useState<number | null>(null);
   const [selectedAreaId, setSelectedAreaId] = useState<number | null>(null);
 
+  const [isFiltersLoaded, setIsFiltersLoaded] = useState(false);
+
+  // Load filters from localStorage on mount
+  useEffect(() => {
+    try {
+      const savedSearch = localStorage.getItem("hubs_filter_searchQuery");
+      const savedGov = localStorage.getItem("hubs_filter_governorateId");
+      const savedCity = localStorage.getItem("hubs_filter_cityId");
+      const savedArea = localStorage.getItem("hubs_filter_areaId");
+
+      if (savedSearch) setSearchQuery(savedSearch);
+      if (savedGov && !isNaN(Number(savedGov))) setSelectedGovernorateId(Number(savedGov));
+      if (savedCity && !isNaN(Number(savedCity))) setSelectedCityId(Number(savedCity));
+      if (savedArea && !isNaN(Number(savedArea))) setSelectedAreaId(Number(savedArea));
+    } catch (e) {
+      console.error("Failed to load filters from localStorage", e);
+    } finally {
+      setIsFiltersLoaded(true);
+    }
+  }, []);
+
+  // Save filters to localStorage when they change
+  useEffect(() => {
+    if (!isFiltersLoaded) return;
+
+    try {
+      if (searchQuery) {
+        localStorage.setItem("hubs_filter_searchQuery", searchQuery);
+      } else {
+        localStorage.removeItem("hubs_filter_searchQuery");
+      }
+
+      if (selectedGovernorateId !== null) {
+        localStorage.setItem("hubs_filter_governorateId", String(selectedGovernorateId));
+      } else {
+        localStorage.removeItem("hubs_filter_governorateId");
+      }
+
+      if (selectedCityId !== null) {
+        localStorage.setItem("hubs_filter_cityId", String(selectedCityId));
+      } else {
+        localStorage.removeItem("hubs_filter_cityId");
+      }
+
+      if (selectedAreaId !== null) {
+        localStorage.setItem("hubs_filter_areaId", String(selectedAreaId));
+      } else {
+        localStorage.removeItem("hubs_filter_areaId");
+      }
+    } catch (e) {
+      console.error("Failed to save filters to localStorage", e);
+    }
+  }, [searchQuery, selectedGovernorateId, selectedCityId, selectedAreaId, isFiltersLoaded]);
+
   // ── Fetch locations from API ─────────────────────────────────────────────
   useEffect(() => {
     setLocationsLoading(true);
