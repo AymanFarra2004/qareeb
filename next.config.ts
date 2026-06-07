@@ -18,7 +18,7 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: 'https',
-        hostname: 'karam.idreis.net',
+        hostname: 'api.qareeb.cc',
         port: '',
         pathname: '/**',
       },
