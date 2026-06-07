@@ -18,7 +18,7 @@ export default async function middleware(request: NextRequest) {
     const locale = localeMatch ? localeMatch[1] : 'ar';
 
     if (!token) {
-      return NextResponse.redirect(new URL(`/${locale}/login`, request.url));
+      return NextResponse.redirect(new URL(`/${locale}/sign-in`, request.url));
     }
 
     try {
@@ -34,7 +34,7 @@ export default async function middleware(request: NextRequest) {
       const userRole = body?.data?.role || body?.role;
 
       if (!res.ok || !userRole) {
-        return NextResponse.redirect(new URL(`/${locale}/login`, request.url));
+        return NextResponse.redirect(new URL(`/${locale}/isgn-in`, request.url));
       }
 
       if (isProtectedAdmin && userRole !== 'admin') {
@@ -47,7 +47,7 @@ export default async function middleware(request: NextRequest) {
 
     } catch (error) {
       console.error("Middleware Auth Error:", error);
-      return NextResponse.redirect(new URL(`/${locale}/login`, request.url));
+      return NextResponse.redirect(new URL(`/${locale}/sign-in`, request.url));
     }
   }
 
