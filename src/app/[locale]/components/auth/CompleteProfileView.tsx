@@ -14,6 +14,8 @@ import { useActionState, useEffect, useState } from "react";
 import { useFormStatus } from "react-dom";
 import { LocationSelect } from "@/components/location/LocationSelect";
 import { useTranslations } from "next-intl";
+import { useDispatch } from "react-redux";
+import { updateUser } from "@/src/store/authSlice";
 
 function SubmitButton() {
   const { pending } = useFormStatus();
@@ -53,13 +55,17 @@ export default function CompleteProfileView() {
   const router = useRouter();
   const t = useTranslations("CompleteProfile");
   const tSignUp = useTranslations("SignUp");
+  const dispatch = useDispatch();
 
   useEffect(() => {
     if (state?.success) {
+      if (state.data) {
+        dispatch(updateUser(state.data));
+      }
       router.push("/");
       router.refresh();
     }
-  }, [state, router]);
+  }, [state, router, dispatch]);
 
   return (
     <div className="flex flex-col min-h-screen bg-background">
